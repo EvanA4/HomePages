@@ -17,8 +17,8 @@ const Experience = () => {
       spaceBetween={50}
       slidesPerView={4}
       navigation
-      onSwiper={(swiper) => console.log(swiper)}
-      onSlideChange={() => console.log('slide change')}
+      onSwiper={(swiper) => {}}
+      onSlideChange={() => {}}
     >
       <SwiperSlide><ExpSlide/></SwiperSlide>
       <SwiperSlide><ExpSlide/></SwiperSlide>
