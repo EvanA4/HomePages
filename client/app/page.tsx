@@ -7,7 +7,7 @@ import Contact from './components/contact'
 
 export default function Home() {
   return (
-    <div className='bg-[#fff2dd]'>
+    <div className='bg-[#818181]'>
       <Nav/>
       <Greeting/>
 
