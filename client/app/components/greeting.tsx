@@ -1,23 +1,27 @@
 'use client'
 import React, { useEffect } from 'react'
-import { Canvas, extend } from '@react-three/fiber'
-import { SphereGeometry, ShaderMaterial } from 'three'
-import { OrbitControls } from '@react-three/drei'
-extend({ SphereGeometry, ShaderMaterial })
+import { Canvas, extend, useLoader } from '@react-three/fiber'
+import { SphereGeometry, ShaderMaterial, TextureLoader } from 'three'
+import { OrbitControls, Stars } from '@react-three/drei'
+extend({ SphereGeometry, ShaderMaterial, TextureLoader })
 
 
 // The below two lines are normally red, idk how to fix this yet -- still works!
 import vert from './shaders/vert.glsl'
 import frag from './shaders/frag.glsl'
 
+import pngTexture from './marsColors.png'
 
 const CoolSphere = () => {
+  const colorMap = useLoader(TextureLoader, pngTexture.src)
 
   return (
     <mesh>
       <sphereGeometry />
       <shaderMaterial
-        attach={'material'}
+        uniforms={{
+          colorMap: { value: colorMap }
+        }}
         vertexShader={vert}
         fragmentShader={frag}
       />
@@ -38,6 +42,7 @@ const Greeting = () => {
           <CoolSphere />
         </mesh>
         <OrbitControls/>
+        <Stars speed={0}/>
       </Canvas>
     </div>
   )
