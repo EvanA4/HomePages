@@ -13,10 +13,10 @@ import atmFrag from './shaders/atmFrag.glsl'
 import pngTexture from '../../public/marsColors.png'
 
 
-
 const PostFX = () => {
   const { viewport, scene, camera, size } = useThree()
   const shMatRef = useRef<THREE.ShaderMaterial>(null!)
+  const meshRef = useRef<THREE.Mesh>(null!)
 
   const target = useFBO(size.width, size.height, {
     depthBuffer: true,
@@ -26,13 +26,23 @@ const PostFX = () => {
   useFrame((state) => {
     state.gl.setRenderTarget(target)
     state.gl.render(scene, camera)
+
     shMatRef.current.uniforms.depthTxt.value = target.depthTexture
+    
+    // match post-processing mesh to camera
+    let cameraLength = Math.sqrt(Math.pow(camera.position.x, 2) + Math.pow(camera.position.y, 2) +  Math.pow(camera.position.z, 2))
+    let cameraNorm = [camera.position.x / cameraLength, camera.position.y / cameraLength, camera.position.z / cameraLength]
+    meshRef.current.position.set(camera.position.x - cameraNorm[0] * .1, camera.position.y - cameraNorm[1] * .1, camera.position.z - cameraNorm[2] * .1)
+    console.log("Camera: ", camera.position, "\nMesh: ", meshRef.current.position)
+    meshRef.current.rotation.set(camera.rotation.x, camera.rotation.y, camera.rotation.z)
+
+    // meshRef.current.scale.set(cameraLength, cameraLength, cameraLength)
 
     state.gl.setRenderTarget(null)
   })
 
   return (
-    <mesh>
+    <mesh ref={meshRef} scale={[.1, .1, .1]}>
       <planeGeometry args={[viewport.width, viewport.height]}/>
       <shaderMaterial ref={shMatRef}
         uniforms={{
@@ -41,6 +51,7 @@ const PostFX = () => {
         vertexShader={atmVert}
         fragmentShader={atmFrag}
         depthWrite={false}
+        transparent
       />
     </mesh>
   )

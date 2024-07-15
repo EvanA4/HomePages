@@ -10,5 +10,5 @@ uniform sampler2D depthTxt;
 
   void main() {
     float depth = texture2D(depthTxt, vUv).r;
-    gl_FragColor = vec4(vec3(depth), 1.);
+    gl_FragColor = vec4(vec3(depth), 1);
   }
