@@ -5,20 +5,10 @@
 // and https://discourse.threejs.org/t/reading-from-depth-texture/51344
 // and docs at https://threejs.org/docs/?q=depth#api/en/textures/DepthTexture
 
-uniform vec3 lightDir;
-uniform sampler2D depthTexture;
-varying vec3 vPos;
-varying vec3 vNorm;
-varying vec3 vCol;
-varying vec2 vUv;
+uniform sampler2D depthTxt;
+  varying vec2 vUv;
 
-
-void main() {
-    
-    gl_FragColor = texture2D(depthTexture, vUv);
-
-    // float camDot = dot(vNorm, cameraPosition) / length(cameraPosition);
-    // float lightDot = dot(vNorm, lightDir) / length(lightDir);
-    // float outFloat = camDot * lightDot;
-    // gl_FragColor = vec4(outFloat, outFloat, outFloat, 0.1);
-}
+  void main() {
+    float depth = texture2D(depthTxt, vUv).r;
+    gl_FragColor = vec4(vec3(depth), 1.);
+  }
