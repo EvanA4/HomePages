@@ -49,8 +49,9 @@ const PostFX = () => {
     state.gl.setRenderTarget(null)
   })
 
-  return ( // 475 is a weird constant I don't understand at all :D
-    <mesh ref={meshRef} scale={[.1/475, .1/475, 1]}>
+  return (
+    // Wanna know about this .6515 constant? See more at the bottom of the file.
+    <mesh ref={meshRef} scale={[.1/(size.height * .6515), .1/(size.height * .6515), 1]}> 
       <planeGeometry ref={rectRef} args={[size.width, size.height]}/>
       <shaderMaterial ref={shMatRef}
         uniforms={{
@@ -104,3 +105,16 @@ const Greeting = () => {
 
 
 export default Greeting
+
+/*
+
+So what's the deal with this constant?
+Apparently changing the size of the canvas height requires the canvas to be scaled differently.
+I noticed that the scaling was inversely proportional to the canvas size. So, I collected a few points of data:
+canvas height, constant, constant/height
+358.4, 233, .6501
+341.75, 222, .6496
+320, 208, .65
+I'd love to figure out how to derive this constant, but this will have to work for now.
+
+*/
