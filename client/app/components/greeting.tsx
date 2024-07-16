@@ -13,8 +13,14 @@ import atmFrag from './shaders/atmFrag.glsl'
 import pngTexture from '../../public/marsColors.png'
 
 
-const PostFX = () => {
-  const { viewport, scene, camera, size } = useThree()
+interface AtmProps {
+  position: THREE.Vector3
+  radius: number
+}
+
+
+const Atm = (props: AtmProps) => {
+  const { scene, camera, size } = useThree()
   const shMatRef = useRef<THREE.ShaderMaterial>(null!)
   const rectRef = useRef<THREE.PlaneGeometry>(null!)
   const meshRef = useRef<THREE.Mesh>(null!)
@@ -41,10 +47,9 @@ const PostFX = () => {
     // DEBUGING
     // /* distance */ console.log(Math.sqrt(Math.pow(camera.position.x - meshRef.current.position.x, 2) + Math.pow(camera.position.y - meshRef.current.position.y, 2) +  Math.pow(camera.position.z - meshRef.current.position.z, 2)))
     // /* scale */ console.log(meshRef.current.scale)
+    // /* mesh pos */ console.log(meshRef.current.position)
     // /* rect dim */ console.log(rectRef.current.parameters.width, rectRef.current.parameters.height)
     // /* camera pos */ console.log(camera.position)
-
-    // meshRef.current.scale.set(cameraLength, cameraLength, cameraLength)
 
     state.gl.setRenderTarget(null)
   })
@@ -55,7 +60,11 @@ const PostFX = () => {
       <planeGeometry ref={rectRef} args={[size.width, size.height]}/>
       <shaderMaterial ref={shMatRef}
         uniforms={{
-          depthTxt: {value: null}
+          depthTxt: {value: null},
+          atmPos: {value: props.position},
+          atmR: {value: props.radius},
+          camNear: {value: camera.near},
+          camFar: {value: camera.far}
         }}
         vertexShader={atmVert}
         fragmentShader={atmFrag}
@@ -97,7 +106,7 @@ const Greeting = () => {
       <Canvas camera={{position: [0, 0, 1]}}>
         <MyPlanet/>
         <OrbitControls/>
-        <PostFX/>
+        <Atm position={new THREE.Vector3(0, 0, -1)} radius={1.5}/>
       </Canvas>
     </div>
   )
