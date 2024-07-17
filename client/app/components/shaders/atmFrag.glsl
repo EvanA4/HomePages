@@ -7,15 +7,15 @@
 // and docs at https://threejs.org/docs/?q=depth#api/en/textures/DepthTexture
 
 uniform sampler2D depthTxt;
+uniform sampler2D colorTxt;
 uniform vec3 atmPos;
 uniform float atmR;
-uniform float camNear;
-uniform float camFar;
-varying vec2 vUv;
 uniform vec3 meshPos;
 uniform vec2 meshDim;
 uniform mat4 projectionInverse;
 uniform mat4 modelMatrix;
+
+varying vec2 vUv;
 
 
 struct Ray {
@@ -37,7 +37,7 @@ Ray create_ray() {
 
 
 float world_depth() {
-  // get distance at pixel
+  // returns real world distance from camera to pixel
   // thanks to https://discourse.threejs.org/t/reconstruct-world-position-in-screen-space-from-depth-buffer/5532/2
   float normalizedDepth = texture2D(depthTxt, vUv).r; 
 		
@@ -56,7 +56,7 @@ float world_depth() {
 
 
 float pierce_atm(Ray ray) {
-  // determines length of path a ray travels through a sphere
+  // returns (distance to sphere, length of path through sphere)
 
   // get distance to planet
   float realDepth = world_depth();

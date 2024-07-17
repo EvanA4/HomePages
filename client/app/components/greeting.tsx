@@ -73,10 +73,9 @@ const Atm = (props: AtmProps) => {
       <shaderMaterial ref={shMatRef}
         uniforms={{
           depthTxt: {value: null},
+          colorTxt: {value: target.texture},
           atmPos: {value: props.position},
           atmR: {value: props.radius},
-          camNear: {value: camera.near},
-          camFar: {value: camera.far},
           meshPos: { value: meshPos.current },
           meshDim: { value: meshDim.current },
           projectionInverse: { value: camera.projectionMatrixInverse },
@@ -121,7 +120,7 @@ const Greeting = () => {
     <div className='flex justify-center items-center h-[80vh] bg-[#000000]'>
       {/* <Canvas camera={{position: [0, 0, 1]}}> */}
       <Canvas >
-        <PerspectiveCamera position={[0, 0, 2]} makeDefault />
+        <PerspectiveCamera position={[0, 0, 3]} makeDefault />
         <MyPlanet/>
         <OrbitControls/>
         <Atm position={new THREE.Vector3(0, 0, 0)} radius={1.3}/>
