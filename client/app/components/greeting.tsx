@@ -59,7 +59,7 @@ const Atm = (props: AtmProps) => {
     // /* camera pos */ console.log(camera.position)
     // /* camRight */ console.log(shMatRef.current.uniforms.camRight.value)
     // /* camUp */ console.log(shMatRef.current.uniforms.camUp.value)
-    /* raw camera up */ console.log(camera.up)
+    // /* raw camera up */ console.log(camera.up)
     // /* camDir */ console.log(cameraDir)
 
     state.gl.setRenderTarget(null)

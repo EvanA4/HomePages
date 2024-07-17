@@ -34,9 +34,13 @@ Ray create_ray() {
 }
 
 
-float pierce_sphere(Ray ray) {
+float pierce_atm(Ray ray) {
   // determines length of path ray travels through sphere
-  // real depth is a little greater than 1000 if it's a miss (another arbitrary constant?)
+
+  // get distance to planet with depth texture
+  float camDepth = texture2D(depthTxt, vUv).r;
+  float realDepth = 2.0 * camNear * camFar / (camFar + camNear - camDepth * (camFar - camNear));
+  // realDepth = camNear * camFar / (camFar - camNear * camDepth - camFar);
 
   // solve parameterized equation for sphere collision https://viclw17.github.io/2018/07/16/raytracing-ray-sphere-intersection
   vec3 originDiff = ray.origin - atmPos;
@@ -46,9 +50,10 @@ float pierce_sphere(Ray ray) {
 
   if (disc > 0.) {
     float sqrtDisc = sqrt(disc);
-    float tNear = max(0., (-b - sqrtDisc) / 2.); // max for in case camera is inside sphere
-    float tFar = (-b + sqrtDisc) / 2.;
-    return tFar - tNear;
+    float distNearIntersect = max(0., (-b - sqrtDisc) / 2.); // max for in case camera is inside sphere
+    float distFarIntersect = (-b + sqrtDisc) / 2.;
+    float rawAtmDepth = distFarIntersect - distNearIntersect;
+    return min(realDepth - distNearIntersect, rawAtmDepth);
   }
 
   return 0.;
@@ -57,12 +62,7 @@ float pierce_sphere(Ray ray) {
 
 void main() {
   Ray current = create_ray();
-  float pierce = pierce_sphere(current);
-
-  float camDepth = texture2D(depthTxt, vUv).r;
-  float realDepth = 2.0 * camNear * camFar / (camFar + camNear - camDepth * (camFar - camNear));
-
-  float atmDepth = min(pierce, realDepth);
+  float atmDepth = pierce_atm(current);
 
   gl_FragColor = vec4(vec3(atmDepth / atmR / 2.), 1.);
 }
