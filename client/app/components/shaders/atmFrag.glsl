@@ -1,4 +1,4 @@
-#version 450
+// #version 450
 // most uniforms and attributes are already provided by ThreeJS
 // see docs at https://threejs.org/docs/#api/en/renderers/webgl/WebGLProgram
 // also helpful code https://tympanus.net/codrops/2024/07/09/creating-an-animated-displaced-sphere-with-a-custom-three-js-material/
@@ -11,8 +11,9 @@ uniform vec3 atmPos;
 uniform float atmR;
 uniform float camNear;
 uniform float camFar;
-varying vec3 vPlanePos;
 varying vec2 vUv;
+uniform vec3 meshPos;
+uniform vec2 meshDim;
 
 
 struct Ray {
@@ -23,14 +24,34 @@ struct Ray {
 
 Ray create_ray() {
   Ray outRay;
-  outRay.origin = cameraPosition;
-  outRay.dir = vec3(vPlanePos - cameraPosition);
+  vec3 camRight = vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
+  vec3 camUp = vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
+  vec3 upTrans = camUp * (vUv.y - .5) * meshDim.y;
+  vec3 rightTrans = camRight * (vUv.x - .5) * meshDim.x;
+  outRay.origin = meshPos + upTrans + rightTrans;
+  outRay.dir = normalize(outRay.origin - cameraPosition);
   return outRay;
 }
 
 
 float pierce_sphere(Ray ray) {
   // determines length of path ray travels through sphere
+  // real depth is a little greater than 1000 if it's a miss (another arbitrary constant?)
+
+  // solve parameterized equation for sphere collision https://viclw17.github.io/2018/07/16/raytracing-ray-sphere-intersection
+  vec3 originDiff = ray.origin - atmPos;
+  float b = 2. * dot(ray.dir, originDiff);
+  float c = dot(originDiff, originDiff) - atmR * atmR;
+  float disc = b * b - 4. * c;
+
+  if (disc > 0.) {
+    float sqrtDisc = sqrt(disc);
+    float tNear = max(0., (-b - sqrtDisc) / 2.); // max for in case camera is inside sphere
+    float tFar = (-b + sqrtDisc) / 2.;
+    return tFar - tNear;
+  }
+
+  return 0.;
 }
 
 
@@ -40,5 +61,8 @@ void main() {
 
   float camDepth = texture2D(depthTxt, vUv).r;
   float realDepth = 2.0 * camNear * camFar / (camFar + camNear - camDepth * (camFar - camNear));
-  gl_FragColor = vec4(vec3(realDepth), 1.);
+
+  float atmDepth = min(pierce, realDepth);
+
+  gl_FragColor = vec4(vec3(atmDepth / atmR / 2.), 1.);
 }
