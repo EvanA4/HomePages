@@ -2,7 +2,7 @@
 import React, { useRef } from 'react'
 import { Canvas, extend, useFrame, useLoader, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { OrbitControls, useFBO } from '@react-three/drei'
+import { OrbitControls, PerspectiveCamera, useFBO } from '@react-three/drei'
 
 
 // The below four lines are normally red, idk how to fix this yet -- still works!
@@ -56,19 +56,20 @@ const Atm = (props: AtmProps) => {
     // /* scale */ console.log(meshRef.current.scale)
     // /* mesh pos */ console.log(meshRef.current.position)
     // /* rect dim */ console.log(rectRef.current.parameters.width, rectRef.current.parameters.height)
-    /* camera pos */ console.log(camera.position)
+    // /* camera pos */ console.log(camera.position)
     // /* camRight */ console.log(shMatRef.current.uniforms.camRight.value)
     // /* camUp */ console.log(shMatRef.current.uniforms.camUp.value)
     // /* raw camera up */ console.log(camera.up)
     // /* camDir */ console.log(cameraDir)
+    // /* camZoom */ console.log(camera.zoom)
 
     state.gl.setRenderTarget(null)
   })
 
   return (
-    // Wanna know about this .6515 constant? See more at the bottom of the file.
+    // 1.072 is an arbitrary constant idk man
     <mesh ref={meshRef}> 
-      <planeGeometry ref={rectRef} args={[size.width * .1/(size.height * .6515), size.height * .1/(size.height * .6515)]}/>
+      <planeGeometry ref={rectRef} args={[size.width * .1/(size.height * 1.072), size.height * .1/(size.height * 1.072)]}/>
       <shaderMaterial ref={shMatRef}
         uniforms={{
           depthTxt: {value: null},
@@ -77,7 +78,9 @@ const Atm = (props: AtmProps) => {
           camNear: {value: camera.near},
           camFar: {value: camera.far},
           meshPos: { value: meshPos.current },
-          meshDim: { value: meshDim.current }
+          meshDim: { value: meshDim.current },
+          projectionInverse: { value: camera.projectionMatrixInverse },
+          modelMatrix: { value: camera.matrixWorld }
         }}
         vertexShader={atmVert}
         fragmentShader={atmFrag}
@@ -96,7 +99,7 @@ const MyPlanet = () => {
 
   return (
     <>
-      <mesh ref={planetRef} position={[0, 0, -1]}>
+      <mesh ref={planetRef} position={[0, 0, 0]}>
         <sphereGeometry args={[1, 32, 32]}/>
         <shaderMaterial
           uniforms={{
@@ -116,10 +119,12 @@ const Greeting = () => {
 
   return (
     <div className='flex justify-center items-center h-[80vh] bg-[#000000]'>
-      <Canvas camera={{position: [0, 0, 1]}}>
+      {/* <Canvas camera={{position: [0, 0, 1]}}> */}
+      <Canvas >
+        <PerspectiveCamera position={[0, 0, 2]} makeDefault />
         <MyPlanet/>
         <OrbitControls/>
-        <Atm position={new THREE.Vector3(0, 0, -1)} radius={1.5}/>
+        <Atm position={new THREE.Vector3(0, 0, 0)} radius={1.3}/>
       </Canvas>
     </div>
   )
@@ -127,16 +132,3 @@ const Greeting = () => {
 
 
 export default Greeting
-
-/*
-
-So what's the deal with this constant?
-Apparently changing the size of the canvas height requires the canvas to be scaled differently.
-I noticed that the scaling was inversely proportional to the canvas size. So, I collected a few points of data:
-canvas height, constant, constant/height
-358.4, 233, .6501
-341.75, 222, .6496
-320, 208, .65
-I'd love to figure out how to derive this constant, but this will have to work for now.
-
-*/
