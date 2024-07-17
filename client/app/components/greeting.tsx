@@ -56,7 +56,7 @@ const Atm = (props: AtmProps) => {
     // /* scale */ console.log(meshRef.current.scale)
     // /* mesh pos */ console.log(meshRef.current.position)
     // /* rect dim */ console.log(rectRef.current.parameters.width, rectRef.current.parameters.height)
-    // /* camera pos */ console.log(camera.position)
+    /* camera pos */ console.log(camera.position)
     // /* camRight */ console.log(shMatRef.current.uniforms.camRight.value)
     // /* camUp */ console.log(shMatRef.current.uniforms.camUp.value)
     // /* raw camera up */ console.log(camera.up)

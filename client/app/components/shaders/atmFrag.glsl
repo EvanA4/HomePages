@@ -64,5 +64,18 @@ void main() {
   Ray current = create_ray();
   float atmDepth = pierce_atm(current);
 
-  gl_FragColor = vec4(vec3(atmDepth / atmR / 2.), 1.);
+  float camDepth = texture2D(depthTxt, vUv).r;
+  float realDepth;
+  // realDepth = 2.0 * camNear * camFar / (camFar + camNear - camDepth * (camFar - camNear)); // ChatGPT
+  // realDepth = (2.0 * camNear) / (camFar + camNear - camDepth * (camFar - camNear)); // ChatGPT again
+  // realDepth = camNear / (camFar - camDepth * (camFar - camNear)); // ChatGPT again again
+  // realDepth = camNear * camFar  / ( (camFar - ( camNear )) * ( camDepth ) - ( camFar ) ); // perspectiveDepthToViewZ
+  // realDepth = camNear - ( camFar ) * ( camDepth ) - ( camNear ); // orthographicDepthToViewZ
+  realDepth = camDepth * camFar;
+
+  // camNear is .1
+  // camFar is 1000
+
+
+  gl_FragColor = vec4(vec3(realDepth), 1.);
 }
