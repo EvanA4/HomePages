@@ -55,11 +55,9 @@ float world_depth() {
 }
 
 
-float pierce_atm(Ray ray) {
+vec2 ray_sphere(Ray ray) {
   // returns (distance to sphere, length of path through sphere)
-
-  // get distance to planet
-  float realDepth = world_depth();
+  // credit to Sebastian Lague at https://www.youtube.com/watch?v=DxfEbulyFcY&t=154s
 
   // solve parameterized equation for sphere collision https://viclw17.github.io/2018/07/16/raytracing-ray-sphere-intersection
   vec3 originDiff = ray.origin - atmPos;
@@ -72,16 +70,26 @@ float pierce_atm(Ray ray) {
     float distNearIntersect = max(0., (-b - sqrtDisc) / 2.); // max for in case camera is inside sphere
     float distFarIntersect = (-b + sqrtDisc) / 2.;
     float rawAtmDepth = distFarIntersect - distNearIntersect;
-    return min(realDepth - distNearIntersect, rawAtmDepth);
+
+    if (distFarIntersect >= 0.)
+      return vec2(distNearIntersect, rawAtmDepth);
   }
 
-  return 0.;
+  return vec2(3.402823466e+38, 0.);
+}
+
+
+float atm_depth(Ray ray) {
+  float realDepth = world_depth();
+  vec2 atmDepth = ray_sphere(ray);
+  return min(atmDepth[1], realDepth - atmDepth[0]);
 }
 
 
 void main() {
   Ray current = create_ray();
-  float atmDepth = pierce_atm(current);
+
+  float atmDepth = atm_depth(current);
 
   gl_FragColor = vec4(vec3(atmDepth / atmR / 2.), .8);
 }
