@@ -14,9 +14,13 @@ uniform vec3 meshPos;
 uniform vec2 meshDim;
 uniform mat4 projectionInverse;
 uniform mat4 modelMatrix;
-
 varying vec2 vUv;
 
+const int numScatterPoints = 10;
+const int opticalDepthSteps = 10;
+const float densityFalloff = 1.8;
+const float scatteringStrength = 1.;
+const vec3 wavelengths = vec3(700., 530., 440.);
 
 struct Ray {
   vec3 origin;
@@ -82,17 +86,18 @@ vec2 pierce_atm(Ray current) {
 float density_at_point(vec3 point) {
   float heightAboveSurface = length(point - atmPos) - 1.;
   float height01 = heightAboveSurface / (atmR - 1.);
-  float localDensity = exp(-height01 * .5) * (1. - height01);
+  float localDensity = exp(-height01 * densityFalloff) * (1. - height01);
   return localDensity;
 }
 
 
 float optical_depth(Ray current, float rayLen) {
+  float floatSteps = float(opticalDepthSteps);
   vec3 densitySamplePoint = current.origin;
-  float stepSize = rayLen / (5. - 1.);
+  float stepSize = rayLen / (floatSteps - 1.);
   float opticalDepth = 0.;
 
-  for (int i = 0; i < 5; ++i) {
+  for (int i = 0; i < opticalDepthSteps; ++i) {
     float localDensity = density_at_point(densitySamplePoint);
     opticalDepth += localDensity * stepSize;
     densitySamplePoint += current.dir * stepSize;
@@ -102,13 +107,14 @@ float optical_depth(Ray current, float rayLen) {
 }
 
 
-float calculate_light(Ray current, float atmDist, float realAtmLen) {
-  int steps = 3;
-  float inScatteredLight = 0.;
+vec3 calculate_light(Ray current, float atmDist, float realAtmLen, vec3 rawColor) {
+  float floatSteps = float(numScatterPoints);
+  vec3 inScatteredLight = vec3(0.);
+  float viewOpticalDepth = 0.;
 
   vec3 sphereEnter = current.origin + atmDist * current.dir;
-  vec3 stepVec = current.dir * realAtmLen / (3. - 1.);
-  for (int i = 0; i < steps; ++i) {
+  vec3 stepVec = current.dir * realAtmLen / (floatSteps - 1.);
+  for (int i = 0; i < numScatterPoints; ++i) {
     vec3 scatterPoint = sphereEnter;
 
     Ray scatterPtToLight;
@@ -121,16 +127,22 @@ float calculate_light(Ray current, float atmDist, float realAtmLen) {
     Ray viewRay;
     viewRay.origin = scatterPoint;
     viewRay.dir = -current.dir;
-    float viewOpticalDepth = optical_depth(viewRay, length(stepVec));
+    viewOpticalDepth = optical_depth(viewRay, length(stepVec));
 
-    float transmittance = exp(-(sunOpticalDepth + viewOpticalDepth));
+    vec3 scatterCoefs = vec3(
+      pow(400. / wavelengths[0], 4.) * scatteringStrength,
+      pow(400. / wavelengths[1], 4.) * scatteringStrength,
+      pow(400. / wavelengths[2], 4.) * scatteringStrength
+    );
+
+    vec3 transmittance = exp(-(sunOpticalDepth + viewOpticalDepth) * scatterCoefs);
     float localDensity = density_at_point(scatterPoint);
 
-    inScatteredLight += localDensity * transmittance * length(stepVec);
+    inScatteredLight += localDensity * transmittance * scatterCoefs * length(stepVec);
     sphereEnter += stepVec;
   }
-
-  return inScatteredLight;
+  float originalColTransmittance = exp(-viewOpticalDepth);
+  return rawColor * originalColTransmittance + inScatteredLight;
 }
 
 
@@ -139,8 +151,9 @@ void main() {
   float realDepth = world_depth();
   vec2 atmDistLen = pierce_atm(current);
   float realAtmLen = min(atmDistLen[1], realDepth - atmDistLen[0]);
-  float light = calculate_light(current, atmDistLen[0], realAtmLen);
-  vec4 color = texture2D(colorTxt, vUv);
 
-  gl_FragColor = vec4(color * (1. - light) + vec4(light * 1.5));
+  vec4 rawColor = texture2D(colorTxt, vUv);
+  vec3 light = calculate_light(current, atmDistLen[0], realAtmLen, rawColor.rgb);
+
+  gl_FragColor = vec4(light, 1.);
 }

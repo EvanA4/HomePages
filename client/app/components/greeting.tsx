@@ -99,7 +99,7 @@ const MyPlanet = () => {
   return (
     <>
       <mesh ref={planetRef} position={[0, 0, 0]}>
-        <sphereGeometry args={[1, 32, 32]}/>
+        <sphereGeometry args={[7, 32, 32]}/>
         <shaderMaterial
           uniforms={{
             colorMap: { value: colorMap },
@@ -120,10 +120,10 @@ const Greeting = () => {
     <div className='flex justify-center items-center h-[80vh] bg-[#000000]'>
       {/* <Canvas camera={{position: [0, 0, 1]}}> */}
       <Canvas >
-        <PerspectiveCamera position={[0, 0, 3]} makeDefault />
+        <PerspectiveCamera position={[0, 0, 29]} makeDefault />
         <MyPlanet/>
         <OrbitControls/>
-        <Atm position={new THREE.Vector3(0, 0, 0)} radius={1.5}/>
+        <Atm position={new THREE.Vector3(0, 0, 0)} radius={14}/>
       </Canvas>
     </div>
   )
