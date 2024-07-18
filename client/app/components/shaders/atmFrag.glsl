@@ -24,7 +24,7 @@ struct Ray {
 };
 
 
-Ray create_ray() {
+Ray create_screen_ray() {
   Ray outRay;
   vec3 camRight = vec3(viewMatrix[0][0], viewMatrix[1][0], viewMatrix[2][0]);
   vec3 camUp = vec3(viewMatrix[0][1], viewMatrix[1][1], viewMatrix[2][1]);
@@ -55,13 +55,13 @@ float world_depth() {
 }
 
 
-vec2 ray_sphere(Ray ray) {
+vec2 pierce_atm(Ray current) {
   // returns (distance to sphere, length of path through sphere)
   // credit to Sebastian Lague at https://www.youtube.com/watch?v=DxfEbulyFcY&t=154s
 
   // solve parameterized equation for sphere collision https://viclw17.github.io/2018/07/16/raytracing-ray-sphere-intersection
-  vec3 originDiff = ray.origin - atmPos;
-  float b = 2. * dot(ray.dir, originDiff);
+  vec3 originDiff = current.origin - atmPos;
+  float b = 2. * dot(current.dir, originDiff);
   float c = dot(originDiff, originDiff) - atmR * atmR;
   float disc = b * b - 4. * c;
 
@@ -72,24 +72,75 @@ vec2 ray_sphere(Ray ray) {
     float rawAtmDepth = distFarIntersect - distNearIntersect;
 
     if (distFarIntersect >= 0.)
-      return vec2(distNearIntersect, rawAtmDepth);
+      return vec2(distNearIntersect, rawAtmDepth );
   }
 
   return vec2(3.402823466e+38, 0.);
 }
 
 
-float atm_depth(Ray ray) {
-  float realDepth = world_depth();
-  vec2 atmDepth = ray_sphere(ray);
-  return min(atmDepth[1], realDepth - atmDepth[0]);
+float density_at_point(vec3 point) {
+  float heightAboveSurface = length(point - atmPos) - 1.;
+  float height01 = heightAboveSurface / (atmR - 1.);
+  float localDensity = exp(-height01 * .5) * (1. - height01);
+  return localDensity;
+}
+
+
+float optical_depth(Ray current, float rayLen) {
+  vec3 densitySamplePoint = current.origin;
+  float stepSize = rayLen / (5. - 1.);
+  float opticalDepth = 0.;
+
+  for (int i = 0; i < 5; ++i) {
+    float localDensity = density_at_point(densitySamplePoint);
+    opticalDepth += localDensity * stepSize;
+    densitySamplePoint += current.dir * stepSize;
+  }
+
+  return opticalDepth;
+}
+
+
+float calculate_light(Ray current, float atmDist, float realAtmLen) {
+  int steps = 3;
+  float inScatteredLight = 0.;
+
+  vec3 sphereEnter = current.origin + atmDist * current.dir;
+  vec3 stepVec = current.dir * realAtmLen / (3. - 1.);
+  for (int i = 0; i < steps; ++i) {
+    vec3 scatterPoint = sphereEnter;
+
+    Ray scatterPtToLight;
+    scatterPtToLight.origin = scatterPoint;
+    scatterPtToLight.dir = normalize(vec3(-10, 4, 10) - scatterPoint);
+    float sunRayLength = pierce_atm(scatterPtToLight)[1];
+
+    float sunOpticalDepth = optical_depth(scatterPtToLight, sunRayLength);
+
+    Ray viewRay;
+    viewRay.origin = scatterPoint;
+    viewRay.dir = -current.dir;
+    float viewOpticalDepth = optical_depth(viewRay, length(stepVec));
+
+    float transmittance = exp(-(sunOpticalDepth + viewOpticalDepth));
+    float localDensity = density_at_point(scatterPoint);
+
+    inScatteredLight += localDensity * transmittance * length(stepVec);
+    sphereEnter += stepVec;
+  }
+
+  return inScatteredLight;
 }
 
 
 void main() {
-  Ray current = create_ray();
+  Ray current = create_screen_ray();
+  float realDepth = world_depth();
+  vec2 atmDistLen = pierce_atm(current);
+  float realAtmLen = min(atmDistLen[1], realDepth - atmDistLen[0]);
+  float light = calculate_light(current, atmDistLen[0], realAtmLen);
+  vec4 color = texture2D(colorTxt, vUv);
 
-  float atmDepth = atm_depth(current);
-
-  gl_FragColor = vec4(vec3(atmDepth / atmR / 2.), .8);
+  gl_FragColor = vec4(color * (1. - light) + vec4(light * 1.5));
 }

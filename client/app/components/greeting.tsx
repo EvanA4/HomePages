@@ -123,7 +123,7 @@ const Greeting = () => {
         <PerspectiveCamera position={[0, 0, 3]} makeDefault />
         <MyPlanet/>
         <OrbitControls/>
-        <Atm position={new THREE.Vector3(0, 0, 0)} radius={1.3}/>
+        <Atm position={new THREE.Vector3(0, 0, 0)} radius={1.5}/>
       </Canvas>
     </div>
   )
