@@ -14,6 +14,7 @@ uniform vec3 meshPos;
 uniform vec2 meshDim;
 uniform mat4 projectionInverse;
 uniform mat4 modelMatrix;
+uniform vec3 lightPos;
 varying vec2 vUv;
 
 const int numScatterPoints = 10;
@@ -119,7 +120,7 @@ vec3 calculate_light(Ray current, float atmDist, float realAtmLen, vec3 rawColor
 
     Ray scatterPtToLight;
     scatterPtToLight.origin = scatterPoint;
-    scatterPtToLight.dir = normalize(vec3(-10, 4, 10) - scatterPoint);
+    scatterPtToLight.dir = normalize(lightPos - scatterPoint);
     float sunRayLength = pierce_atm(scatterPtToLight)[1];
 
     float sunOpticalDepth = optical_depth(scatterPtToLight, sunRayLength);
@@ -153,7 +154,11 @@ void main() {
   float realAtmLen = min(atmDistLen[1], realDepth - atmDistLen[0]);
 
   vec4 rawColor = texture2D(colorTxt, vUv);
-  vec3 light = calculate_light(current, atmDistLen[0], realAtmLen, rawColor.rgb);
 
-  gl_FragColor = vec4(light, 1.);
+  if (atmDistLen[1] != 0.) {
+    vec3 light = calculate_light(current, atmDistLen[0], realAtmLen, rawColor.rgb);
+    gl_FragColor = vec4(light, 1.);
+  } else {
+    gl_FragColor = vec4(rawColor);
+  }
 }

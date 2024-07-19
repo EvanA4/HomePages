@@ -1,8 +1,9 @@
 'use client'
-import React, { useRef } from 'react'
-import { Canvas, extend, useFrame, useLoader, useThree } from '@react-three/fiber'
+import React, { Suspense, useEffect, useRef, useState } from 'react'
+import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { OrbitControls, PerspectiveCamera, useFBO } from '@react-three/drei'
+import { GLTFLoader } from 'three/examples/jsm/Addons.js'
 
 
 // The below four lines are normally red, idk how to fix this yet -- still works!
@@ -11,6 +12,7 @@ import planetFrag from './shaders/planetFrag.glsl'
 import atmVert from './shaders/atmVert.glsl'
 import atmFrag from './shaders/atmFrag.glsl'
 import pngTexture from '../../public/marsColors.png'
+import { list } from 'postcss'
 
 
 interface AtmProps {
@@ -48,6 +50,11 @@ const Atm = (props: AtmProps) => {
     meshRef.current.rotation.set(camera.rotation.x, camera.rotation.y, camera.rotation.z)
 
     // set some of the uniforms
+    let period = 10
+    let time = state.clock.elapsedTime
+    let angle = time / period * 2 * Math.PI
+    shMatRef.current.uniforms.lightPos.value.set(-80 * Math.sin(angle), 0, 80 * Math.cos(angle))
+
     meshPos.current.copy(meshRef.current.position)
     meshDim.current.set(rectRef.current.parameters.width, rectRef.current.parameters.height)
 
@@ -79,7 +86,8 @@ const Atm = (props: AtmProps) => {
           meshPos: { value: meshPos.current },
           meshDim: { value: meshDim.current },
           projectionInverse: { value: camera.projectionMatrixInverse },
-          modelMatrix: { value: camera.matrixWorld }
+          modelMatrix: { value: camera.matrixWorld },
+          lightPos: { value: new THREE.Vector3(0, 0, 80) }
         }}
         vertexShader={atmVert}
         fragmentShader={atmFrag}
@@ -114,6 +122,63 @@ const MyPlanet = () => {
 }
 
 
+const MiniEvan = () => {
+  const [model, setNodes] = useState<THREE.Mesh>()
+  const evanRef = useRef<THREE.Mesh>(null!)
+
+  useEffect(() => {
+    const loader = new GLTFLoader();
+    loader.load("cheaperMiniEvanMatte.glb", async (gltf) => {
+      const nodes = await gltf.parser.getDependencies("node");
+      const materials = await gltf.parser.getDependencies("materials");
+      setNodes(nodes[0])
+    })
+  }, [])
+
+  useFrame((state) => {
+    evanRef.current.rotation.set(0, 2 * Math.PI * (state.clock.elapsedTime / 60), 0)
+  })
+
+  return (
+    <mesh
+      ref={evanRef}
+      scale={[5, 5, 5]}
+      rotation={[0, 1.5 * Math.PI, 0]}
+      position={[0, -1.2, 0]}
+      geometry={model ? model.geometry : undefined}
+      material={model ? model.material : undefined}>
+    </mesh>
+  )
+}
+
+
+const Sun = () => {
+  const lightRef = useRef<THREE.PointLight>(null!)
+  const meshRef = useRef<THREE.Mesh>(null!)
+
+  useFrame((state) => {
+    let period = 10
+    let time = state.clock.elapsedTime
+    let angle = time / period * 2 * Math.PI
+    let pos = [-80 * Math.sin(angle), 0, 80 * Math.cos(angle)]
+    meshRef.current.position.set(pos[0], pos[1], pos[2])
+    lightRef.current.position.set(pos[0], pos[1], pos[2])
+  })
+
+  return (
+    <>
+      <pointLight ref={lightRef} position={[0, 0, 80]} intensity={24000}/>
+      <mesh ref={meshRef} position={[0, 0, 80]}>
+        <sphereGeometry args={[7, 32, 32]}/>
+        <meshBasicMaterial
+          color={[255, 255, 0]}
+        />
+      </mesh>
+    </>
+  )
+}
+
+
 const Greeting = () => {
 
   return (
@@ -121,7 +186,8 @@ const Greeting = () => {
       {/* <Canvas camera={{position: [0, 0, 1]}}> */}
       <Canvas >
         <PerspectiveCamera position={[0, 0, 29]} makeDefault />
-        <MyPlanet/>
+        <Sun/>
+        <MiniEvan/>
         <OrbitControls/>
         <Atm position={new THREE.Vector3(0, 0, 0)} radius={14}/>
       </Canvas>
