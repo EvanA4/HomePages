@@ -124,7 +124,6 @@ const MyPlanet = () => {
 
 const MiniEvan = () => {
   const [model, setNodes] = useState<THREE.Mesh>()
-  const evanRef = useRef<THREE.Mesh>(null!)
 
   useEffect(() => {
     const loader = new GLTFLoader();
@@ -135,16 +134,11 @@ const MiniEvan = () => {
     })
   }, [])
 
-  useFrame((state) => {
-    evanRef.current.rotation.set(0, 2 * Math.PI * (state.clock.elapsedTime / 60), 0)
-  })
-
   return (
     <mesh
-      ref={evanRef}
-      scale={[5, 5, 5]}
+      scale={[1, 1, 1]}
       rotation={[0, 1.5 * Math.PI, 0]}
-      position={[0, -1.2, 0]}
+      position={[0, -.2, 0]}
       geometry={model ? model.geometry : undefined}
       material={model ? model.material : undefined}>
     </mesh>
@@ -189,7 +183,7 @@ const Greeting = () => {
         <Sun/>
         <MiniEvan/>
         <OrbitControls/>
-        <Atm position={new THREE.Vector3(0, 0, 0)} radius={14}/>
+        <Atm position={new THREE.Vector3(0, 0, 0)} radius={5}/>
       </Canvas>
     </div>
   )

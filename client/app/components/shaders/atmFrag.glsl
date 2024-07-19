@@ -19,8 +19,9 @@ varying vec2 vUv;
 
 const int numScatterPoints = 10;
 const int opticalDepthSteps = 10;
-const float densityFalloff = 1.8;
-const float scatteringStrength = 1.;
+const float densityFalloff = 12.;
+const float scatteringStrength = 18.;
+const float planetR = 1.;
 const vec3 wavelengths = vec3(700., 530., 440.);
 
 struct Ray {
@@ -85,8 +86,8 @@ vec2 pierce_atm(Ray current) {
 
 
 float density_at_point(vec3 point) {
-  float heightAboveSurface = length(point - atmPos) - 1.;
-  float height01 = heightAboveSurface / (atmR - 1.);
+  float heightAboveSurface = length(point - atmPos) - planetR;
+  float height01 = heightAboveSurface / (atmR - planetR);
   float localDensity = exp(-height01 * densityFalloff) * (1. - height01);
   return localDensity;
 }
