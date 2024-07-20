@@ -36,6 +36,7 @@ const Atm = (props: AtmProps) => {
   })
 
   useFrame((state) => {
+    state.gl
     state.gl.setRenderTarget(target)
     state.gl.render(scene, camera)
 
@@ -50,7 +51,7 @@ const Atm = (props: AtmProps) => {
     meshRef.current.rotation.set(camera.rotation.x, camera.rotation.y, camera.rotation.z)
 
     // set some of the uniforms
-    let period = 10
+    let period = 60
     let time = state.clock.elapsedTime
     let angle = time / period * 2 * Math.PI
     shMatRef.current.uniforms.lightPos.value.set(-80 * Math.sin(angle), 0, 80 * Math.cos(angle))
@@ -151,7 +152,7 @@ const Sun = () => {
   const meshRef = useRef<THREE.Mesh>(null!)
 
   useFrame((state) => {
-    let period = 10
+    let period = 60
     let time = state.clock.elapsedTime
     let angle = time / period * 2 * Math.PI
     let pos = [-80 * Math.sin(angle), 0, 80 * Math.cos(angle)]
@@ -179,7 +180,7 @@ const Greeting = () => {
     <div className='flex justify-center items-center h-[80vh] bg-[#000000]'>
       {/* <Canvas camera={{position: [0, 0, 1]}}> */}
       <Canvas >
-        <PerspectiveCamera position={[0, 0, 29]} makeDefault />
+        <PerspectiveCamera position={[0, 0, 5]} makeDefault />
         <Sun/>
         <MiniEvan/>
         <OrbitControls/>
