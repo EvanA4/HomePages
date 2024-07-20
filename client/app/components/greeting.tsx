@@ -30,15 +30,21 @@ const Atm = (props: AtmProps) => {
   const meshPos = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, 0))
   const meshDim = useRef<THREE.Vector2>(new THREE.Vector2(0, 0))
 
-  const target = useFBO(size.width, size.height, {
-    depthBuffer: true,
-    depthTexture: new THREE.DepthTexture(size.width, size.height)
-  })
+  const target = new THREE.WebGLRenderTarget(
+    size.width,
+    size.height,
+    {
+      samples: 4,
+      depthBuffer: true,
+      depthTexture: new THREE.DepthTexture(size.width, size.height)
+    }
+  )
 
   useFrame((state) => {
-    state.gl
+    shMatRef.current.visible = false;
     state.gl.setRenderTarget(target)
     state.gl.render(scene, camera)
+    shMatRef.current.visible = true;
 
     shMatRef.current.uniforms.depthTxt.value = target.depthTexture
     
@@ -64,6 +70,7 @@ const Atm = (props: AtmProps) => {
     // /* scale */ console.log(meshRef.current.scale)
     // /* mesh pos */ console.log(meshRef.current.position)
     // /* rect dim */ console.log(rectRef.current.parameters.width, rectRef.current.parameters.height)
+    // /* canvas size */ console.log(state.size.width, state.size.height)
     // /* camera pos */ console.log(camera.position)
     // /* camRight */ console.log(shMatRef.current.uniforms.camRight.value)
     // /* camUp */ console.log(shMatRef.current.uniforms.camUp.value)
@@ -180,7 +187,7 @@ const Greeting = () => {
     <div className='flex justify-center items-center h-[80vh] bg-[#000000]'>
       {/* <Canvas camera={{position: [0, 0, 1]}}> */}
       <Canvas >
-        <PerspectiveCamera position={[0, 0, 5]} makeDefault />
+        <PerspectiveCamera position={[0, 0, 5]} makeDefault fov={50} />
         <Sun/>
         <MiniEvan/>
         <OrbitControls/>

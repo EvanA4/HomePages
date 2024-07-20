@@ -42,14 +42,14 @@ Ray create_screen_ray() {
 }
 
 
-float world_depth() {
+float world_depth(vec2 uv) {
   // returns real world distance from camera to pixel
   // thanks to https://discourse.threejs.org/t/reconstruct-world-position-in-screen-space-from-depth-buffer/5532/2
-  float normalizedDepth = texture2D(depthTxt, vUv).r; 
+  float normalizedDepth = texture2D(depthTxt, uv).r; 
 		
   vec4 ndc = vec4(
-    (vUv.x - 0.5) * 2.0,
-    (vUv.y - 0.5) * 2.0,
+    (uv.x - 0.5) * 2.0,
+    (uv.y - 0.5) * 2.0,
     (normalizedDepth - 0.5) * 2.0,
     1.0);
   
@@ -150,7 +150,7 @@ vec3 calculate_light(Ray current, float atmDist, float realAtmLen, vec3 rawColor
 
 void main() {
   Ray current = create_screen_ray();
-  float realDepth = world_depth();
+  float realDepth = world_depth(vUv);
   vec2 atmDistLen = pierce_atm(current);
   float realAtmLen = min(atmDistLen[1], realDepth - atmDistLen[0]);
 
