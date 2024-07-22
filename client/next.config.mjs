@@ -3,10 +3,21 @@ const nextConfig = {
     reactStrictMode: true,
     swcMinify: true,
     webpack: (config) => {
-        config.module.rules.push({
-        test: /\.(glsl|frag|vert)$/,
-        type: 'asset/source'
-        })
+        config.module.rules.push(
+            {
+                test: /\.(glsl|frag|vert)$/,
+                type: 'asset/source'
+            },
+            {
+                test: /\.(bin)$/,
+                type: 'asset/source'
+                // use: [
+                //     {
+                //         loader: 'raw-loader'
+                //     }
+                // ]
+            }
+        )
         return config
     }
 };

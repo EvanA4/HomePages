@@ -1,18 +1,18 @@
 'use client'
-import React, { Suspense, useEffect, useRef, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { OrbitControls, PerspectiveCamera, useFBO } from '@react-three/drei'
+import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
 import { GLTFLoader } from 'three/examples/jsm/Addons.js'
 
 
-// The below four lines are normally red, idk how to fix this yet -- still works!
+// The below five lines are normally red, idk how to fix this yet -- still works!
 import planetVert from './shaders/planetVert.glsl'
 import planetFrag from './shaders/planetFrag.glsl'
 import atmVert from './shaders/atmVert.glsl'
 import atmFrag from './shaders/atmFrag.glsl'
+// import opRaw from '../../public/opticalDepth.bin'
 import pngTexture from '../../public/marsColors.png'
-import { list } from 'postcss'
 
 
 interface AtmProps {
@@ -39,6 +39,27 @@ const Atm = (props: AtmProps) => {
       depthTexture: new THREE.DepthTexture(size.width, size.height)
     }
   )
+
+  // useEffect(() => {
+  //   var floatStrs = opRaw.split('\n')
+  //   var floatArr = new Float32Array(250 * 250)
+  //   for (let i = 0; i < floatStrs.length; ++i) {
+  //     floatArr[i * 4] = parseFloat(floatStrs[i])
+  //   }
+
+  //   shMatRef.current.uniforms.opticalTxt.value = new THREE.DataTexture(floatArr, 250, 250, THREE.LuminanceFormat, THREE.FloatType)
+  //   shMatRef.current.uniforms.opticalTxt.value.needsUpdate = true;
+  //   shMatRef.current.needsUpdate = true;
+    
+  //   // let byteArray = new Uint8Array(opRaw.length);
+  //   // for (let i = 0; i < opRaw.length; i++) {
+  //   //     byteArray[i] = opRaw.charCodeAt(i);
+  //   // }
+
+  //   // let opticalFloats = new Float32Array(byteArray.buffer)
+  //   // opTxt.current = new THREE.DataTexture(opticalFloats, 540, 540)
+  //   // console.log(opRaw.at(4))
+  // }, [])
 
   useFrame((state) => {
     shMatRef.current.visible = false;
@@ -89,6 +110,7 @@ const Atm = (props: AtmProps) => {
         uniforms={{
           depthTxt: {value: null},
           colorTxt: {value: target.texture},
+          // opticalTxt: { value: null },
           atmPos: {value: props.position},
           atmR: {value: props.radius},
           meshPos: { value: meshPos.current },

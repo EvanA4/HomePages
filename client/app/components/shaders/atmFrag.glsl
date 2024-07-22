@@ -8,6 +8,7 @@
 
 uniform sampler2D depthTxt;
 uniform sampler2D colorTxt;
+uniform sampler2D opticalTxt;
 uniform vec3 atmPos;
 uniform float atmR;
 uniform vec3 meshPos;
@@ -86,6 +87,8 @@ vec2 pierce_atm(Ray current) {
 
 
 float density_at_point(vec3 point) {
+  // credit to Sebastian Lague at https://www.youtube.com/watch?v=DxfEbulyFcY&t=154s
+
   float heightAboveSurface = length(point - atmPos) - planetR;
   float height01 = heightAboveSurface / (atmR - planetR);
   float localDensity = exp(-height01 * densityFalloff) * (1. - height01);
@@ -94,6 +97,9 @@ float density_at_point(vec3 point) {
 
 
 float optical_depth(Ray current, float rayLen) {
+  // credit to Sebastian Lague at https://www.youtube.com/watch?v=DxfEbulyFcY&t=154s
+
+  // unoptimized
   float floatSteps = float(opticalDepthSteps);
   vec3 densitySamplePoint = current.origin;
   float stepSize = rayLen / (floatSteps - 1.);
@@ -105,11 +111,19 @@ float optical_depth(Ray current, float rayLen) {
     densitySamplePoint += current.dir * stepSize;
   }
 
+  // optimized
+  // float height = length(atmPos - current.origin) - planetR;
+  // float height01 = height / (atmR - planetR);
+  // float angle01 = dot(normalize(atmPos - current.origin), current.dir) * .5 + .5;
+  // opticalDepth = texture2D(opticalDepthTxt, vec2(angle01, height01));
+
   return opticalDepth;
 }
 
 
 vec3 calculate_light(Ray current, float atmDist, float realAtmLen, vec3 rawColor) {
+  // credit to Sebastian Lague at https://www.youtube.com/watch?v=DxfEbulyFcY&t=154s
+
   float floatSteps = float(numScatterPoints);
   vec3 inScatteredLight = vec3(0.);
   float viewOpticalDepth = 0.;
@@ -162,4 +176,6 @@ void main() {
   } else {
     gl_FragColor = vec4(rawColor);
   }
+
+  // gl_FragColor = vec4(texture2D(opticalTxt, vUv));
 }
