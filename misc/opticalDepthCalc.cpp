@@ -5,11 +5,11 @@
 #include <bitset>
 using namespace std;
 
-const int opticalDepthSteps = 10;
+const int opticalDepthSteps = 20;
 const float planetR = 1.F;
 const float atmR = 2.F;
 const float densityFalloff = 12.F;
-const int resolution = 250;
+const int resolution = 256;
 
 
 struct Ray {

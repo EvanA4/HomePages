@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { OrbitControls, PerspectiveCamera } from '@react-three/drei'
+import { OrbitControls, PerspectiveCamera, useTexture } from '@react-three/drei'
 import { GLTFLoader } from 'three/examples/jsm/Addons.js'
 
 
@@ -11,7 +11,7 @@ import planetVert from './shaders/planetVert.glsl'
 import planetFrag from './shaders/planetFrag.glsl'
 import atmVert from './shaders/atmVert.glsl'
 import atmFrag from './shaders/atmFrag.glsl'
-// import opRaw from '../../public/opticalDepth.bin'
+import opRaw from '../../public/opticalDepth.bin'
 import pngTexture from '../../public/marsColors.png'
 
 
@@ -27,6 +27,16 @@ const Atm = (props: AtmProps) => {
   const rectRef = useRef<THREE.PlaneGeometry>(null!)
   const meshRef = useRef<THREE.Mesh>(null!)
 
+  const opticalTxt = useRef<THREE.DataTexture>(null!)
+
+  // const floatStrs = opRaw.split('\n')
+  // var floatArr = new Float32Array(250 * 250 * 4)
+  // for (let i = 0; i < floatArr.length; ++i) {
+  //   floatArr[i * 4] = parseFloat(floatStrs[i])
+  // }
+  // const floatTxt = new THREE.DataTexture(floatArr, 250, 250, THREE.RGBAFormat, THREE.FloatType)
+  // floatTxt.needsUpdate = true
+
   const meshPos = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, 0))
   const meshDim = useRef<THREE.Vector2>(new THREE.Vector2(0, 0))
 
@@ -40,28 +50,18 @@ const Atm = (props: AtmProps) => {
     }
   )
 
-  // useEffect(() => {
-  //   var floatStrs = opRaw.split('\n')
-  //   var floatArr = new Float32Array(250 * 250)
-  //   for (let i = 0; i < floatStrs.length; ++i) {
-  //     floatArr[i * 4] = parseFloat(floatStrs[i])
-  //   }
-
-  //   shMatRef.current.uniforms.opticalTxt.value = new THREE.DataTexture(floatArr, 250, 250, THREE.LuminanceFormat, THREE.FloatType)
-  //   shMatRef.current.uniforms.opticalTxt.value.needsUpdate = true;
-  //   shMatRef.current.needsUpdate = true;
-    
-  //   // let byteArray = new Uint8Array(opRaw.length);
-  //   // for (let i = 0; i < opRaw.length; i++) {
-  //   //     byteArray[i] = opRaw.charCodeAt(i);
-  //   // }
-
-  //   // let opticalFloats = new Float32Array(byteArray.buffer)
-  //   // opTxt.current = new THREE.DataTexture(opticalFloats, 540, 540)
-  //   // console.log(opRaw.at(4))
-  // }, [])
+  useEffect(() => {
+    const floatStrs = opRaw.split('\n')
+    var floatArr = new Float32Array(256 * 256)
+    for (let i = 0; i < floatArr.length; ++i) {
+      floatArr[i] = parseFloat(floatStrs[i])
+    }
+    opticalTxt.current = new THREE.DataTexture(floatArr, 256, 256, THREE.RedFormat, THREE.FloatType)
+    opticalTxt.current.needsUpdate = true
+  }, [])
 
   useFrame((state) => {
+
     shMatRef.current.visible = false;
     state.gl.setRenderTarget(target)
     state.gl.render(scene, camera)
@@ -110,7 +110,7 @@ const Atm = (props: AtmProps) => {
         uniforms={{
           depthTxt: {value: null},
           colorTxt: {value: target.texture},
-          // opticalTxt: { value: null },
+          opticalTxt: { value: opticalTxt.current },
           atmPos: {value: props.position},
           atmR: {value: props.radius},
           meshPos: { value: meshPos.current },

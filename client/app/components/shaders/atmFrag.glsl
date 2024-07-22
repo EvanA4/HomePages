@@ -170,12 +170,13 @@ void main() {
 
   vec4 rawColor = texture2D(colorTxt, vUv);
 
-  if (atmDistLen[1] != 0.) {
-    vec3 light = calculate_light(current, atmDistLen[0], realAtmLen, rawColor.rgb);
-    gl_FragColor = vec4(light, 1.);
-  } else {
-    gl_FragColor = vec4(rawColor);
-  }
+  // if (atmDistLen[1] != 0.) {
+  //   vec3 light = calculate_light(current, atmDistLen[0], realAtmLen, rawColor.rgb);
+  //   gl_FragColor = vec4(light, 1.);
+  // } else {
+  //   gl_FragColor = vec4(rawColor);
+  // }
 
-  // gl_FragColor = vec4(texture2D(opticalTxt, vUv));
+  // gl_FragColor = vec4(smoothOptical(vUv), 0., 0., 1.);
+  gl_FragColor = vec4(texture2D(opticalTxt, vUv).rgb, 1.);
 }
