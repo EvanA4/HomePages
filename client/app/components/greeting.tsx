@@ -3,15 +3,16 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
 import { OrbitControls, PerspectiveCamera, useTexture } from '@react-three/drei'
-import { GLTFLoader } from 'three/examples/jsm/Addons.js'
+import { EXRLoader, GLTFLoader } from 'three/examples/jsm/Addons.js'
 
 
 // The below five lines are normally red, idk how to fix this yet -- still works!
-import planetVert from './shaders/planetVert.glsl'
-import planetFrag from './shaders/planetFrag.glsl'
+// import planetVert from './shaders/planetVert.glsl'
+// import planetFrag from './shaders/planetFrag.glsl'
+import starVert from './shaders/starVert.glsl'
+import starFrag from './shaders/starFrag.glsl'
 import atmVert from './shaders/atmVert.glsl'
 import atmFrag from './shaders/atmFrag.glsl'
-import opRaw from '../../public/opticalDepth.bin'
 import pngTexture from '../../public/marsColors.png'
 
 
@@ -51,13 +52,11 @@ const Atm = (props: AtmProps) => {
   )
 
   useEffect(() => {
-    const floatStrs = opRaw.split('\n')
-    var floatArr = new Float32Array(256 * 256)
-    for (let i = 0; i < floatArr.length; ++i) {
-      floatArr[i] = parseFloat(floatStrs[i])
-    }
-    opticalTxt.current = new THREE.DataTexture(floatArr, 256, 256, THREE.RedFormat, THREE.FloatType)
-    opticalTxt.current.needsUpdate = true
+    const exrLoader = new EXRLoader();
+    exrLoader.setDataType(THREE.FloatType)
+    exrLoader.load('/opticalDepth.exr', (texture) => {
+      shMatRef.current.uniforms.opticalTxt.value = texture
+    })
   }, [])
 
   useFrame((state) => {
@@ -129,27 +128,27 @@ const Atm = (props: AtmProps) => {
 }
 
 
-const MyPlanet = () => {
-  const planetRef = useRef<THREE.Mesh>(null!)
-  const colorMap = useLoader(THREE.TextureLoader, pngTexture.src)
-  const lightDir = new THREE.Vector3(-10, 4, 10)
+// const MyPlanet = () => {
+//   const planetRef = useRef<THREE.Mesh>(null!)
+//   const colorMap = useLoader(THREE.TextureLoader, pngTexture.src)
+//   const lightDir = new THREE.Vector3(-10, 4, 10)
 
-  return (
-    <>
-      <mesh ref={planetRef} position={[0, 0, 0]}>
-        <sphereGeometry args={[7, 32, 32]}/>
-        <shaderMaterial
-          uniforms={{
-            colorMap: { value: colorMap },
-            lightDir: { value: lightDir}
-          }}
-          vertexShader={planetVert}
-          fragmentShader={planetFrag}
-        />
-      </mesh>
-    </>
-  );
-}
+//   return (
+//     <>
+//       <mesh ref={planetRef} position={[0, 0, 0]}>
+//         <sphereGeometry args={[7, 32, 32]}/>
+//         <shaderMaterial
+//           uniforms={{
+//             colorMap: { value: colorMap },
+//             lightDir: { value: lightDir}
+//           }}
+//           vertexShader={planetVert}
+//           fragmentShader={planetFrag}
+//         />
+//       </mesh>
+//     </>
+//   );
+// }
 
 
 const MiniEvan = () => {
@@ -203,13 +202,46 @@ const Sun = () => {
 }
 
 
-const Greeting = () => {
+const MyStars = () => {
+  const meshRef = useRef<THREE.Mesh>(null!)
+  const shMatRef = useRef<THREE.ShaderMaterial>(null!)
 
+  useEffect(() => {
+    const exrLoader = new EXRLoader();
+    exrLoader.setDataType(THREE.FloatType)
+    exrLoader.load('/test.exr', (texture) => {
+      shMatRef.current.uniforms.starTxt.value = texture
+    })
+  })
+
+  useFrame((state) => {
+    meshRef.current.position.copy(state.camera.position)
+  })
+
+  return(
+    <mesh ref={meshRef}>
+      <sphereGeometry />
+      <shaderMaterial
+        ref={shMatRef}
+        uniforms={{
+          starTxt: {value: null}
+        }}
+        vertexShader={starVert}
+        fragmentShader={starFrag}
+        depthTest={false}
+        side={THREE.DoubleSide}
+      />
+    </mesh>
+  )
+}
+
+
+const Greeting = () => {
   return (
     <div className='flex justify-center items-center h-[80vh] bg-[#000000]'>
-      {/* <Canvas camera={{position: [0, 0, 1]}}> */}
       <Canvas >
         <PerspectiveCamera position={[0, 0, 5]} makeDefault fov={50} />
+        <MyStars />
         <Sun/>
         <MiniEvan/>
         <OrbitControls/>

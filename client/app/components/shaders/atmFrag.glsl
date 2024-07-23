@@ -96,28 +96,91 @@ float density_at_point(vec3 point) {
 }
 
 
+// float opticalDepthBaked(vec3 rayOrigin, vec3 rayDir) {
+//   float height = length(rayOrigin - atmPos) - planetR;
+//   float height01 = clamp(height / (atmR - planetR), 0., 1.);
+
+//   float uvX = 1. - (dot(normalize(rayOrigin - atmPos), rayDir) * .5 + .5);
+//   return texture2D(opticalTxt, vec2(uvX, height01)).r;
+// }
+
+
+// float optical_depth_c(Ray current, float rayLength) {
+//   vec3 endPoint = current.origin + current.dir * rayLength;
+//   float d = dot(current.dir, normalize(current.origin - atmPos));
+//   float opticalDepth = 0.;
+
+//   const float blendStrength = 1.5;
+//   float w = clamp(d * blendStrength + .5, 0., 1.);
+
+//   float d1 = opticalDepthBaked(current.origin, current.dir) - opticalDepthBaked(endPoint, current.dir);
+//   float d2 = opticalDepthBaked(endPoint, -current.dir) - opticalDepthBaked(current.origin, -current.dir);
+
+//   opticalDepth = mix(d2, d1, w);
+//   return opticalDepth;
+// }
+
+
+// float optical_depth_c(Ray current, float rayLen) {
+//   // optimized
+//   float firstHeight = length(current.origin - atmPos) - planetR;
+//   float firstHeight01 = firstHeight / (atmR - planetR);
+//   float firstAngle01 = dot(normalize(atmPos - current.origin), current.dir) * .5 + .5;
+//   float firstDepth = texture2D(opticalTxt, vec2(firstAngle01, firstHeight01)).r;
+
+//   vec3 endPos = current.origin + current.dir * rayLen;
+//   float secondHeight = length(endPos - atmPos) - planetR;
+//   float secondHeight01 = secondHeight / (atmR - planetR);
+//   float secondAngle01 = dot(normalize(atmPos - endPos), current.dir) * .5 + .5;
+//   float secondDepth = texture2D(opticalTxt, vec2(secondAngle01, secondHeight01)).r;
+//   return firstDepth - secondDepth;
+// }
+
+
 float optical_depth(Ray current, float rayLen) {
   // credit to Sebastian Lague at https://www.youtube.com/watch?v=DxfEbulyFcY&t=154s
 
   // unoptimized
-  float floatSteps = float(opticalDepthSteps);
-  vec3 densitySamplePoint = current.origin;
-  float stepSize = rayLen / (floatSteps - 1.);
-  float opticalDepth = 0.;
+  // float floatSteps = float(opticalDepthSteps);
+  // vec3 densitySamplePoint = current.origin;
+  // float stepSize = rayLen / (floatSteps - 1.);
+  // float opticalDepth = 0.;
 
-  for (int i = 0; i < opticalDepthSteps; ++i) {
-    float localDensity = density_at_point(densitySamplePoint);
-    opticalDepth += localDensity * stepSize;
-    densitySamplePoint += current.dir * stepSize;
-  }
+  // for (int i = 0; i < opticalDepthSteps; ++i) {
+  //   float localDensity = density_at_point(densitySamplePoint);
+  //   opticalDepth += localDensity * stepSize;
+  //   densitySamplePoint += current.dir * stepSize;
+  // }
+
+  // return opticalDepth;
+
 
   // optimized
-  // float height = length(atmPos - current.origin) - planetR;
-  // float height01 = height / (atmR - planetR);
-  // float angle01 = dot(normalize(atmPos - current.origin), current.dir) * .5 + .5;
-  // opticalDepth = texture2D(opticalDepthTxt, vec2(angle01, height01));
+  // float firstHeight = length(atmPos - current.origin) - planetR;
+  // float firstHeight01 = firstHeight / (atmR - planetR);
+  // float firstAngle01 = dot(normalize(atmPos - current.origin), current.dir) * .5 + .5;
+  // float firstDepth = texture2D(opticalTxt, vec2(firstAngle01, firstHeight01)).r;
 
-  return opticalDepth;
+  // vec3 endPos = current.origin + current.dir * rayLen;
+  // float secondHeight = length(atmPos - endPos) - planetR;
+  // float secondHeight01 = secondHeight / (atmR - planetR);
+  // float secondAngle01 = dot(normalize(atmPos - endPos), current.dir) * .5 + .5;
+  // float secondDepth = texture2D(opticalTxt, vec2(secondAngle01, secondHeight01)).r;
+  // return firstDepth - secondDepth;
+
+
+  // vec3 endPoint = current.origin + current.dir * rayLen;
+  // float d = dot(current.dir, normalize(current.origin - atmPos));
+  // float opticalDepth = 0.;
+
+  // const float blendStrength = 1.5;
+  // float w = clamp(d * blendStrength + .5, 0., 1.);
+  
+  // float d1 = opticalDepthBaked(current.origin, current.dir) - opticalDepthBaked(endPoint, current.dir);
+  // float d2 = opticalDepthBaked(endPoint, -current.dir) - opticalDepthBaked(current.origin, -current.dir);
+
+  // opticalDepth = mix(d2, d1, w);
+  // return opticalDepth;
 }
 
 
@@ -139,6 +202,11 @@ vec3 calculate_light(Ray current, float atmDist, float realAtmLen, vec3 rawColor
     float sunRayLength = pierce_atm(scatterPtToLight)[1];
 
     float sunOpticalDepth = optical_depth(scatterPtToLight, sunRayLength);
+    // float sunOpticalDepth_c = optical_depth_c(scatterPtToLight, sunRayLength);
+    // if (i == numScatterPoints / 2) {
+    //   return vec3(abs(sunOpticalDepth_c - sunOpticalDepth));
+    // }
+
 
     Ray viewRay;
     viewRay.origin = scatterPoint;
@@ -170,13 +238,13 @@ void main() {
 
   vec4 rawColor = texture2D(colorTxt, vUv);
 
-  // if (atmDistLen[1] != 0.) {
-  //   vec3 light = calculate_light(current, atmDistLen[0], realAtmLen, rawColor.rgb);
-  //   gl_FragColor = vec4(light, 1.);
-  // } else {
-  //   gl_FragColor = vec4(rawColor);
-  // }
+  if (atmDistLen[1] != 0.) {
+    vec3 light = calculate_light(current, atmDistLen[0], realAtmLen, rawColor.rgb);
+    gl_FragColor = vec4(light, 1.);
+  } else {
+    gl_FragColor = vec4(rawColor);
+  }
 
   // gl_FragColor = vec4(smoothOptical(vUv), 0., 0., 1.);
-  gl_FragColor = vec4(texture2D(opticalTxt, vUv).rgb, 1.);
+  // gl_FragColor = vec4(texture2D(opticalTxt, vUv).rgb, 1.);
 }

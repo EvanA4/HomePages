@@ -9,7 +9,9 @@ const int opticalDepthSteps = 20;
 const float planetR = 1.F;
 const float atmR = 2.F;
 const float densityFalloff = 12.F;
-const int resolution = 256;
+const int resolution = 718;
+// works at 718
+// not 719
 
 
 struct Ray {
@@ -79,7 +81,7 @@ int main() {
     // assuming planet at atm centered at [0, 0, 0]
     // start on surface and work up to edge of atm
 
-    // float writtenFloats[resolution][resolution];
+    float writtenFloats[resolution][resolution];
 
     ofstream fout("opticalDepth.bin", ios::binary);
 
@@ -90,12 +92,12 @@ int main() {
     float posStep = (atmR - planetR) / (resolution - 1);
     float angleStep = PI / (resolution - 1);
     for (int i = 0; i < resolution; ++i) {
-        // float rowData[resolution];
+        float rowData[resolution];
 
         for (int j = 0; j < resolution; ++j) {
             float opticalDepth = get_optical_depth(current);
-            fout << opticalDepth << endl;
-            // rowData[j] = opticalDepth;
+            // fout << opticalDepth << endl;
+            rowData[j] = opticalDepth;
 
             angle -= angleStep;
             current.dir[0] = cos(angle);
@@ -107,8 +109,8 @@ int main() {
         current.dir[0] = cos(angle);
         current.dir[1] = sin(angle);
 
-        // fout.write((const char *) rowData, resolution * 4);
-        // memcpy(writtenFloats[i], rowData, resolution * 4);
+        fout.write((const char *) rowData, resolution * 4);
+        memcpy(writtenFloats[i], rowData, resolution * 4);
     }
 
     fout.close();

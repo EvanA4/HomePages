@@ -5,7 +5,7 @@ const nextConfig = {
     webpack: (config) => {
         config.module.rules.push(
             {
-                test: /\.(glsl|frag|vert)$/,
+                test: /\.(glsl|frag|vert|txt)$/,
                 type: 'asset/source'
             },
             {
