@@ -122,10 +122,20 @@ float density_at_point(vec3 point) {
 
 
 // float optical_depth_c(Ray current, float rayLen) {
+//   // determine whether ray passes through planet
+//   vec3 endRayPos = current.origin + current.dir * rayLen;
+//   float endHeight = length(endRayPos - atmPos) - planetR;
+//   float endHeight01 = endHeight / (atmR - planetR);
+
+//   if (abs(endHeight01) < .0001) { // it goes through, reverse ray direction!
+//     current.dir = -current.dir;
+//     current.origin = endRayPos;
+//   }
+
 //   // optimized
 //   float firstHeight = length(current.origin - atmPos) - planetR;
 //   float firstHeight01 = firstHeight / (atmR - planetR);
-//   float firstAngle01 = dot(normalize(atmPos - current.origin), current.dir) * .5 + .5;
+//   float firstAngle01 = dot(normalize(atmPos - current.origin), current.dir) * .5 + .5; // 0 when looking up
 //   float firstDepth = texture2D(opticalTxt, vec2(firstAngle01, firstHeight01)).r;
 
 //   vec3 endPos = current.origin + current.dir * rayLen;
@@ -141,18 +151,18 @@ float optical_depth(Ray current, float rayLen) {
   // credit to Sebastian Lague at https://www.youtube.com/watch?v=DxfEbulyFcY&t=154s
 
   // unoptimized
-  // float floatSteps = float(opticalDepthSteps);
-  // vec3 densitySamplePoint = current.origin;
-  // float stepSize = rayLen / (floatSteps - 1.);
-  // float opticalDepth = 0.;
+  float floatSteps = float(opticalDepthSteps);
+  vec3 densitySamplePoint = current.origin;
+  float stepSize = rayLen / (floatSteps - 1.);
+  float opticalDepth = 0.;
 
-  // for (int i = 0; i < opticalDepthSteps; ++i) {
-  //   float localDensity = density_at_point(densitySamplePoint);
-  //   opticalDepth += localDensity * stepSize;
-  //   densitySamplePoint += current.dir * stepSize;
-  // }
+  for (int i = 0; i < opticalDepthSteps; ++i) {
+    float localDensity = density_at_point(densitySamplePoint);
+    opticalDepth += localDensity * stepSize;
+    densitySamplePoint += current.dir * stepSize;
+  }
 
-  // return opticalDepth;
+  return opticalDepth;
 
 
   // optimized
@@ -204,7 +214,7 @@ vec3 calculate_light(Ray current, float atmDist, float realAtmLen, vec3 rawColor
     float sunOpticalDepth = optical_depth(scatterPtToLight, sunRayLength);
     // float sunOpticalDepth_c = optical_depth_c(scatterPtToLight, sunRayLength);
     // if (i == numScatterPoints / 2) {
-    //   return vec3(abs(sunOpticalDepth_c - sunOpticalDepth));
+    //   return vec3(abs(sunOpticalDepth_c - sunOpticalDepth)); // candidate is bigger
     // }
 
 
@@ -212,6 +222,10 @@ vec3 calculate_light(Ray current, float atmDist, float realAtmLen, vec3 rawColor
     viewRay.origin = scatterPoint;
     viewRay.dir = -current.dir;
     viewOpticalDepth = optical_depth(viewRay, length(stepVec));
+    // float viewOpticalDepth_c = optical_depth_c(viewRay, length(stepVec));
+    // if (i == numScatterPoints / 2) {
+    //   return vec3(abs(viewOpticalDepth_c - viewOpticalDepth)); // candidate is bigger
+    // }
 
     vec3 scatterCoefs = vec3(
       pow(400. / wavelengths[0], 4.) * scatteringStrength,
@@ -226,6 +240,7 @@ vec3 calculate_light(Ray current, float atmDist, float realAtmLen, vec3 rawColor
     sphereEnter += stepVec;
   }
   float originalColTransmittance = exp(-viewOpticalDepth);
+
   return rawColor * originalColTransmittance + inScatteredLight;
 }
 
@@ -239,6 +254,10 @@ void main() {
   vec4 rawColor = texture2D(colorTxt, vUv);
 
   if (atmDistLen[1] != 0.) {
+    if (realDepth > 1000. && length(rawColor) > 1.) {
+      rawColor = vec4(1., 0., 0., 0.);
+    }
+
     vec3 light = calculate_light(current, atmDistLen[0], realAtmLen, rawColor.rgb);
     gl_FragColor = vec4(light, 1.);
   } else {

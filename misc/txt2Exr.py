@@ -2,7 +2,7 @@ import numpy as np
 from openexr_numpy import imwrite
 import struct
 
-RESOLUTION = 718
+RESOLUTION = 5
 
 
 def read_bin(fileName: str) -> list[list[float]]:
@@ -10,7 +10,7 @@ def read_bin(fileName: str) -> list[list[float]]:
     Reads file and returns list of floats.
     '''
     fileContent: bytes
-    with open('opticalDepth.bin', mode='rb') as file: # b is important -> binary
+    with open(fileName, mode='rb') as file: # b is important -> binary
         fileContent = file.read()
 
     floatArr: list[list[float]] = []
@@ -28,5 +28,6 @@ def read_bin(fileName: str) -> list[list[float]]:
 
 if __name__ == '__main__':
     rawList = read_bin('opticalDepth.bin')
+    print(rawList)
     nparr = np.array(rawList, dtype=np.float32)
     imwrite('opticalDepth.exr', nparr)

@@ -7,13 +7,11 @@ import { EXRLoader, GLTFLoader } from 'three/examples/jsm/Addons.js'
 
 
 // The below five lines are normally red, idk how to fix this yet -- still works!
-// import planetVert from './shaders/planetVert.glsl'
-// import planetFrag from './shaders/planetFrag.glsl'
 import starVert from './shaders/starVert.glsl'
 import starFrag from './shaders/starFrag.glsl'
 import atmVert from './shaders/atmVert.glsl'
 import atmFrag from './shaders/atmFrag.glsl'
-import pngTexture from '../../public/marsColors.png'
+// import pngTexture from '../../public/marsColors.png'
 
 
 interface AtmProps {
@@ -29,14 +27,6 @@ const Atm = (props: AtmProps) => {
   const meshRef = useRef<THREE.Mesh>(null!)
 
   const opticalTxt = useRef<THREE.DataTexture>(null!)
-
-  // const floatStrs = opRaw.split('\n')
-  // var floatArr = new Float32Array(250 * 250 * 4)
-  // for (let i = 0; i < floatArr.length; ++i) {
-  //   floatArr[i * 4] = parseFloat(floatStrs[i])
-  // }
-  // const floatTxt = new THREE.DataTexture(floatArr, 250, 250, THREE.RGBAFormat, THREE.FloatType)
-  // floatTxt.needsUpdate = true
 
   const meshPos = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, 0))
   const meshDim = useRef<THREE.Vector2>(new THREE.Vector2(0, 0))
@@ -56,6 +46,7 @@ const Atm = (props: AtmProps) => {
     exrLoader.setDataType(THREE.FloatType)
     exrLoader.load('/opticalDepth.exr', (texture) => {
       shMatRef.current.uniforms.opticalTxt.value = texture
+      console.log(texture.image.data)
     })
   }, [])
 
@@ -206,25 +197,17 @@ const MyStars = () => {
   const meshRef = useRef<THREE.Mesh>(null!)
   const shMatRef = useRef<THREE.ShaderMaterial>(null!)
 
-  useEffect(() => {
-    const exrLoader = new EXRLoader();
-    exrLoader.setDataType(THREE.FloatType)
-    exrLoader.load('/test.exr', (texture) => {
-      shMatRef.current.uniforms.starTxt.value = texture
-    })
-  })
-
   useFrame((state) => {
     meshRef.current.position.copy(state.camera.position)
   })
 
   return(
     <mesh ref={meshRef}>
-      <sphereGeometry />
+      <sphereGeometry/>
       <shaderMaterial
         ref={shMatRef}
         uniforms={{
-          starTxt: {value: null}
+          
         }}
         vertexShader={starVert}
         fragmentShader={starFrag}

@@ -9,7 +9,7 @@ const int opticalDepthSteps = 20;
 const float planetR = 1.F;
 const float atmR = 2.F;
 const float densityFalloff = 12.F;
-const int resolution = 718;
+const int resolution = 5;
 // works at 718
 // not 719
 
