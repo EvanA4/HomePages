@@ -1,17 +1,28 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
-import { Canvas, useFrame, useLoader, useThree } from '@react-three/fiber'
+import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import * as THREE from 'three'
-import { OrbitControls, PerspectiveCamera, useTexture } from '@react-three/drei'
-import { EXRLoader, GLTFLoader } from 'three/examples/jsm/Addons.js'
+import { OrbitControls, PerspectiveCamera, useGLTF } from '@react-three/drei'
+// import { EXRLoader } from 'three/examples/jsm/Addons.js'
 
 
 // The below five lines are normally red, idk how to fix this yet -- still works!
-import starVert from './shaders/starVert.glsl'
-import starFrag from './shaders/starFrag.glsl'
 import atmVert from './shaders/atmVert.glsl'
 import atmFrag from './shaders/atmFrag.glsl'
-// import pngTexture from '../../public/marsColors.png'
+import sunVert from './shaders/sunVert.glsl'
+import sunFrag from './shaders/sunFrag.glsl'
+
+// skybox
+import px from '../../public/skybox/px.png'
+import nx from '../../public/skybox/nx.png'
+import py from '../../public/skybox/py.png'
+import ny from '../../public/skybox/ny.png'
+import pz from '../../public/skybox/pz.png'
+import nz from '../../public/skybox/nz.png'
+
+// backup sim pic
+import simPic from '../../public/simPicSmall.png'
+import Image from 'next/image'
 
 
 interface AtmProps {
@@ -30,8 +41,9 @@ const Atm = (props: AtmProps) => {
 
   const meshPos = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, 0))
   const meshDim = useRef<THREE.Vector2>(new THREE.Vector2(0, 0))
+  const lightPos = useRef<THREE.Vector3>(new THREE.Vector3(0, 0, 0))
 
-  const target = new THREE.WebGLRenderTarget(
+  const target = useRef<THREE.WebGLRenderTarget>(new THREE.WebGLRenderTarget(
     size.width,
     size.height,
     {
@@ -39,25 +51,25 @@ const Atm = (props: AtmProps) => {
       depthBuffer: true,
       depthTexture: new THREE.DepthTexture(size.width, size.height)
     }
-  )
+  ))
 
-  useEffect(() => {
-    const exrLoader = new EXRLoader();
-    exrLoader.setDataType(THREE.FloatType)
-    exrLoader.load('/opticalDepth.exr', (texture) => {
-      shMatRef.current.uniforms.opticalTxt.value = texture
-      console.log(texture.image.data)
-    })
-  }, [])
+  // useEffect(() => {
+  //   const exrLoader = new EXRLoader();
+  //   exrLoader.setDataType(THREE.FloatType)
+  //   exrLoader.load('/opticalDepth.exr', (texture) => {
+  //     shMatRef.current.uniforms.opticalTxt.value = texture
+  //     // console.log(texture.image.data)
+  //   })
+  // }, [])
 
   useFrame((state) => {
-
     shMatRef.current.visible = false;
-    state.gl.setRenderTarget(target)
+    state.gl.setRenderTarget(target.current)
     state.gl.render(scene, camera)
     shMatRef.current.visible = true;
 
-    shMatRef.current.uniforms.depthTxt.value = target.depthTexture
+    shMatRef.current.uniforms.depthTxt.value = target.current.depthTexture
+    shMatRef.current.uniforms.colorTxt.value = target.current.texture
     
     // match post-processing mesh to camera
     let cameraDir = new THREE.Vector3()
@@ -67,14 +79,17 @@ const Atm = (props: AtmProps) => {
     meshRef.current.position.set(camera.position.x + cameraNorm[0] * .1, camera.position.y + cameraNorm[1] * .1, camera.position.z + cameraNorm[2] * .1)
     meshRef.current.rotation.set(camera.rotation.x, camera.rotation.y, camera.rotation.z)
 
-    // set some of the uniforms
-    let period = 60
+    // find position of sun
+    let period = 40
     let time = state.clock.elapsedTime
     let angle = time / period * 2 * Math.PI
-    shMatRef.current.uniforms.lightPos.value.set(-80 * Math.sin(angle), 0, 80 * Math.cos(angle))
+    lightPos.current.set(-80 * Math.sin(angle), 0, 80 * Math.cos(angle))
 
     meshPos.current.copy(meshRef.current.position)
     meshDim.current.set(rectRef.current.parameters.width, rectRef.current.parameters.height)
+
+    // shMatRef.current.uniformsNeedUpdate = true
+    shMatRef.current.needsUpdate = true
 
     // DEBUGING
     // /* distance */ console.log(Math.sqrt(Math.pow(camera.position.x - meshRef.current.position.x, 2) + Math.pow(camera.position.y - meshRef.current.position.y, 2) +  Math.pow(camera.position.z - meshRef.current.position.z, 2)))
@@ -88,8 +103,11 @@ const Atm = (props: AtmProps) => {
     // /* raw camera up */ console.log(camera.up)
     // /* camDir */ console.log(cameraDir)
     // /* camZoom */ console.log(camera.zoom)
+    // /* time */ console.log(state.clock.elapsedTime)
+    // /* lightPos */ console.log(shMatRef.current.uniforms.lightPos.value)
 
     state.gl.setRenderTarget(null)
+    state.gl.clear()
   })
 
   return (
@@ -99,7 +117,7 @@ const Atm = (props: AtmProps) => {
       <shaderMaterial ref={shMatRef}
         uniforms={{
           depthTxt: {value: null},
-          colorTxt: {value: target.texture},
+          colorTxt: {value: target.current.texture},
           opticalTxt: { value: opticalTxt.current },
           atmPos: {value: props.position},
           atmR: {value: props.radius},
@@ -107,71 +125,38 @@ const Atm = (props: AtmProps) => {
           meshDim: { value: meshDim.current },
           projectionInverse: { value: camera.projectionMatrixInverse },
           modelMatrix: { value: camera.matrixWorld },
-          lightPos: { value: new THREE.Vector3(0, 0, 80) }
+          lightPos: { value: lightPos.current }
         }}
         vertexShader={atmVert}
         fragmentShader={atmFrag}
         depthWrite={false}
         transparent
+        opacity={.01}
       />
     </mesh>
   )
 }
 
 
-// const MyPlanet = () => {
-//   const planetRef = useRef<THREE.Mesh>(null!)
-//   const colorMap = useLoader(THREE.TextureLoader, pngTexture.src)
-//   const lightDir = new THREE.Vector3(-10, 4, 10)
-
-//   return (
-//     <>
-//       <mesh ref={planetRef} position={[0, 0, 0]}>
-//         <sphereGeometry args={[7, 32, 32]}/>
-//         <shaderMaterial
-//           uniforms={{
-//             colorMap: { value: colorMap },
-//             lightDir: { value: lightDir}
-//           }}
-//           vertexShader={planetVert}
-//           fragmentShader={planetFrag}
-//         />
-//       </mesh>
-//     </>
-//   );
-// }
-
-
 const MiniEvan = () => {
-  const [model, setNodes] = useState<THREE.Mesh>()
-
-  useEffect(() => {
-    const loader = new GLTFLoader();
-    loader.load("cheaperMiniEvanMatte.glb", async (gltf) => {
-      const nodes = await gltf.parser.getDependencies("node");
-      const materials = await gltf.parser.getDependencies("materials");
-      setNodes(nodes[0])
-    })
-  }, [])
+  const glb = useGLTF('planetEvan.glb')
 
   return (
-    <mesh
-      scale={[1, 1, 1]}
-      rotation={[0, 1.5 * Math.PI, 0]}
-      position={[0, -.2, 0]}
-      geometry={model ? model.geometry : undefined}
-      material={model ? model.material : undefined}>
-    </mesh>
+    <primitive object={glb.scene} scale={[1.4, 1.4, 1.4]} rotation={[0, -Math.PI/2, 0]} position={[.1, -.1, -.3]}/>
   )
 }
 
 
 const Sun = () => {
+  // spherical gerstner waves
+  // https://cescg.org/wp-content/uploads/2018/04/Michelic-Real-Time-Rendering-of-Procedurally-Generated-Planets-2.pdf
+
   const lightRef = useRef<THREE.PointLight>(null!)
   const meshRef = useRef<THREE.Mesh>(null!)
+  const shMatRef = useRef<THREE.ShaderMaterial>(null!)
 
   useFrame((state) => {
-    let period = 60
+    let period = 40
     let time = state.clock.elapsedTime
     let angle = time / period * 2 * Math.PI
     let pos = [-80 * Math.sin(angle), 0, 80 * Math.cos(angle)]
@@ -181,11 +166,15 @@ const Sun = () => {
 
   return (
     <>
-      <pointLight ref={lightRef} position={[0, 0, 80]} intensity={24000}/>
+      <pointLight ref={lightRef} position={[0, 0, 80]} intensity={16000}/>
       <mesh ref={meshRef} position={[0, 0, 80]}>
-        <sphereGeometry args={[7, 32, 32]}/>
-        <meshBasicMaterial
-          color={[255, 255, 0]}
+        <sphereGeometry args={[7, 20, 20]}/>
+        <shaderMaterial
+          ref={shMatRef}
+          uniforms={{
+          }}
+          vertexShader={sunVert}
+          fragmentShader={sunFrag}
         />
       </mesh>
     </>
@@ -194,42 +183,110 @@ const Sun = () => {
 
 
 const MyStars = () => {
-  const meshRef = useRef<THREE.Mesh>(null!)
-  const shMatRef = useRef<THREE.ShaderMaterial>(null!)
 
-  useFrame((state) => {
-    meshRef.current.position.copy(state.camera.position)
-  })
+  const {scene} = useThree()
+  const loader = new THREE.CubeTextureLoader()
+  const texture = loader.load([
+      px.src,
+      nx.src,
+      py.src,
+      ny.src,
+      pz.src,
+      nz.src
+    ])
 
-  return(
-    <mesh ref={meshRef}>
-      <sphereGeometry/>
-      <shaderMaterial
-        ref={shMatRef}
-        uniforms={{
-          
-        }}
-        vertexShader={starVert}
-        fragmentShader={starFrag}
-        depthTest={false}
-        side={THREE.DoubleSide}
-      />
-    </mesh>
+  scene.background = texture
+
+  return(<></>)
+}
+
+
+interface simButtonProps {
+  simRef: React.MutableRefObject<number>
+  simState: number
+  setPhysics: React.Dispatch<React.SetStateAction<number>>
+}
+
+
+const SimButton = (props: simButtonProps) => {
+  const [buttonDisabled, setButton] = useState<boolean>(false)
+
+  return (
+    <button disabled={buttonDisabled} onClick={()=>{
+      setButton(true)
+
+      if (props.simState == 0) {
+        props.setPhysics(1)
+        props.simRef.current = 1
+      } else {
+        props.setPhysics(0)
+        props.simRef.current = 0
+      }
+
+      setTimeout(() => {
+        setButton(false)
+      }, 1000)
+    }} className={'pointer-events-auto transition-all h-[80px] w-[80px] md:h-[100px] md:w-[100px] rounded-full border px-[10px] ' + (props.simState == 1 ? 'border-green-400 bg-green-700' : 'border-red-400 bg-red-700 rotate-180')}>
+      <Image src="/powerButton.svg" height={100} width={100} alt="Power button" />
+    </button>
   )
 }
 
 
 const Greeting = () => {
+  const [simState, setPhysics] = useState<number>(1)
+  const simRef = useRef<number>(1)
+
+  const handleScroll = () => {
+    if (window.scrollY > window.innerHeight * .8 && simRef.current == 0) {
+      setPhysics(1)
+      simRef.current = 1
+    }
+  };
+
+  useEffect(() => {
+    window.addEventListener('scroll', () => {handleScroll()}, { passive: true });
+
+    return () => {
+      window.removeEventListener('scroll', () => {handleScroll()});
+    };
+  }, [simState]);
+
+  const simOptions = [
+    <Canvas resize={{scroll: false}}>
+      <PerspectiveCamera position={[4.9, 0, 7.7]}
+        makeDefault fov={50}/>
+      <MyStars />
+      <Sun />
+      <MiniEvan/>
+      <OrbitControls/>
+      <Atm position={new THREE.Vector3(0, 0, 0)} radius={5}/>
+    </Canvas>,
+    <div className='w-[100%] h-[100%] overflow-hidden relative pointer-events-none'>
+      <Image
+        priority
+        src={simPic.src}
+        fill
+        alt="Simulation picture"
+        style={{objectFit: "cover"}}
+        unoptimized
+      />
+    </div>
+  ]
+
   return (
-    <div className='flex justify-center items-center h-[80vh] bg-[#000000]'>
-      <Canvas >
-        <PerspectiveCamera position={[0, 0, 5]} makeDefault fov={50} />
-        <MyStars />
-        <Sun/>
-        <MiniEvan/>
-        <OrbitControls/>
-        <Atm position={new THREE.Vector3(0, 0, 0)} radius={5}/>
-      </Canvas>
+    <div className='flex justify-center items-center h-[80vh] bg-[#000000] relative text-white'>
+
+      {simOptions[simState]}
+
+      <div className={'absolute top-[5vh] md:top-[8vh] md:left-[4vw] pointer-events-none transition-opacity duration-300 ' + (simState == 0 ? 'opacity-0' : 'opacity-100')}>
+        <p className='text-[20px] md:text-[2.6vw] 2xl:text-[40px] w-fit'>Hi, I'm</p>
+        <p className='text-[40px] md:text-[5.2vw] 2xl:text-[80px] w-fit'>Evan Abbott</p>
+      </div>
+      <div className='absolute bottom-[20px] right-[20px]'>
+        <SimButton simRef={simRef} simState={simState} setPhysics={setPhysics}/>
+        <p className='text-center pointer-events-none'>Power <label className={simState == 1 ? 'text-red-600' : 'text-green-400'}>{simState == 1 ? " OFF" : " ON"}</label></p>
+      </div>
     </div>
   )
 }

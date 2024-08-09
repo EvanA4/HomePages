@@ -2,16 +2,17 @@
 // see docs at https://threejs.org/docs/#api/en/renderers/webgl/WebGLProgram
 // more code at https://threejs.org/docs/index.html?q=shader#api/en/materials/ShaderMaterial
 
-varying vec3 vPos;
-varying vec3 vNorm;
-varying vec3 vCol;
 varying vec2 vUv;
+varying vec3 vNorm;
 
-void main() {
-    vPos = position;
-    vNorm = normal;
-    vCol = vec3(1.);
-    vUv = uv;
-
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
+vec3 wavePos(vec3 position) {
+    return vec3(0.);
 }
+
+
+void main () {
+    vUv = uv;
+    vec3 newPos = wavePos(position);
+    vNorm = normal;
+    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.);
+}    

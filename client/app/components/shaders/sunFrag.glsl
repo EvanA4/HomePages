@@ -3,10 +3,10 @@
 // more code at https://threejs.org/docs/index.html?q=shader#api/en/materials/ShaderMaterial
 
 varying vec2 vUv;
-varying vec3 vPos;
+varying vec3 vNorm;
 
 void main () {
-    vUv = uv;
-    vPos = position;
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(position, 1.0);
-}    
+    vec3 camDir = vec3(viewMatrix[0][2], viewMatrix[1][2], viewMatrix[2][2]);
+    float diff = dot(vNorm, camDir);
+    gl_FragColor = vec4(1., 1., 0., 1.);
+}

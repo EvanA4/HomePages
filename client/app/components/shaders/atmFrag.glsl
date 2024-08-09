@@ -194,7 +194,7 @@ float optical_depth(Ray current, float rayLen) {
 }
 
 
-vec3 calculate_light(Ray current, float atmDist, float realAtmLen, vec3 rawColor) {
+vec3 calculate_light(Ray current, float atmDist, float realAtmLen, vec3 rawColor, float realDepth) {
   // credit to Sebastian Lague at https://www.youtube.com/watch?v=DxfEbulyFcY&t=154s
 
   float floatSteps = float(numScatterPoints);
@@ -241,6 +241,10 @@ vec3 calculate_light(Ray current, float atmDist, float realAtmLen, vec3 rawColor
   }
   float originalColTransmittance = exp(-viewOpticalDepth);
 
+  if (realDepth > 1000.) {
+
+    return clamp(rawColor * originalColTransmittance - vec3(inScatteredLight[2] * 3.), 0., 1.) + inScatteredLight;
+  }
   return rawColor * originalColTransmittance + inScatteredLight;
 }
 
@@ -254,16 +258,9 @@ void main() {
   vec4 rawColor = texture2D(colorTxt, vUv);
 
   if (atmDistLen[1] != 0.) {
-    if (realDepth > 1000. && length(rawColor) > 1.) {
-      rawColor = vec4(1., 0., 0., 0.);
-    }
-
-    vec3 light = calculate_light(current, atmDistLen[0], realAtmLen, rawColor.rgb);
+    vec3 light = calculate_light(current, atmDistLen[0], realAtmLen, rawColor.rgb, realDepth);
     gl_FragColor = vec4(light, 1.);
   } else {
     gl_FragColor = vec4(rawColor);
   }
-
-  // gl_FragColor = vec4(smoothOptical(vUv), 0., 0., 1.);
-  // gl_FragColor = vec4(texture2D(opticalTxt, vUv).rgb, 1.);
 }

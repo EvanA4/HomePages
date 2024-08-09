@@ -4,7 +4,7 @@ import React, { useState, useEffect } from 'react';
 const Nav = () => {
     const [scrollPosition, setScrollPosition] = useState(0);
     const handleScroll = () => {
-        const position = window.pageYOffset;
+        const position = window.scrollY;
         setScrollPosition(position);
     };
 
