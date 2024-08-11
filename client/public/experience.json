@@ -1,0 +1,22 @@
+{
+    "object": "Experience slides list",
+    "slides": [
+        {
+            "header": "SULI Intern at ORNL",
+            "date": "Summer 2023",
+            "bullets": [
+                "Programmed 3D Object recognition for point clouds",
+                "Hands-on experience with C++ packages using CMake"
+            ]
+        },
+
+        {
+            "header": "SULI Intern at ORNL",
+            "date": "Summer 2024",
+            "bullets": [
+                "Evaluated LLM performance in zero-shot learning conditions",
+                "Learned the mathematical bases of LLMs, recurrent neural networks, and transformers"
+            ]
+        }
+    ]
+}

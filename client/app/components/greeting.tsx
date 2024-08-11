@@ -227,7 +227,7 @@ const SimButton = (props: simButtonProps) => {
         setButton(false)
       }, 1000)
     }} className={'pointer-events-auto transition-all h-[80px] w-[80px] md:h-[100px] md:w-[100px] rounded-full border px-[10px] ' + (props.simState == 1 ? 'border-green-400 bg-green-700' : 'border-red-400 bg-red-700 rotate-180')}>
-      <Image src="/powerButton.svg" height={100} width={100} alt="Power button" />
+      <Image src="/svgs/powerButton.svg" height={100} width={100} alt="Power button" />
     </button>
   )
 }

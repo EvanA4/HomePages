@@ -1,0 +1,91 @@
+{
+    "object": "Experience slides list",
+    "slides": [
+        {
+            "header": "HomePages",
+            "desc": "My little corner of the internet, a full-stack self-hosted application. Blogs and their comments will hopefully be stored in SQL databases. Soon to be hosted on my own Raspberry PI!",
+            "techs": [
+                "nextjs",
+                "tailwindcss",
+                "typescript",
+                "opengl",
+                "threejs"
+            ]
+        },
+
+        {
+            "header": "ReactResumeSrc",
+            "desc": "First React application, simulating physics and gravity with React Three Rapier. Utilizes React Hooks for a visually interesting display.",
+            "techs": [
+                "reactjs",
+                "reactthreerapier",
+                "threejs"
+            ]
+        },
+
+        {
+            "header": "HTML-Resume",
+            "desc": "Original resume website design, using pure HTML and CSS. Everyone has to start somewhere!",
+            "techs": [
+                "html",
+                "css"
+            ]
+        },
+
+        {
+            "header": "CNNChess",
+            "desc": "A chess bot powered by a convolutional neural network (CNN) for evaluating chess positions. Uses alpha-beta pruning and the mini-max algorithm.",
+            "techs": [
+                "pytorch",
+                "cplusplus",
+                "cmake"
+            ]
+        },
+
+        {
+            "header": "UCIvsGUI",
+            "desc": "A PyGame application for playing against any chess bot imaginable. Uses asynchronous functions for a smooth playing experience.",
+            "techs": [
+                "python",
+                "pygame"
+            ]
+        },
+
+        {
+            "header": "RCturtle",
+            "desc": "A web application which remote controls with a Lua-based robot through a websocket server. The environment the robot detects is rendered in 3D on the web app.",
+            "techs": [
+                "reactjs",
+                "nodejs",
+                "lua",
+                "threejs"
+            ]
+        },
+
+        {
+            "header": "JSTaskManager",
+            "desc": "Some raw HTML, CSS, and JavaScript for creating, deleting, and finishing tasks.",
+            "techs": [
+                "html",
+                "css",
+                "javascript"
+            ]
+        },
+
+        {
+            "header": "InstantStonks",
+            "desc": "Simple Python program with a free YahooFinance API to simulate randomly selected stock portfolios. It may make you second-guess your investments...",
+            "techs": [
+                "python"
+            ]
+        },
+
+        {
+            "header": "EvansTurtleTools",
+            "desc": "A collection of different Lua programs designed to run on ComputerCraft: Tweaked robots. Programs involve complex interactions between robots for tasks like charcoal farming.",
+            "techs": [
+                "lua"
+            ]
+        }
+    ]
+}

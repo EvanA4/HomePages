@@ -7,28 +7,30 @@ import Contact from './components/contact'
 
 export default function Home() {
   return (
-    <div className='bg-[#818181] h-[3000px]'>
+    <div className='bg-zinc-950'>
       <Nav/>
       <Greeting/>
 
-      {/* <div className='py-[20vh] px-[2vw]'>
-        <p className='text-black text-4xl mb-10'>Experience</p>
+      <div className='py-[20vh]'>
+        <p className='text-green-500 text-4xl mb-10 px-[2vw]'>Experience</p>
         <Experience/>
-      </div> */}
+        <p className='text-neutral-300 text-center'>Swipe the cards!</p>
+      </div>
 
-      {/* <div className='pb-[20vh] px-[2vw]'>
-        <p className='text-black text-4xl mb-10'>Projects</p>
+      <div className='pb-[20vh]'>
+        <p className='text-green-500 text-4xl mb-10 px-[2vw]'>Projects</p>
+        <p className='text-neutral-300 text-center'>The project headings are URLs!</p>
         <Projects/>
-      </div> */}
+      </div>
 
-      {/* <div className='flex justify-center mb-[20vh]'>
-        <p className='text-black text-3xl'>
-          Looking for more? Check out my <a href="blogs" className='text-blue-500'><u>blogs</u></a> and
-           <a href="blogs" className='text-blue-500'> <u>art</u></a>!
+      <div className='flex justify-center mb-[20vh]'>
+        <p className='text-white text-2xl md:text-3xl text-center px-5'>
+          Looking for more? Check out my <a href="blogs" className='text-blue-400'><u>blogs</u></a> and
+           <a href="blogs" className='text-blue-400'> <u>art</u></a>!
         </p>
       </div>
 
-      <Contact/> */}
+      <Contact/>
     </div>
   );
 }

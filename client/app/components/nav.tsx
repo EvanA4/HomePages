@@ -17,7 +17,7 @@ const Nav = () => {
     }, []);
 
     return (
-    <div className={'fixed w-[100%] top-0 z-50 bg-[#265530]/80 flex justify-between items-center backdrop-blur-sm transition-all duration-300 overflow-hidden ' + (scrollPosition > 50 ? 'h-[50px]' : 'h-0')}>
+    <div className={'fixed w-[100%] top-0 z-50 bg-green-600/80 flex justify-between items-center backdrop-blur-md transition-all duration-300 overflow-hidden ' + (scrollPosition > 50 ? 'h-[50px]' : 'h-0')}>
         <div className='pl-10 text-white'>
             <a href=""><b>Home</b></a>
         </div>
