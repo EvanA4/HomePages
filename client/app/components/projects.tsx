@@ -20,7 +20,7 @@ function projCard(data: projCardProps) {
     return (
         <div key={data.header} className='w-[100%] sm:w-auto h-fit px-[7vw] py-3 sm:p-3 flex justify-center'>
             <div className='w-[100%] sm:w-[450px] h-[400px] sm:h-[350px] bg-white rounded-[30px] shadow-md p-5 relative'>
-                <p className='text-[25px]'><b>{data.header}</b></p>
+                <a href={"https://github.com/EvanA4/" + data.header}><p className='text-[25px]'><b>{data.header}</b></p></a>
                 <br/>
                 <p>{data.desc}</p>
                 <div className='absolute bottom-[20px] left-0 h-[10vw] max-h-[50px] w-[100%] px-5 flex justify-around'>
