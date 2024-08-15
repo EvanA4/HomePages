@@ -12,6 +12,7 @@
     "@react-three/drei": "^9.108.3",
     "@react-three/fiber": "^8.16.8",
     "@types/three": "^0.166.0",
+    "babel-standalone": "^6.26.0",
     "next": "14.2.5",
     "raw-loader": "^4.0.2",
     "react": "^18",

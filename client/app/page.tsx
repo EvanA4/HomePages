@@ -8,7 +8,7 @@ import Contact from './components/contact'
 export default function Home() {
   return (
     <div className='bg-zinc-950'>
-      <Nav/>
+      <Nav alwaysOn={false}/>
       <Greeting/>
 
       <div className='py-[20vh]'>

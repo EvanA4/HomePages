@@ -29,8 +29,8 @@ const Experience = () => {
 
   useEffect(() => {
     if (isMobile) {
-      const prevArrow = document.getElementsByClassName('swiper-button-prev')
-      const nextArrow = document.getElementsByClassName('swiper-button-next')
+      const prevArrow: any = document.getElementsByClassName('swiper-button-prev')
+      const nextArrow: any = document.getElementsByClassName('swiper-button-next')
       prevArrow[0].style.display = "none"
       nextArrow[0].style.display = "none"
     }

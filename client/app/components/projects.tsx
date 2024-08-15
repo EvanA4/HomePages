@@ -70,7 +70,7 @@ const Projects = () => {
                 )
             }
 
-            setCards(newCards)
+            setCards(newCards as any)
         })
       })
 

@@ -1,0 +1,49 @@
+Add title below:
+Hey, Evan! Here's an Example Blog
+
+Add description below:
+This neat little fake blog contains a bunch of good reference material for writing future blogs. If you aren't Evan, feel free to check it out anyways!
+
+Add full blog text below:
+            <H1>Blog Example: Everything In One Place</H1>
+            <p>If you haven't immediately noticed, this blog style is heavily inspired by GitHub's unique markdown documents.</p>
+            <H2>Motivation Behind This Blog</H2>
+            <p>
+                In my GitHub projects, I've always tried to explaining some about how the project works to inspire any onlookers to try it themselves.
+                This blog is another way of explaining how my website works. I hope some fellow computer nerds enjoy seeing behind the scenes and try
+                to implement this themselves!
+            </p>
+            <H3>So What About a <i>REAL</i> Blog?</H3>
+            <p>
+                My first blog is likely going to be explaining how this site works or how
+                my <a href="https://github.com/EvanA4/CNNChess" className="text-blue-400"><u>chess bot</u></a> works (it's terrible, by the way).
+                Wanna guess what the hardest part of developing this website was? It was learning how to write shaders for the fancy space simulation
+                at the top of the home page. It took like two full months, but half of the struggle was coming home from working full-time at ORNL as
+                a SULI intern just to code even more.
+            </p>
+            <H3>The Rest of This Blog</H3>
+            <p>
+                The rest of this blog is just going to demonstrate other elements I can add to my blogs for visual flare. I can't really come up with
+                a cool segway, so I just made this additional subsection.
+            </p>
+            <Note>Hi there!</Note>
+            <Tip>What's up?</Tip>
+            <Important>This is good to know.</Important>
+            <Warning>Uh oh...</Warning>
+            <Caution>This is terrible!</Caution>
+            <Textblock>Here is some less dramatic stuff.</Textblock>
+            <p>To print something to the console in JavaScript, simply write <Code>console.log("Hello world!")</Code></p>
+            <p>Take a look at this <a href="https://google.com" className="text-blue-400"><u>link</u></a> to Google!</p>
+            <IMG
+                src='/blogPics/example.png'
+                height={500}
+                width={500}
+                alt="some alt text"
+            >
+                Figure 1. Here is a caption.
+            </IMG>
+            <Codeblock>
+                This is a lot of information, so sit down! <br/>
+                Check out all of these individual lines! <br/>
+                Oh yeah, this baby *pat pat* can fit so many lines in it.
+            </Codeblock>
