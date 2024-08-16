@@ -86,48 +86,51 @@ function blogTSX(props: any) {
 
     return (
         <div className='text-neutral-200'>
-            <H1>Blog Example: Everything In One Place</H1>
-            <p>If you haven't immediately noticed, this blog style is heavily inspired by GitHub's unique markdown documents.</p>
-            <H2>Motivation Behind This Blog</H2>
+            <H1>Welcome to HomePages</H1>
             <p>
-                In my GitHub projects, I've always tried to explaining some about how the project works to inspire any onlookers to try it themselves.
-                This blog is another way of explaining how my website works. I hope some fellow computer nerds enjoy seeing behind the scenes and try
-                to implement this themselves!
+                I'm gonna pull a <a className='text-blue-400' href="https://blog.seanholloway.com/2021/09/08/home-web-server-and-hosting/"><u>
+                Sean Holloway</u></a> and say,
+                <br/>
+                If you’re seeing this page, welcome to my living room! You are here:
             </p>
-            <H3>So What About a <i>REAL</i> Blog?</H3>
-            <p>
-                My first blog is likely going to be explaining how this site works or how
-                my <a href="https://github.com/EvanA4/CNNChess" className="text-blue-400"><u>chess bot</u></a> works (it's terrible, by the way).
-                Wanna guess what the hardest part of developing this website was? It was learning how to write shaders for the fancy space simulation
-                at the top of the home page. It took like two full months, but half of the struggle was coming home from working full-time at ORNL as
-                a SULI intern just to code even more.
-            </p>
-            <H3>The Rest of This Blog</H3>
-            <p>
-                The rest of this blog is just going to demonstrate other elements I can add to my blogs for visual flare. I can't really come up with
-                a cool segway, so I just made this additional subsection.
-            </p>
-            <Note>Hi there!</Note>
-            <Tip>What's up?</Tip>
-            <Important>This is good to know.</Important>
-            <Warning>Uh oh...</Warning>
-            <Caution>This is terrible!</Caution>
-            <Textblock>Here is some less dramatic stuff.</Textblock>
-            <p>To print something to the console in JavaScript, simply write <Code>console.log("Hello world!")</Code></p>
-            <p>Take a look at this <a href="https://google.com" className="text-blue-400"><u>link</u></a> to Google!</p>
             <IMG
-                src='/blogPics/example.png'
+                src='/blogPics/ingenuity.png'
                 height={500}
                 width={500}
                 alt="some alt text"
             >
-                Figure 1. Here is a caption.
+                This is <i>Ingenuity</i>, the GMKTec NucBox mini computer hosting this site.
             </IMG>
-            <Codeblock>
-                This is a lot of information, so sit down! <br/>
-                Check out all of these individual lines! <br/>
-                Oh yeah, this baby *pat pat* can fit so many lines in it.
-            </Codeblock>
+            <H2>What's the Deal With Ingenuity?</H2>
+            <H3>1. The Name</H3>
+            <p>
+                Ingenuity was given its name because of the name of my main computer: Perseverance. When I was setting up that computer tower, I
+                somehow corrupted the memory and spent like two days figuring out how to save it. I ended up just reformatting everything. However, since I
+                pushed through to save that PC, the PC's name became Perseverance. I also chose the name because Perseverance is the name of a still-active
+                Mars rover (as of August 2024). Interestingly, Perseverance came with a little helicopter friend strapped to its belly named Ingenuity.
+                Since my little machine is under the desk of my Perseverance, Ingenuity was a fitting choice.
+            </p>
+            <H3>2. Reason for Self-Hosting</H3>
+            <p>
+                A couple of months ago, I was wanting to try a project in graphics programming. Specifically, I wanted to render a black hole by simulating
+                the paths of photons in warped spacetime. I found many solo developers had written blogs on this subject, and most of these devs also
+                had their own websites. I realized that, if I were to make my own relativistic ray tracer, it's only fitting I do the same thing.
+                <br/><br/>
+                It's also a great experience for web development. I had an excuse to try Nginx for reverse proxying, but I also learned about DNS, SSL
+                certificates, making my own SSH machine, and more.
+            </p>
+            <Caution>If you ever need to forward ports, avoid Spectrum if you can!</Caution>
+            <H2>Dividing this Blog</H2>
+            <p>
+                Creating this website had quite a few ups and downs. The hardest part of this website, however, was creating the fancy simulation at
+                the top of the main page. I used Sebastian
+                Lague's <a className='text-blue-400' href='https://www.youtube.com/watch?v=DxfEbulyFcY'><u>video</u></a> on creating a postprocessing
+                shader for simulating atmospheric light scattering. Unfortunately, figuring out how to use conveniently use my own shaders for
+                react-three-fiber turned out to be more of a problem than I had thought.
+                <br/><br/>
+                Another difficult but fun part of designing this site was powering the blog features with my own MySQL database server. Although, both
+                my MySQL server and shader deserve their own blogs. I'll see you there!
+            </p>
         </div>
     )
 }
