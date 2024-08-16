@@ -25,8 +25,8 @@ export default function Home() {
 
       <div className='flex justify-center mb-[20vh]'>
         <p className='text-white text-2xl md:text-3xl text-center px-5'>
-          Looking for more? Check out my <a href="blogs" className='text-blue-400'><u>blogs</u></a> and
-           <a href="blogs" className='text-blue-400'> <u>art</u></a>!
+          Looking for more? Check out my <a href="/blogs" className='text-blue-400'><u>blogs</u></a> and
+           <a href="/art" className='text-blue-400'> <u>art</u></a>!
         </p>
       </div>
 
