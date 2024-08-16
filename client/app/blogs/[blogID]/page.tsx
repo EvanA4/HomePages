@@ -103,9 +103,10 @@ function addCodeFrame(blogContent: string): string {
 export default function Blog({ params }: any) {
   const [blogCode, setBlog] = useState(<></>)
   const finishedFirstSearch = useRef(false)
+  const fetchIP = process.env.NODE_ENV === "production" ? 'https://evanabbott.net' : 'http://127.0.0.1:30360'
 
   if (!finishedFirstSearch.current) {
-    fetch('http://127.0.0.1:30360/fullblogs/' + params.blogID).then((response) => {
+    fetch(fetchIP + '/fullblogs/' + params.blogID).then((response) => {
         response.json().then((data) => {
           const babelCode = babel.transform(addCodeFrame(data[0].content), {presets: ["react", "es2017"]}).code;
           const code = babelCode.replace('"use strict";', "").trim();

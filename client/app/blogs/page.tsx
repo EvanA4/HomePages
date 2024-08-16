@@ -16,9 +16,10 @@ export default function Blogs() {
     const [blogs, setBlogs] = useState([])
     const firstSearch = useRef(false)
     const searchText = useRef('')
+    const fetchIP = process.env.NODE_ENV === "production" ? 'https://evanabbott.net' : 'http://127.0.0.1:30360'
 
     if (!firstSearch.current) {
-        fetch('http://127.0.0.1:30360/blogsnippets').then((response) => {
+        fetch(fetchIP + '/blogsnippets').then((response) => {
             response.json().then((data) => {
                 setBlogs(data)
             })
@@ -49,7 +50,7 @@ export default function Blogs() {
             <div className='p-3 w-[100%] flex gap-3 justify-center static'>
                 <input type="text" onInput={(e: any) => {searchText.current = e.target.value}} placeholder='Search or scroll!' className='w-[60vw] rounded-full py-3 px-4 text-black z-10'/>
                 <button onClick={() => {
-                    fetch('http://127.0.0.1:30360/blogsnippets/' + searchText.current).then((response) => {
+                    fetch(fetchIP + '/blogsnippets/' + searchText.current).then((response) => {
                         response.json().then((data) => {
                             setBlogs(data)
                         })
