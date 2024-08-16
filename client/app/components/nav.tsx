@@ -23,7 +23,7 @@ const Nav = (props: navProps) => {
     }, []);
 
     return (
-    <div style={{backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)'}} className={(props.alwaysOn ? 'sticky ' : 'fixed ') + 'w-[100%] top-0 z-50 bg-green-600/80 flex justify-between items-center transition-all duration-300 overflow-hidden ' + (scrollPosition > 50 || props.alwaysOn ? 'h-[50px]' : 'h-0')}>
+    <div style={{backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)'}} className={(props.alwaysOn ? 'sticky ' : 'fixed ') + 'w-[100%] top-0 z-50 bg-green-600 bg-opacity-80 flex justify-between items-center transition-all duration-300 overflow-hidden ' + (scrollPosition > 50 || props.alwaysOn ? 'h-[50px]' : 'h-0')}>
         <div className='pl-10 text-white'>
             <a href="/"><b>Home</b></a>
         </div>
