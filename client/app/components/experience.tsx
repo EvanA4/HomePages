@@ -11,8 +11,8 @@ import './experience.css';
 import { Suspense, useEffect, useRef, useState } from 'react';
 
 
-async function experienceLoader() {
-  const json = await fetch("experience.json").then(r => r.json())
+function experienceLoader() {
+  const json = fetch("experience.json").then(r => r.json())
   return json
 }
 
@@ -38,7 +38,6 @@ const Experience = () => {
 
     if (!finishedFirstLoad.current) {
       experienceLoader().then((data) => {
-        console.log("blah")
         setSlides(data.slides.map((slide: ExpSlideProps) => {
           return (
             <SwiperSlide key={slide.header + slide.date}>
