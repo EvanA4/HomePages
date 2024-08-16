@@ -113,6 +113,8 @@ export default function Blog({ params }: any) {
           const func = new Function("React", `return ${code}`);
           setBlog(func(React)(Image))
         })
+    }, (error) => {
+        console.log(error)
     })
     finishedFirstSearch.current = true
   }
