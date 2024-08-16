@@ -3,7 +3,7 @@
     "slides": [
         {
             "header": "HomePages",
-            "desc": "My little corner of the internet, a full-stack self-hosted application. Blogs and their comments will hopefully be stored in SQL databases. Soon to be hosted on my own Raspberry PI!",
+            "desc": "My little corner of the internet, a full-stack self-hosted application. Blogs are powered by a MySQL database server, and the site is hosted on my own mini PC!",
             "techs": [
                 "nextjs",
                 "tailwindcss",
