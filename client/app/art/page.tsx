@@ -2,7 +2,7 @@ import Nav from '../components/nav'
 
 export default function Blogs() {
     return (
-        <div className='bg-zinc-950 h-[2000px]'>
+        <div className='bg-zinc-950 min-h-[200vw]'>
             <Nav alwaysOn={true} />
 
             <div className="text-white py-[10vh] px-[10vw]">

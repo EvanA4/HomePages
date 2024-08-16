@@ -32,7 +32,7 @@ export default function Blogs() {
             <Nav alwaysOn={true}/>
             
 
-            <div className='w-[100%] h-[70vh] flex flex-col justify-center items-center p-3 relative'>
+            <div className='w-[100%] my-[4vh] flex flex-col justify-center items-center p-3 relative'>
                 <Image
                     src={'/blogs.png'}
                     width={500}
