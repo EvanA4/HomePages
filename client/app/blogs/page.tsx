@@ -1,7 +1,7 @@
 'use client'
 import Image from 'next/image';
 import Nav from '../components/nav'
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 
 interface BlogSnippet {
@@ -12,20 +12,27 @@ interface BlogSnippet {
 }
 
 
+async function blogLoader(url: string) {
+    fetch(url).then((response) => {
+        response.json().then((data) => {
+            return data
+        })
+    })
+}
+
+
 export default function Blogs() {
     const [blogs, setBlogs] = useState([])
     const firstSearch = useRef(false)
     const searchText = useRef('')
 
-    if (!firstSearch.current) {
-        var fromServer = fetch('http://127.0.0.1:30360/blogsnippets')
-        .then((response) => {
-            response.json().then((data) => {
-                setBlogs(data)
-            })
-        })
-        firstSearch.current = true
-    }
+    useEffect(() => {
+        if (!firstSearch.current) {
+            let data = blogLoader('http://127.0.0.1:30360/blogsnippets')
+            setBlogs(data as any)
+            firstSearch.current = true
+        }
+    })
 
     return (
         <div className='bg-zinc-950 min-h-[100vh]'>
@@ -50,12 +57,8 @@ export default function Blogs() {
             <div className='p-3 w-[100%] flex gap-3 justify-center static'>
                 <input type="text" onInput={(e: any) => {searchText.current = e.target.value}} placeholder='Search or scroll!' className='w-[60vw] rounded-full py-3 px-4 text-black z-10'/>
                 <button onClick={() => {
-                    fromServer = fetch('http://127.0.0.1:30360/blogsnippets/' + searchText.current)
-                    .then((response) => {
-                        response.json().then((data) => {
-                            setBlogs(data)
-                        })
-                    })
+                    let data = blogLoader('http://127.0.0.1:30360/blogsnippets/')
+                    setBlogs(data as any)
                 }} className='bg-blue-500 hover:bg-blue-400 text-white px-3 rounded-[10px]'>Search</button>
             </div>
 

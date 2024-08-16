@@ -8,7 +8,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 // https://www.youtube.com/watch?v=IwAYsbuERL4
 import './experience.css';
-import { Suspense, useEffect, useState } from 'react';
+import { Suspense, useEffect, useRef, useState } from 'react';
 
 
 async function experienceLoader() {
@@ -26,6 +26,7 @@ interface ExpSlideProps {
 
 const Experience = () => {
   const [expSlides, setSlides] = useState([])
+  const finishedFirstLoad = useRef(false)
 
   useEffect(() => {
     if (isMobile) {
@@ -35,26 +36,30 @@ const Experience = () => {
       nextArrow[0].style.display = "none"
     }
 
-    experienceLoader().then((data) => {
-      setSlides(data.slides.map((slide: ExpSlideProps) => {
-        return (
-          <SwiperSlide key={slide.header + slide.date}>
-            <div className='h-[100%] w-[100%] p-3 flex justify-center'>
-                <div className='w-[350px] h-[450px] bg-white rounded-[30px] shadow-md p-5'>
-                    <p className='text-[25px]'><b>{slide.header}</b></p>
-                    <p>{slide.date}</p>
-                    <br/>
-                    <ul className='list-disc px-5'>
-                      {slide.bullets.map((bullet: string) => {
-                        return(<li key={bullet}>{bullet}</li>)
-                      })}
-                    </ul>
-                </div>
-            </div>
-          </SwiperSlide>
-        )
-      }))
-    })
+    if (!finishedFirstLoad.current) {
+      experienceLoader().then((data) => {
+        console.log("blah")
+        setSlides(data.slides.map((slide: ExpSlideProps) => {
+          return (
+            <SwiperSlide key={slide.header + slide.date}>
+              <div className='h-[100%] w-[100%] p-3 flex justify-center'>
+                  <div className='w-[350px] h-[450px] bg-white rounded-[30px] shadow-md p-5'>
+                      <p className='text-[25px]'><b>{slide.header}</b></p>
+                      <p>{slide.date}</p>
+                      <br/>
+                      <ul className='list-disc px-5'>
+                        {slide.bullets.map((bullet: string) => {
+                          return(<li key={bullet}>{bullet}</li>)
+                        })}
+                      </ul>
+                  </div>
+              </div>
+            </SwiperSlide>
+          )
+        }))
+      })
+      finishedFirstLoad.current = true
+    }
   })
 
   return (

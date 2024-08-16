@@ -1,5 +1,5 @@
 'use client'
-import React, { useEffect, useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 
 
@@ -45,34 +45,38 @@ function projCard(data: projCardProps) {
 
 const Projects = () => {
     const [projCards, setCards] = useState([])
+    const finishedFirstLoad = useRef(false)
 
     useEffect(() => {
-        projectLoader().then((data) => {
-            var newCards = []
+        if (!finishedFirstLoad.current) {
+            projectLoader().then((data) => {
+                var newCards = []
 
-            for (let i = 0; i < data.slides.length; i += 2) {
-                var projRow = []
+                for (let i = 0; i < data.slides.length; i += 2) {
+                    var projRow = []
 
-                // add first card
-                var current: projCardProps = data.slides[i]
-                projRow.push(projCard(current))
-
-                // add second card
-                if (i + 1 != data.slides.length) {
-                    current = data.slides[i + 1]
+                    // add first card
+                    var current: projCardProps = data.slides[i]
                     projRow.push(projCard(current))
+
+                    // add second card
+                    if (i + 1 != data.slides.length) {
+                        current = data.slides[i + 1]
+                        projRow.push(projCard(current))
+                    }
+
+                    newCards.push(
+                        <div key={i} className='flex flex-col lg:flex-row w-[100%] justify-center'>
+                            {...projRow}
+                        </div>
+                    )
                 }
 
-                newCards.push(
-                    <div key={i} className='flex flex-col lg:flex-row w-[100%] justify-center'>
-                        {...projRow}
-                    </div>
-                )
-            }
-
-            setCards(newCards as any)
-        })
-      })
+                setCards(newCards as any)
+            })
+            finishedFirstLoad.current = true
+        }
+    })
 
     return (
         <div className='flex flex-col'>
