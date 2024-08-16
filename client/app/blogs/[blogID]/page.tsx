@@ -103,7 +103,7 @@ function addCodeFrame(blogContent: string): string {
 export default function Blog({ params }: any) {
   const [blogCode, setBlog] = useState(<></>)
   const finishedFirstSearch = useRef(false)
-  const fetchIP = process.env.NODE_ENV === "production" ? 'http://24.158.115.93:30360' : 'http://127.0.0.1:30360'
+  const fetchIP = process.env.NODE_ENV === "production" ? 'https://24.158.115.93' : 'http://127.0.0.1:30360'
 
   if (!finishedFirstSearch.current) {
     fetch(fetchIP + '/fullblogs/' + params.blogID).then((response) => {

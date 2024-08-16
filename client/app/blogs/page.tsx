@@ -16,7 +16,7 @@ export default function Blogs() {
     const [blogs, setBlogs] = useState([])
     const firstSearch = useRef(false)
     const searchText = useRef('')
-    const fetchIP = process.env.NODE_ENV === "production" ? 'http://24.158.115.93:30360' : 'http://127.0.0.1:30360'
+    const fetchIP = process.env.NODE_ENV === "production" ? 'https://24.158.115.93' : 'http://127.0.0.1:30360'
 
     if (!firstSearch.current) {
         fetch(fetchIP + '/blogsnippets').then((response) => {
