@@ -1,52 +1,102 @@
 Add title below:
-Welcome to HomePages
+My Atmosphere Shader
 
 Add description below:
-New the site? Come read about the motivation for it, as well as the story behind the computer responsible for hosting!
+My first REAL blog which describes a lot of the basics behind shaders and ray tracing. It also explains how I made my own custom postprocessing shader in ThreeJS.
 
 Add full blog text below:
-            <H1>Welcome to HomePages</H1>
+            <H1>My Atmosphere Shader</H1>
+            <IMG
+                src='/blogPics/simPicCrop.png'
+                height={687}
+                width={683}
+                alt='My Fragment Shader'
+            >
+                The atmosphere and postprocessing fragment shader.
+            </IMG>
             <p>
-                I'm gonna pull a <a className='text-blue-400' href="https://blog.seanholloway.com/2021/09/08/home-web-server-and-hosting/"><u>
-                Sean Holloway</u></a> and say,
-                <br/>
-                If you’re seeing this page, welcome to my living room! You are here:
+                To the uninitiated, shaders are pretty much magic. Want a cube to look like a sphere? Vertex shader. Want to simulate inconceivable quantities
+                of particles for a fluid simulation? Compute shader. In this blog, I'll be explaining the inner workings of my fragment shader for the atmosphere
+                and how it fits in the context of the rest of my ThreeJS scene.
+            </p>
+            <Tip>If you're unsure what to call a sphere that is technically a cube, one of my friends called it a <Code>sphube</Code>.</Tip>
+            <H2>What is a shader?</H2>
+            <p>
+                In my opinion, it's easiest to learn what shaders are by analyzing the types of shaders. In general, a shader is just some code than runs on a GPU,
+                normally in parallel.
+            </p>
+            <H3>Vertex Shader</H3>
+            <p>
+                A vertex shader runs in parallel for each vertex on an object you wish to render. All it computes is where the vertex should appear on the screen, but
+                messing with this shader can yield <a className='text-blue-400' href="https://github.com/kulesz/PlanetaryWater"><u>cool distortions</u></a> of a mesh.
+            </p>
+            <H3>Fragment Shader</H3>
+            <p>
+                A fragment shader, runs for each pixel said object takes up on the screen. This code ultimately determines what the color of that pixel shoud be. Textures
+                are a common input here.
+            </p>
+            <Important>
+                Just to reiterate, both vertex shaders and fragment shaders must be associated with an object!
+            </Important>
+            <H3>Compute Shader</H3>
+            <p>
+                A compute shader doesn't have a set purpose, as they are not a necessary part of the rendering pipeline. However, they can be used for simulations with
+                many moving parts, like this <a className='text-blue-400' href="https://www.youtube.com/watch?v=X-iSQQgOd1A"><u>ant colony</u></a>.
+            </p>
+            <H2>My Shader's Context</H2>
+            <p>
+                In my scene, I told ThreeJS (it's technically React Three Fiber since this is a React site) to render the scene <i>twice</i>. The first time, the scene
+                is rendered without my atmosphere around the planet. The rendered frame is then given to my fragment shader. But what object is my fragment shader for?
+            </p>
+            <H3>The Atmosphere "Mesh"</H3>
+            <p>
+                I said that fragment shaders run for a specific object, and my shader is no exception. Since my fragment shader is for postprocessing, the mesh is actually
+                a rectangle (tecnically a plane) that <i>perfectly</i> covers the camera. All my shader does is take the rendered frame from earlier and draw in the atmosphere
+                on top. This frame is then drawn on top of the rectangle with my fragment shader. It's like if you asked me to draw a portait of you and instead I draw a
+                beautiful landscape. However, just before I turn the drawing towards you, I realize you asked for a portait and I draw in a shoddy stick figure on top.
+                <br/><br/>
+                The scene then renders the rectangle, and because the rectangle perfectly fits the camera, the artificial scene looks like the real one.
+            </p>
+            <H2>Simulating the Light</H2>
+            <H3>1. Backwards Ray Tracing</H3>
+            <IMG
+                src='/blogPics/badRayTracing.png'
+                height={687}
+                width={683}
+                alt='My Fragment Shader'
+            >
+                The bad approach for ray tracing.
+            </IMG>
+            <p>
+                If we were to simulate light in the way light actually works (as in, track the light emitted from a source), we would waste a lot of computation on rays which don't
+                even meet our eyes. The image above shows a cute cow and a cool sun and how realistic light isn't very computer friendly. Fortunately, if we backtrack hypothetical rays
+                that hit our eyes, we can reverse engineer what the colors of those rays are meant to be. Check this out:
             </p>
             <IMG
-                src='/blogPics/ingenuity.png'
-                height={500}
-                width={500}
-                alt="some alt text"
+                src='/blogPics/goodRayTracing.png'
+                height={687}
+                width={683}
+                alt='My Fragment Shader'
             >
-                This is <i>Ingenuity</i>, the GMKTec NucBox mini computer hosting this site.
+                The better approach for ray tracing. No redundant rays!
             </IMG>
-            <H2>What's the Deal With Ingenuity?</H2>
-            <H3>1. The Name</H3>
+            <Note>Because we are simulating rays moving backwards, this is sometimes called backwards ray tracing.</Note>
+            <H3>2. Depth Texture</H3>
             <p>
-                Ingenuity was given its name because of the name of my main computer: Perseverance. When I was setting up that computer tower, I
-                somehow corrupted the memory and spent like two days figuring out how to save it. I ended up just reformatting everything. However, since I
-                pushed through to save that PC, the PC's name became Perseverance. I also chose the name because Perseverance is the name of a still-active
-                Mars rover (as of August 2024). Interestingly, Perseverance came with a little helicopter friend strapped to its belly named Ingenuity.
-                Since my little machine is under the desk of my Perseverance, Ingenuity was a fitting choice.
-            </p>
-            <H3>2. Reason for Self-Hosting</H3>
-            <p>
-                A couple of months ago, I was wanting to try a project in graphics programming. Specifically, I wanted to render a black hole by simulating
-                the paths of photons in warped spacetime. I found many solo developers had written blogs on this subject, and most of these devs also
-                had their own websites. I realized that, if I were to make my own relativistic ray tracer, it's only fitting I do the same thing.
+                Remember when I said there were only two renderings? I LIED. There's technically three. The computations necessary for my atmosphere require many inputs, and one of these is a
+                texture where each pixel indicates how far away the object in that pixel is away from the camera. Pixels of close objects are usually black, whereas far objects appear white.
+                This depth texture is rendered along with the first frame, the one that the fragment shader draws on top of.
                 <br/><br/>
-                It's also a great experience for web development. I had an excuse to try Nginx for reverse proxying, but I also learned about DNS, SSL
-                certificates, making my own SSH machine, and more.
+                Using this texture of distances, we can see how far a ray of light "emitted" from any pixel would reach into the atmosphere. Intuitively, the further a ray of light
+                travels in the atmosphere, the greater the chance is to see any scattered sunlight.
             </p>
-            <Caution>If you ever need to forward ports, avoid Spectrum if you can!</Caution>
-            <H2>Dividing this Blog</H2>
+            <H3>3. Cheesing Physics</H3>
             <p>
-                Creating this website had quite a few ups and downs. The hardest part of this website, however, was creating the fancy simulation at
-                the top of the main page. I used Sebastian
-                Lague's <a className='text-blue-400' href='https://www.youtube.com/watch?v=DxfEbulyFcY'><u>video</u></a> on creating a postprocessing
-                shader for simulating atmospheric light scattering. Unfortunately, figuring out how to use conveniently use my own shaders for
-                react-three-fiber turned out to be more of a problem than I had thought.
+                There are a whole bunch of integrals used to compute the exact values of light rays that would reach our camera. Unfortunately, our computer doesn't have the resources to
+                perform these integrations. Instead, we can write <Code>for</Code> loops to determine the Riemann sum appoximations.
                 <br/><br/>
-                Another difficult but fun part of designing this site was powering the blog features with my own MySQL database server. Although, both
-                my MySQL server and shader deserve their own blogs. I'll see you there!
+                For more details on the math behind atmospheric scattering, check out
+                Nvidia's <a className='text-blue-400'
+                href="https://developer.nvidia.com/gpugems/gpugems2/part-ii-shading-lighting-and-shadows/chapter-16-accurate-atmospheric-scattering"><u>guide</u></a> and Sebastian
+                Lague's <a className="text-blue-400" href="https://www.youtube.com/watch?v=DxfEbulyFcY"><u>video</u></a>.
             </p>
