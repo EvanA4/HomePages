@@ -30,22 +30,36 @@ def connectToDB():
 
 def printUsage() -> None:
   print("Usage: python blogManager.py\n" +
-        "-d             :             Delete a blog given its title.", file=sys.stderr)
+        "-d             :             Delete a blog given its title.\n" +
+        "-g             :             Get a blog given its title.\n" +
+        "-c             :             Create a blog given a title, description, and code.", file=sys.stderr)
   exit(1)
 
 
 def parseArgs(args: list[str]) -> tuple:
   '''
   [0] Are we deleting a blog?
+  [1] Are we getting a blog?
+  [2] Are we creating a blog?
   '''
-  output = [False]
-  occurBools = [False]
+  output = [False, False, False]
+  occurBools = [False, False, False]
   for i in range(1, len(args)):
     if args[i] == '-d':
-      if occurBools[0]:
+      if occurBools[0] or occurBools[1] or occurBools[2]:
         printUsage()
       output[0] = True
-      occurBools[0]
+      occurBools[0] = True
+    elif args[i] == '-g':
+      if occurBools[1] or occurBools[0] or occurBools[2]:
+        printUsage()
+      output[1] = True
+      occurBools[1] = True
+    elif args[i] == '-c':
+      if occurBools[1] or occurBools[0] or occurBools[2]:
+        printUsage()
+      output[2] = True
+      occurBools[2] = True
     else:
       printUsage()
   return tuple(output)
@@ -95,7 +109,7 @@ def readBlog() -> tuple[str]:
   [1] blog description
   [2] blog content
   '''
-  file = open("blog.txt")
+  file = open("input.txt")
   lines = file.readlines()
   title = lines[1][:-1]
   desc = lines[4][:-1]
@@ -105,14 +119,34 @@ def readBlog() -> tuple[str]:
   return (title, desc, content)
 
 if __name__ == '__main__':
-  toDelete = parseArgs(sys.argv)[0]
+  ARGS = parseArgs(sys.argv)
+  print(ARGS)
   title, desc, content = readBlog()
 
   mydb = connectToDB()
   mycursor = mydb.cursor()
 
+  # check if we're just getting a blog
+  if ARGS[1]:
+    print("Getting blog!")
+    sql = "SELECT * FROM FullBlogs INNER JOIN BlogSnippets ON FullBlogs.title = BlogSnippets.title WHERE BlogSnippets.title = %s"
+    val = (title, )
+    mycursor.execute(sql, val)
+    myresult = mycursor.fetchall()
+    if len(myresult) == 0:
+      print("Error: there are no blogs with the title \"%s\""%(title), file=sys.stderr)
+      exit(1)
+    
+    # write the retrieved blog to a new text file
+    file = open('output.txt', 'w')
+    file.writelines([
+      f'Title:\n{myresult[0][1]}\n\n',
+      f'Description:\n{myresult[0][5]}\n\n',
+      f'Blog Code:\n{myresult[0][2]}'
+    ])
+
   # to create or replace a blog
-  if not toDelete:
+  elif ARGS[2]:
     # check if blog already exists
     # if it does, ask player if they want to swap the blogs
     doSwap = False
@@ -147,14 +181,12 @@ if __name__ == '__main__':
     createBlog(title, desc, content, mycursor)
 
   # to delete a blog
-  else:
+  elif ARGS[0]:
     print("Deleting a blog!")
     deleteBlog(title, mycursor)
 
-  mydb.commit()
+  else:
+    print("Error: failed to read arguments.", file=sys.stderr)
+    exit(1)
 
-'''
-miniterminal
-delete blogs (in both tables) using title
-create entirely new blogs (if title already exists, ask them if they want to delete THIS [print the blog])
-'''
+  mydb.commit()

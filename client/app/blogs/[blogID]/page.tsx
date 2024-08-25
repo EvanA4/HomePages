@@ -103,7 +103,9 @@ function addCodeFrame(blogContent: string): string {
 export default function Blog({ params }: any) {
   const [blogCode, setBlog] = useState(<></>)
   const finishedFirstSearch = useRef(false)
-  const fetchIP = process.env.NODE_ENV === "production" ? 'https://evanabbott.net' : 'http://127.0.0.1:30360'
+  // vvv requires MySQL server on device editing code vvv
+  //   const fetchIP = process.env.NODE_ENV === "production" ? 'https://evanabbott.net' : 'http://127.0.0.1:30360'
+  const fetchIP = 'https://evanabbott.net'
 
   if (!finishedFirstSearch.current) {
     fetch(fetchIP + '/fullblogs/' + params.blogID).then((response) => {
