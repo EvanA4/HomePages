@@ -122,9 +122,10 @@ def readBlog() -> tuple[str]:
     content += contentLine
   return (title, desc, content)
 
+
 if __name__ == '__main__':
   ARGS = parseArgs(sys.argv)
-  print(ARGS)
+  # print(ARGS)
   title, desc, content = readBlog()
 
   mydb = connectToDB()

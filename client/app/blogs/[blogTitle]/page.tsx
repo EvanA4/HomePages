@@ -75,10 +75,12 @@ function addCodeFrame(blogContent: string): string {
         return (
             <div className='flex flex-col items-center my-[50px]'>
                 <Image
+                    priority
                     src={props.src}
                     height={props.height}
                     width={props.width}
                     alt={props.alt}
+                    style={{width: "auto"}}
                 />
                 <p className='my-[10px]'>{props.children}</p>
             </div>
