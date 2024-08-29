@@ -68,7 +68,7 @@ export default function Blogs() {
                     let options: any = { year: 'numeric', month: 'long', day: 'numeric' };
 
                     return (
-                        <a key={snippet.id} href={'blogs/' + snippet.id} className='w-[100%] z-20'>
+                        <a key={snippet.id} href={'blogs/' + snippet.title.replaceAll(' ', '+')} className='w-[100%] z-20'>
                             <div className='text-white p-3 border-white border-2 rounded-[15px] bg-black'>
                                 <p className='text-lg'><b>{snippet.title}</b></p>
                                 <p className='text-neutral-300'>{dateObj.toLocaleDateString("en-US", options)}</p>

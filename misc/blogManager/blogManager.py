@@ -62,6 +62,10 @@ def parseArgs(args: list[str]) -> tuple:
       occurBools[2] = True
     else:
       printUsage()
+
+  if not output[0] and not output[1] and not output[2]:
+    printUsage()
+
   return tuple(output)
 
 

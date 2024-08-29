@@ -20,21 +20,21 @@ export async function getBlogDescs() {
 
 export async function getBlogDesc(searchStr) {
   const [rows] = await pool.query(`
-  SELECT * 
-  FROM BlogSnippets
+  SELECT * FROM BlogSnippets
   WHERE title LIKE ?
   ORDER BY posted DESC
   `, [`%${searchStr}%`])
   return rows
 }
 
-export async function getFullBlog(searchID) {
+export async function getFullBlog(searchTitle) {
   const [rows] = await pool.query(`
   SELECT * FROM FullBlogs
   INNER JOIN BlogSnippets
   ON FullBlogs.title = BlogSnippets.title
-  WHERE BlogSnippets.id = ?;
-  `, [searchID])
+  WHERE BlogSnippets.title = ?;
+  `, [`${searchTitle.replaceAll("+", " ")}`])
+  console.log(searchTitle.replace("+", " "))
   return rows
 }
 

@@ -108,8 +108,9 @@ export default function Blog({ params }: any) {
   const fetchIP = 'https://evanabbott.net'
 
   if (!finishedFirstSearch.current) {
-    fetch(fetchIP + '/fullblogs/' + params.blogID).then((response) => {
+    fetch(fetchIP + '/fullblogs/' + params.blogTitle).then((response) => {
         response.json().then((data) => {
+            console.log(data)
           const babelCode = babel.transform(addCodeFrame(data[0].content), {presets: ["react", "es2017"]}).code;
           const code = babelCode.replace('"use strict";', "").trim();
           const func = new Function("React", `return ${code}`);
