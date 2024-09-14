@@ -16,7 +16,9 @@ export default function Blogs() {
     const [blogs, setBlogs] = useState([])
     const firstSearch = useRef(false)
     const searchText = useRef('')
-    const fetchIP = process.env.NODE_ENV === "production" ? 'https://evanabbott.net' : 'http://127.0.0.1:30360'
+    // vvv requires MySQL server on device editing code vvv
+    // const fetchIP = process.env.NODE_ENV === "production" ? 'https://evanabbott.net' : 'http://127.0.0.1:30360'
+    const fetchIP = 'https://evanabbott.net'
 
     if (!firstSearch.current) {
         fetch(fetchIP + '/blogsnippets').then((response) => {
@@ -66,7 +68,7 @@ export default function Blogs() {
                     let options: any = { year: 'numeric', month: 'long', day: 'numeric' };
 
                     return (
-                        <a key={snippet.id} href={'blogs/' + snippet.id} className='w-[100%] z-20'>
+                        <a key={snippet.id} href={'blogs/' + snippet.title.replaceAll(' ', '+')} className='w-[100%] z-20'>
                             <div className='text-white p-3 border-white border-2 rounded-[15px] bg-black'>
                                 <p className='text-lg'><b>{snippet.title}</b></p>
                                 <p className='text-neutral-300'>{dateObj.toLocaleDateString("en-US", options)}</p>

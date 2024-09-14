@@ -20,8 +20,8 @@ app.get("/blogsnippets/:searchStr", async (req, res) => {
   res.send(results)
 })
 
-app.get("/fullblogs/:id", async (req, res) => {
-  const toSearch = req.params.id
+app.get("/fullblogs/:title", async (req, res) => {
+  const toSearch = req.params.title
   const results = await getFullBlog(toSearch)
   console.log("Recieved request! Sending the following:", results)
   res.send(results)

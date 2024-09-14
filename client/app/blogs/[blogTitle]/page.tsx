@@ -75,10 +75,12 @@ function addCodeFrame(blogContent: string): string {
         return (
             <div className='flex flex-col items-center my-[50px]'>
                 <Image
+                    priority
                     src={props.src}
                     height={props.height}
                     width={props.width}
                     alt={props.alt}
+                    style={{width: "auto"}}
                 />
                 <p className='my-[10px]'>{props.children}</p>
             </div>
@@ -103,11 +105,14 @@ function addCodeFrame(blogContent: string): string {
 export default function Blog({ params }: any) {
   const [blogCode, setBlog] = useState(<></>)
   const finishedFirstSearch = useRef(false)
-  const fetchIP = process.env.NODE_ENV === "production" ? 'https://evanabbott.net' : 'http://127.0.0.1:30360'
+  // vvv requires MySQL server on device editing code vvv
+  //   const fetchIP = process.env.NODE_ENV === "production" ? 'https://evanabbott.net' : 'http://127.0.0.1:30360'
+  const fetchIP = 'https://evanabbott.net'
 
   if (!finishedFirstSearch.current) {
-    fetch(fetchIP + '/fullblogs/' + params.blogID).then((response) => {
+    fetch(fetchIP + '/fullblogs/' + params.blogTitle).then((response) => {
         response.json().then((data) => {
+            console.log(data)
           const babelCode = babel.transform(addCodeFrame(data[0].content), {presets: ["react", "es2017"]}).code;
           const code = babelCode.replace('"use strict";', "").trim();
           const func = new Function("React", `return ${code}`);
