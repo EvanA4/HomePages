@@ -14,6 +14,18 @@
         },
 
         {
+            "header": "BlackHole",
+            "desc": "This NextJS application uses the Schwarzchild geodesic equations to numerically integrate the paths of light for real-time raytracing.",
+            "techs": [
+                "nextjs",
+                "tailwindcss",
+                "typescript",
+                "opengl",
+                "threejs"
+            ]
+        },
+
+        {
             "header": "ReactResumeSrc",
             "desc": "First React application, simulating physics and gravity with React Three Rapier. Utilizes React Hooks for a visually interesting display.",
             "techs": [

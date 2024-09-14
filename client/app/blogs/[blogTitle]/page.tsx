@@ -52,6 +52,11 @@ function addCodeFrame(blogContent: string): string {
             {props.children}
         </div>
     )}
+    const Elist = (props: any) => { return (
+        <ul className="list-disc pl-[20px]">
+            {props.children}
+        </ul>
+    )}
     const H1 = (props: any) => {
         return (
             <div className='mt-[40px] mb-[20px]'>
