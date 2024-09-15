@@ -89,124 +89,118 @@ function blogTSX(props: any) {
 
     return (
         <div className='text-neutral-200'>
-            <H1>My Atmosphere Shader</H1>
+            <H1>Rendering a Black Hole</H1>
             <IMG
-                src='/blogPics/simPicCrop.png'
-                height={687}
-                width={683}
+                src='/blogPics/bhFinal.png'
+                height={912}
+                width={1920}
                 alt='My fragment shader'
             >
-                The atmosphere and postprocessing fragment shader.
+                The final (scuffed) black hole.
             </IMG>
+            <Caution>
+                This blog builds upon concepts already laid out in my <a className='text-blue-400' href="https://evanabbott.net/blogs/My+Atmosphere+Shader">atmosphere blog</a>. Please
+                read this first and come back!
+            </Caution>
+            <H2>What is Gravity?</H2>
             <p>
-                To the uninitiated, shaders are pretty much magic. Want a cube to look like a sphere? Vertex shader. Want to simulate inconceivable quantities
-                of particles for a fluid simulation? Compute shader. In this blog, I'll be explaining what shaders even are. I'll also discuss the inner workings of
-                my fragment shader for the atmosphere and how it fits in the context of the rest of my ThreeJS scene.
-            </p>
-            <Tip>If you're unsure what to call a sphere that is technically a cube, one of my friends called it a <Code>sphube</Code>.</Tip>
-            <H2>What is a shader?</H2>
-            <p>
-                Very generally, a shader is just some code than runs in parallel on a GPU. Here are some of the different types:
-            </p>
-            <H3>Vertex Shader</H3>
-            <p>
-                Suppose you want to render an object. All objects in the rendering pipeline are comprised of vertices and edges. The vertex shader just computes where each vertex
-                should appear on the screen, but messing with this shader can yield <a className='text-blue-400' href="https://github.com/kulesz/PlanetaryWater"><u>cool
-                distortions</u></a> of a mesh.
-            </p>
-            <H3>Fragment Shader</H3>
-            <p>
-                Rendering this object also requires a fragment shader. This shader runs for each pixel the object takes up on the screen. This code ultimately determines what color
-                of a pixel should be. Textures are a common input here.
+                Here, we will be looking at concepts of general relativity (as opposed to special relativity). In a field where light travels no distance and time is
+                measured in two dimensions, I will be oversimplifying a lot through this blog.
+                <br/><br/>
+                Suppose you're flying in a plane. If you try to fly straight, you'd expect to fly in a line. Ultimately, you will eventually end up flying in a ring around the Earth.
+                Obviously, this has something to do with gravity.
+                <br/><br/>
+                One thing that makes relativity different from Newtonian mechanics, however, is that gravity isn't considered a force.
+                In our case, gravity is just the byproduct of the fabric of the universe, spacetime, warping.
             </p>
             <Important>
-                Both vertex shaders and fragment shaders are <i>always</i> associated with an object!
+                In this scenario, one could argue you actually <i>did</i> fly in a straight line. You only formed a ring because spacetime was warped.
             </Important>
-            <H3>Compute Shader</H3>
+            <H2>The Core Equation</H2>
+            <IMG
+                src='/blogPics/EFE.png'
+                height={99}
+                width={341}
+                alt='EFE'
+            >
+                The Einstein Field Equations.
+            </IMG>
             <p>
-                A compute shader doesn't have a set purpose, as they are not a necessary part of the rendering pipeline. However, they can be used for simulations with
-                many moving parts, like this <a className='text-blue-400' href="https://www.youtube.com/watch?v=X-iSQQgOd1A"><u>ant colony</u></a>.
+                Einstein first made his equations public in 1915, and they describe how energy and space are related. There have been multiple solutions to these equations, one of which
+                being the Schwarzschild metric. This metric describes spacetime around a non-rotating, uncharged black hole:
             </p>
-            <H2>My Shader's Context</H2>
+            <IMG
+                src='/blogPics/schwarzschildMetric.png'
+                height={79}
+                width={766}
+                alt='Schwarzschild metric'
+            >
+                The Schwarzschild metric.
+            </IMG>
+            From this, <a className='text-blue-400' href="https://rantonels.github.io/starless">Riccardo Antonelli</a> derived a second-order ordinary differential equation (ODE) which
+            describes the paths of photons:
+            <IMG
+                src='/blogPics/starlessEq.png'
+                height={135}
+                width={242}
+                alt='Starless eq'
+            >
+                The final ODE for ray tracing.
+            </IMG>
             <p>
-                My shader is responsible for displaying the atmosphere on my home page, and I just said that a fragment shader must be associated with an object. So what object
-                does my fragment shader describe the pixels of? It's not the atmosphere.
+                Where <Code>h</Code> represents the angular momentum of the photon, which is a constant equal to the length of the cross product between the initial position and
+                initial velocity. With some numeric integration (I used Euler's method instead of the classic Runge-Kutta method), a final position of the photon can be reached.
             </p>
-            <H3>The Atmosphere "Object"</H3>
+            <H2>The Fragment Shader</H2>
             <p>
-                Since my fragment shader is for postprocessing, the mesh is actually a rectangle (tecnically a plane) that <i>perfectly</i> covers the camera.
-                <br/><br/>
-                My shader has two steps:
-            </p>
+                Just like with the atmosphere blog, we can create a rectangle that perfectly covers the camera and use the fragment shader. The shader has three main steps for each pixel:
+            </p><br/>
             <Elist>
-                <li>Take the pixel that is below the rectangle</li>
-                <li>Add any necessary atmospheric coloring</li>
-                <li>Display that to the screen</li>
+                <li>Creating the initial position and velocity of the photon</li>
+                <li>Moving the photon along its predetermined path, checking for collisions with the accretion disk</li>
+                <li>If the photon hasn't fallen into the black hole, draw a straight line from the photon out into infinity</li>
+                <li>From this far away position, sample the skybox for the appropriate color</li>
             </Elist>
-            <br/>
-            <p>    
-                It's like if you asked me to draw a portait of you and instead I draw a
-                beautiful landscape. However, just before I turn the drawing towards you, I realize you asked for a portait and I draw in a shoddy stick figure on top.
-                <br/>
-            </p>
-            <Note>Because my shader's object perfectly fits the camera, the artificial scene looks like the real one.</Note>
-            <H2>Ray Tracing 101</H2>
-            <IMG
-                src='/blogPics/badRayTracing.png'
-                height={687}
-                width={683}
-                alt='Bad ray tracing'
-            >
-                The bad approach for ray tracing.
-            </IMG>
+            <H2>Precomputation and Compromises</H2>
             <p>
-                If we were to simulate light in the way light actually works (as in, track the light emitted from a source), we would waste a lot of computation on rays which don't
-                even meet our eyes. The image above shows a cute cow and a cool sun and how realistic light isn't very computer friendly. Fortunately, if we backtrack hypothetical rays
-                that hit our eyes, we can reverse engineer what the colors of those rays are meant to be. Check this out:
+                There are <a href="https://arxiv.org/abs/2010.08735" className='text-blue-400'>multiple ways</a> to improve performance with precomputation.
             </p>
             <IMG
-                src='/blogPics/goodRayTracing.png'
-                height={687}
-                width={683}
-                alt='Good ray tracing'
-            >
-                The better approach for ray tracing. No redundant rays!
-            </IMG>
-            <Note>Because we are simulating rays moving backwards, this is sometimes called backwards ray tracing.</Note>
-            <H2>Depth Texture</H2>
-            <IMG
-                src='/blogPics/depth.png'
+                src='/blogPics/bhPrecomp.png'
                 height={680}
                 width={680}
-                alt='Motivation for depth texture'
+                alt='Starless eq'
             >
-                Two rays casted into an atmosphere.
+                Dimensions used to describe the path of a photon in 2D.
             </IMG>
             <p>
-                There's another critical part of the atmosphere we're forgetting. The further a ray travels into the atmosphere, the more the atmosphere should contribute
-                to the color of the pixel. Take a look at the photo above.
+                The inputs for my precomputation image are the initial distance from the black hole and the angle of the velocity vector. However, this assumes spherical symmetry around
+                the blackhole. This assumption is true as long as we aren't including the accretion disk. If you are willing to sacrifice the accretion disk for potato-as-a-computer
+                optimization, this is a great option. The nice thing about this precomputation is that we can make it as accurate of a computation as we'd like before deploying it.
                 <br/><br/>
-                The ray on the left doesn't travel far into the atmosphere, because it hits the top of the mountain. The right ray doesn't, and travels much further into denser parts
-                of the atmosphere. We should expect that the pixel corresponding to the left ray should have a lot less atmospheric color than the ray on the right.
-                <br/><br/>
-                However, determining the path our ray travels into the atmosphere, we need a measurement of depth from the environment. A depth texture tell us how far each pixel
-                reaches into the scene we are rendering.
+                If you aren't interested in that, then using two dimensions instead of three for the ray tracing can help. The above image also
+                displays <Code>e0</Code> and <Code>e1</Code> which span the entire orbital plane of the photon. Fortunately, this saves us from using a 3D cross product
+                when computing the inital angular momentum. Instead, the angular momentum is just the distance of the initial position times the e1 component of the initial velocity.
             </p>
-            <H2>The Physics</H2>
+            <Warning>
+                A photon only has an orbital plane if the black hole is non-rotating. Otherwise, this two component optimization will not help.
+            </Warning>
+            <IMG
+                src='/blogPics/bhFastRaw.png'
+                height={911}
+                width={1920}
+                alt='Starless eq'
+            >
+                The fast but disk-less version of the black hole ray tracer.
+            </IMG>
+            <H2>Final Notes</H2>
             <p>
-                As it turns out, the equations for determining how much atmospheric color should be added to a pixel are rather intimidating.
+                Over the few months I was researching how to go about this project, I noticed that there were a disproportionate number of people that had their own blog site amongst
+                those who had already completed this project. This was another reason for me creating my personal website and hosting it at my own home. I specifically want to thank
+                one <a href="https://seanholloway.com/" className="text-blue-400">Sean Holloway</a> for inspiring me.
                 <br/><br/>
-                In a perfect world, integrals would be used to compute the exact values of light rays that would reach our camera. Although, our computer doesn't have the ability to
-                evaluate them. Instead, we can write <Code>for</Code> loops to determine the Riemann sum appoximations.
-            </p>
-            <Important>
-                The name of this process is called numeric integration, and it may be an important part of future blogs!
-            </Important>
-            <p>
-                For more details on the math behind atmospheric scattering, check out
-                Nvidia's <a className='text-blue-400'
-                href="https://developer.nvidia.com/gpugems/gpugems2/part-ii-shading-lighting-and-shadows/chapter-16-accurate-atmospheric-scattering"><u>guide</u></a> and Sebastian
-                Lague's <a className="text-blue-400" href="https://www.youtube.com/watch?v=DxfEbulyFcY"><u>video</u></a>.
+                There are a LOT of things I'm still not accounting for with this general ray tracer. Actually, the only thing I <i>am</i> accounting for is the warped spacetime. There's
+                still the doppler effect and time retardation at the very least. I could implement these things, but I feel like it's time for me to move on from this project.
             </p>
         </div>
     )
@@ -217,7 +211,7 @@ const BlogTesting = () => {
         <div className="bg-zinc-950 min-h-[100vh]">
             <Nav alwaysOn={true}/>
 
-            <div className="text-white py-[10vh] px-[10vw]">
+            <div className="text-white my-[10vh] w-[80vw] sm:w-[73.57vw] md:w-[565px] lg:w-[55.16vw] xl:w-[706px] 2xl:w-[46vw] mx-auto">
                 {blogTSX(Image)}
             </div>
         </div>

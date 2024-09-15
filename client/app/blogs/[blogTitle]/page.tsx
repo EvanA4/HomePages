@@ -132,7 +132,7 @@ export default function Blog({ params }: any) {
   return (
     <div className="bg-zinc-950 min-h-[100vh]">
         <Nav alwaysOn={true}/>
-        <div className="py-[10vh] px-[10vw]">
+        <div className="text-white my-[10vh] w-[80vw] sm:w-[73.57vw] md:w-[565px] lg:w-[55.16vw] xl:w-[706px] 2xl:w-[46vw] mx-auto">
           {blogCode}
         </div>
     </div>
