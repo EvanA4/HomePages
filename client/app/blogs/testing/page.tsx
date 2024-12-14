@@ -153,7 +153,7 @@ function blogTSX(props: any) {
             </p>
             <H2>The Fragment Shader</H2>
             <p>
-                Just like with the atmosphere blog, we can create a rectangle that perfectly covers the camera and use the fragment shader. The shader has three main steps for each pixel:
+                Just like with the atmosphere blog, we can create a rectangle that perfectly covers the camera and use the fragment shader. The shader has four main steps for each pixel:
             </p><br/>
             <Elist>
                 <li>Creating the initial position and velocity of the photon</li>
@@ -180,7 +180,7 @@ function blogTSX(props: any) {
                 <br/><br/>
                 If you aren't interested in that, then using two dimensions instead of three for the ray tracing can help. The above image also
                 displays <Code>e0</Code> and <Code>e1</Code> which span the entire orbital plane of the photon. Fortunately, this saves us from using a 3D cross product
-                when computing the inital angular momentum. Instead, the angular momentum is just the distance of the initial position times the e1 component of the initial velocity.
+                when computing the inital angular momentum. Instead, the angular momentum is just the distance of the initial position times the <Code>e1</Code> component of the initial velocity.
             </p>
             <Warning>
                 A photon only has an orbital plane if the black hole is non-rotating. Otherwise, this two component optimization will not help.
@@ -199,8 +199,9 @@ function blogTSX(props: any) {
                 those who had already completed this project. This was another reason for me creating my personal website and hosting it at my own home. I specifically want to thank
                 one <a href="https://seanholloway.com/" className="text-blue-400">Sean Holloway</a> for inspiring me.
                 <br/><br/>
-                There are a LOT of things I'm still not accounting for with this general ray tracer. Actually, the only thing I <i>am</i> accounting for is the warped spacetime. There's
-                still the doppler effect and time retardation at the very least. I could implement these things, but I feel like it's time for me to move on from this project.
+                There are a LOT of things I'm still not accounting for with this general relativistic ray tracer. Actually, the only thing I <i>am</i> accounting for is the warped
+                spacetime. There's still the doppler effect and time retardation at the very least. I could implement these things, but I feel like it's time for me to move on from
+                this project. Thanks for reading!
             </p>
         </div>
     )

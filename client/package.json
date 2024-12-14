@@ -13,6 +13,8 @@
     "@react-three/fiber": "^8.16.8",
     "@types/three": "^0.166.0",
     "babel-standalone": "^6.26.0",
+    "dotenv": "^16.4.7",
+    "mysql2": "^3.11.5",
     "next": "14.2.5",
     "raw-loader": "^4.0.2",
     "react": "^18",
