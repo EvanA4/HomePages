@@ -41,7 +41,6 @@ export async function GET(req: NextRequest) {
 	let sql: string;
 	if (!strictBool) sql = `SELECT * FROM Blogs WHERE title LIKE "%${title}%" ORDER BY postdate DESC`;
 	else sql = `SELECT * FROM Blogs WHERE title="${title}" ORDER BY postdate DESC`;
-	console.log(sql);
 
 	// try to use the query
 	try {
