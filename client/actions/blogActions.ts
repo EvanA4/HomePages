@@ -1,16 +1,22 @@
-import type { BlogRow, Blog } from "$lib/types/types"
-import { toSQLDate } from "$lib/utils/sqlDate"
+import type { BlogRow, Blog } from "@/types/types";
+import { toSQLDate } from "@/utils/sqlDate";
 
 
 export async function GetBlogs(title: string, strict: boolean = false): Promise<Blog[]> {
     // get raw SQL rows for each blog
-    let res = await fetch('/api/blogs?' + new URLSearchParams({
-        title: title,
-        strict: (strict ? "true" : "false")
-    }).toString(), {
-        cache: "no-cache"
-    });
-    let rows: BlogRow[] = await res.json();
+    let rows: BlogRow[] = []
+    try {
+        let res = await fetch('/api/blogs?' + new URLSearchParams({
+            title: title,
+            strict: (strict ? "true" : "false")
+        }).toString(), {
+            cache: "no-cache"
+        });
+        rows = await res.json();
+        
+    } catch (err) {
+        console.log("GetBlogs: Failed to make fetch request to blogs.");
+    }
     let blogs: Blog[] = [];
 
     // simplify and convert each row into a blog object

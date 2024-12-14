@@ -15,16 +15,16 @@ const Contact = () => {
         <a className='px-5' href="https://github.com/EvanA4">
           <Image
             src="/svgs/github.svg"
-            width={100}
-            height={100}
+            width={75}
+            height={75}
             alt='GitHub SVG'
           />
         </a>
         <a className='px-5' href="https://www.linkedin.com/in/evan-abbott-667167214/">
           <Image
             src="/svgs/linkedin.svg"
-            width={100}
-            height={100}
+            width={75}
+            height={75}
             alt='LinkedIn SVG'
           />
         </a>
@@ -33,8 +33,8 @@ const Contact = () => {
         }}>
           <Image
               src="/svgs/gmail.svg"
-              width={100}
-              height={100}
+              width={75}
+              height={75}
               alt='LinkedIn SVG'
           />
           <p className='absolute bottom-0 left-[50%] -translate-x-[50%] translate-y-[75%] text-neutral-300 text-nowrap'>Click me!</p>

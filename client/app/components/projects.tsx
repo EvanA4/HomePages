@@ -1,37 +1,30 @@
 'use client'
 import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
+import { GetProjs } from '@/actions/projActions'
+import { Project } from '@/types/types'
 
 
-async function projectLoader() {
-    const json = await fetch("project.json").then(r => r.json())
-    return json
-}
-
-
-interface projCardProps {
-    header: string,
-    desc: string,
-    techs: Array<string>
-}
-
-
-function projCard(data: projCardProps) {
+function projCard(data: Project) {
     return (
-        <div key={data.header} className='w-[100%] sm:w-auto h-fit px-[7vw] py-3 sm:p-3 flex justify-center'>
+        <div key={data.title} className='w-[100%] sm:w-auto h-fit px-[7vw] py-3 sm:p-3 flex justify-center'>
             <div className='w-[100%] sm:w-[450px] h-[400px] sm:h-[350px] bg-white rounded-[30px] shadow-md p-5 relative'>
-                <a href={"https://github.com/EvanA4/" + data.header}><p className='text-[25px]'><b>{data.header}</b></p></a>
+                {data.link ? <>
+                    <a href={data.link} className='text-[25px]'><b>{data.title}</b></a>
+                </> : <>
+                    <p className='text-[25px]'><b>{data.title}</b></p>
+                </>}
                 <br/>
-                <p>{data.desc}</p>
+                <p>{data.summary}</p>
                 <div className='absolute bottom-[20px] left-0 h-[10vw] max-h-[50px] w-[100%] px-5 flex justify-around'>
-                    {data.techs.map((name: string) => {
+                    {data.flags.map((name: string) => {
                         return (
                             <Image
-                                key={data.header + name}
+                                key={data.title + name}
                                 src={'/svgs/' + name + '.svg'}
                                 height={0}
                                 width={0}
-                                alt="tech svg"
+                                alt={name + ".svg"}
                                 style={{width: "auto", height: "auto"}}
                             />
                         )
@@ -47,36 +40,35 @@ const Projects = () => {
     const [projCards, setCards] = useState([])
     const finishedFirstLoad = useRef(false)
 
-    useEffect(() => {
+    useEffect(() => {(async () => {
         if (!finishedFirstLoad.current) {
-            projectLoader().then((data) => {
-                var newCards = []
+            let data = await GetProjs("");
 
-                for (let i = 0; i < data.slides.length; i += 2) {
-                    var projRow = []
+            var newCards = []
+            for (let i = 0; i < data.length; i += 2) {
+                var projRow = []
 
-                    // add first card
-                    var current: projCardProps = data.slides[i]
+                // add first card
+                var current: Project = data[i]
+                projRow.push(projCard(current))
+
+                // add second card
+                if (i + 1 != data.length) {
+                    current = data[i + 1]
                     projRow.push(projCard(current))
-
-                    // add second card
-                    if (i + 1 != data.slides.length) {
-                        current = data.slides[i + 1]
-                        projRow.push(projCard(current))
-                    }
-
-                    newCards.push(
-                        <div key={i} className='flex flex-col lg:flex-row w-[100%] justify-center'>
-                            {...projRow}
-                        </div>
-                    )
                 }
 
-                setCards(newCards as any)
-            })
+                newCards.push(
+                    <div key={i} className='flex flex-col lg:flex-row w-[100%] justify-center'>
+                        {...projRow}
+                    </div>
+                )
+            }
+            setCards(newCards as any)
+
             finishedFirstLoad.current = true
         }
-    })
+    })();})
 
     return (
         <div className='flex flex-col'>

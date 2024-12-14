@@ -4,6 +4,7 @@ import Image from "next/image"
 import Nav from "../../components/nav"
 import { useState } from "react"
 import * as babel from "babel-standalone"
+import { GetBlogs } from "@/actions/blogActions"
 
 
 function addCodeFrame(blogContent: string): string {
@@ -115,17 +116,26 @@ export default function Blog({ params }: any) {
   const fetchIP = 'https://evanabbott.net'
 
   if (!finishedFirstSearch.current) {
-    fetch(fetchIP + '/fullblogs/' + params.blogTitle).then((response) => {
-        response.json().then((data) => {
-            console.log(data)
-          const babelCode = babel.transform(addCodeFrame(data[0].content), {presets: ["react", "es2017"]}).code;
-          const code = babelCode.replace('"use strict";', "").trim();
-          const func = new Function("React", `return ${code}`);
-          setBlog(func(React)(Image))
-        })
-    }, (error) => {
-        console.log(error)
-    })
+    // fetch(fetchIP + '/fullblogs/' + params.blogTitle).then((response) => {
+    //     response.json().then((data) => {
+    //         console.log(data)
+    //       const babelCode = babel.transform(addCodeFrame(data[0].content), {presets: ["react", "es2017"]}).code;
+    //       const code = babelCode.replace('"use strict";', "").trim();
+    //       const func = new Function("React", `return ${code}`);
+    //       setBlog(func(React)(Image))
+    //     })
+    // }, (error) => {
+    //     console.log(error)
+    // })
+    (async () => {
+        let blog = (await GetBlogs(params.blogTitle.replaceAll("%2B", " "), true))[0];
+        if (blog != undefined) {
+            const babelCode = babel.transform(addCodeFrame(blog.content), {presets: ["react", "es2017"]}).code;
+            const code = babelCode.replace('"use strict";', "").trim();
+            const func = new Function("React", `return ${code}`);
+            setBlog(func(React)(Image))
+        }
+    })();
     finishedFirstSearch.current = true
   }
 

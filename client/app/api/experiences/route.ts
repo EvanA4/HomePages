@@ -1,7 +1,6 @@
 import mysql from "mysql2";
 import dotenv from "dotenv";
-import type { Exp, ExpRow } from "@/types/types";
-import { NextApiRequest } from "next";
+import type { ExpRow } from "@/types/types";
 import { NextRequest, NextResponse } from "next/server";
 dotenv.config();
 
@@ -27,9 +26,10 @@ export async function GET(req: NextRequest, { params }: { params: { title: strin
 
 	// access search parameters
 	console.log("exp got a GET request!");
-	let title = (params != undefined && "title" in params) ? params.title : "";
-	let timeperiod = (params != undefined && "timeperiod" in params) ? params.timeperiod : "";
-	let strict = (params != undefined && "strict" in params) ? params.strict : "";
+	let urlObj = new URL(req.url);
+	let title = urlObj.searchParams.get("title");
+	let timeperiod = urlObj.searchParams.get("timeperiod");
+	let strict = urlObj.searchParams.get("strict");
 	let strictBool = strict == "true";
 
 	// check for bad request

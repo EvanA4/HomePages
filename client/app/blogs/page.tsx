@@ -1,7 +1,9 @@
 'use client'
 import Image from 'next/image';
 import Nav from '../components/nav'
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { GetBlogs } from '@/actions/blogActions';
+import { Blog } from '@/types/types';
 
 
 interface BlogSnippet {
@@ -13,20 +15,16 @@ interface BlogSnippet {
 
 
 export default function Blogs() {
-    const [blogs, setBlogs] = useState([])
-    const firstSearch = useRef(false)
-    const searchText = useRef('')
-    // vvv requires MySQL server on device editing code vvv
-    // const fetchIP = process.env.NODE_ENV === "production" ? 'https://evanabbott.net' : 'http://127.0.0.1:30360'
-    const fetchIP = 'https://evanabbott.net'
+    const [blogs, setBlogs] = useState<Blog[]>([]);
+    const searchText = useRef<string>('');
+    const firstSearch = useRef(false);
 
+    // load blogs if first run
     if (!firstSearch.current) {
-        fetch(fetchIP + '/blogsnippets').then((response) => {
-            response.json().then((data) => {
-                setBlogs(data)
-            })
-        })
-        firstSearch.current = true
+        firstSearch.current = true;
+        (async () => {
+            setBlogs(await GetBlogs(""));
+        })();
     }
 
     return (
@@ -51,39 +49,26 @@ export default function Blogs() {
 
             <div className='p-3 w-[100%] flex gap-3 justify-center static'>
                 <input type="text" onInput={(e: any) => {searchText.current = e.target.value}} placeholder='Search or scroll!' className='w-[60vw] rounded-full py-3 px-4 text-black z-10'/>
-                <button onClick={() => {
-                    fetch(fetchIP + '/blogsnippets/' + searchText.current).then((response) => {
-                        response.json().then((data) => {
-                            setBlogs(data)
-                        })
-                    })
+                <button onClick={async () => {
+                    setBlogs(await GetBlogs(searchText.current));
                 }} className='bg-blue-500 hover:bg-blue-400 text-white px-3 rounded-[10px]'>Search</button>
             </div>
 
             <div className='flex flex-col gap-[25px] w-[100%] justify-center items-center px-5 pb-[50px] pt-[50px]'>
-                {blogs.map((snippet: BlogSnippet) => {
-                    let newTime = snippet.posted.replaceAll('T', ' ').split('.')[0]
-                    let t: any = newTime.split(/[- :]/);
-                    let dateObj = new Date(Date.UTC(t[0], t[1]-1, t[2], t[3], t[4], t[5]));
-                    let options: any = { year: 'numeric', month: 'long', day: 'numeric' };
-
+                {blogs.map((blog: Blog) => {
                     return (
-                        <a key={snippet.id} href={'blogs/' + snippet.title.replaceAll(' ', '+')} className='w-[100%] z-20'>
+                        <a key={blog.title} href={'blogs/' + blog.title.replaceAll(' ', '+')} className='w-[100%] z-20'>
                             <div className='text-white p-3 border-white border-2 rounded-[15px] bg-black'>
-                                <p className='text-lg'><b>{snippet.title}</b></p>
-                                <p className='text-neutral-300'>{dateObj.toLocaleDateString("en-US", options)}</p>
+                                <p className='text-lg'><b>{blog.title}</b></p>
+                                <p className='text-neutral-300'>{blog.postdate}</p>
                                 <br/>
-                                <p>{snippet.summary}</p>
+                                <p>{blog.summary}</p>
                             </div>
                         </a>
                     )
                 })}
-                {blogs.length == 0 && firstSearch.current ? <p className='text-neutral-300 text-3xl'>No Results</p> : <></>}
+                {blogs.length == 0 ? <p className='text-neutral-300 text-3xl'>No Results</p> : <></>}
             </div>
         </div>
     );
 }
-
-/*
-TODO:
-*/

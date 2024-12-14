@@ -13,19 +13,6 @@ import { GetExps } from '@/actions/expActions';
 import { Exp } from '@/types/types';
 
 
-function experienceLoader() {
-	const json = fetch("experience.json").then(r => r.json())
-	return json
-}
-
-
-interface ExpSlideProps {
-	header: string,
-	date: string,
-	bullets: Array<string>
-}
-
-
 const Experience = () => {
 	const [expSlides, setSlides] = useState<JSX.Element[]>([])
 	const finishedFirstLoad = useRef(false)

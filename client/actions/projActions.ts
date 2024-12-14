@@ -1,15 +1,21 @@
-import type { ProjectRow, Project, NewProject } from "$lib/types/types";
+import type { ProjectRow, Project, NewProject } from "@/types/types";
 
 
 export async function GetProjs(title: string, strict: boolean = false): Promise<Project[]> {
     // get raw SQL rows for each blog
-    let res = await fetch('/api/projects?' + new URLSearchParams({
-        title: title,
-        strict: (strict ? "true" : "false")
-    }).toString(), {
-        cache: "no-cache"
-    });
-    let rows: ProjectRow[] = await res.json();
+    let rows: ProjectRow[] = [];
+    try {
+        let res = await fetch('/api/projects?' + new URLSearchParams({
+            title: title,
+            strict: (strict ? "true" : "false")
+        }).toString(), {
+            cache: "no-cache"
+        });
+        rows = await res.json();
+        
+    } catch (err) {
+        console.log("GetProjs: failed to make a fetch to projects.")
+    }
     let projs: Project[] = [];
 
     // simplify and convert each row into an exp object

@@ -3,14 +3,20 @@ import type { ExpRow, Exp, NewExp } from "@/types/types";
 
 export async function GetExps(title: string, timeperiod: string, strict: boolean = false): Promise<Exp[]> {
     // get raw SQL rows for each blog
-    let res = await fetch('/api/experiences?' + new URLSearchParams({
-        title: title,
-        timeperiod: timeperiod,
-        strict: (strict ? "true" : "false")
-    }).toString(), {
-        cache: "no-cache"
-    });
-    let rows: ExpRow[] = await res.json();
+    let rows: ExpRow[] = [];
+    try {
+        let res = await fetch('/api/experiences?' + new URLSearchParams({
+            title: title,
+            timeperiod: timeperiod,
+            strict: (strict ? "true" : "false")
+        }).toString(), {
+            cache: "no-cache"
+        });
+        rows = await res.json();
+        
+    } catch (err) {
+        console.log("GetExps: failed to make fetch request to experiences.");
+    }
     let exps: Exp[] = [];
 
     // simplify and convert each row into an exp object
