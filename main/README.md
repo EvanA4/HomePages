@@ -1,4 +1,6 @@
-This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
+# HomePages Web Server
+
+This is a [Next.js](https://nextjs.org/) web server bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app) to host my official [website](https://evanabbott.net).
 
 ## Getting Started
 
