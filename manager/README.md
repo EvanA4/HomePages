@@ -1,6 +1,6 @@
-# sv
+# HomePages Manager
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+A CRUD content management system powered by Svelete for the officail HomePages [website](https://evanabbott.net).
 
 ## Creating a project
 
