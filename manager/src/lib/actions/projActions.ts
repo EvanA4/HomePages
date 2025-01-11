@@ -1,7 +1,8 @@
-import type { ProjectRow, Project, NewProject } from "$lib/types/types";
+import type { ProjectType, ProjectFormSQL } from "$lib/types/types";
+import { fromSQLDate } from "$lib/utils/sqlDate";
 
 
-export async function GetProjs(title: string, strict: boolean = false): Promise<Project[]> {
+export async function GetProjs(title: string, strict: boolean = false): Promise<ProjectType[]> {
     // get raw SQL rows for each blog
     let res = await fetch('/api/projects?' + new URLSearchParams({
         title: title,
@@ -9,18 +10,17 @@ export async function GetProjs(title: string, strict: boolean = false): Promise<
     }).toString(), {
         cache: "no-cache"
     });
-    let rows: ProjectRow[] = await res.json();
-    let projs: Project[] = [];
+    let rows: ProjectFormSQL[] = await res.json();
+    let projs: ProjectType[] = [];
 
     // simplify and convert each row into an exp object
     for (let i = 0; i < rows.length; ++i) {
-        let flagsArr: string[] = JSON.parse(rows[i].flags);
-        
-        let proj: Project = {
+        let proj: ProjectType = {
             title: rows[i].title,
+            completed: fromSQLDate(rows[i].completed),
             link: rows[i].link,
             summary: rows[i].summary,
-            flags: flagsArr,
+            flags: rows[i].flags ? JSON.parse(rows[i].flags) : [],
         };
 
         projs.push(proj);
@@ -49,7 +49,7 @@ export async function DeleteProj(title: string): Promise<boolean> {
 }
 
 
-export async function PostProj(proj: NewProject): Promise<boolean> {
+export async function PostProj(proj: ProjectFormSQL): Promise<boolean> {
     // delete blog if already exists
     let projCheck = await GetProjs(proj.title, true);
     if (projCheck.length > 0) {
@@ -60,7 +60,7 @@ export async function PostProj(proj: NewProject): Promise<boolean> {
     // remove annoying characters and add back slash to quotation marks
     proj.flags = proj.flags.replace(/\t/g,'');
     proj.flags = proj.flags.replace(/\n/g,'');
-    proj.flags = proj.flags.replace(/\"/g,'\\\"');
+    // proj.flags = proj.flags.replace(/\"/g,'\\\"');
 
     // make actual POST requestproj
     let res = await fetch("/api/projects", {

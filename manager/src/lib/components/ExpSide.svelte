@@ -1,29 +1,37 @@
 <script lang="ts">
 	import { PostExp } from "$lib/actions/expActions";
-	import type { Exp, NewExp } from "$lib/types/types";
+	import type { ExpFormSQL } from "$lib/types/types";
 
 	let {
 		toHide = $bindable(true),
 		newTitle = $bindable(""),
 		newLink = $bindable(""),
-		newTimeperiod = $bindable(""),
+		newStartTime = $bindable(""),
+		newEndTime = $bindable(""),
 		newBullets = $bindable(""),
 		refreshExps
-	} = $props<{toHide: boolean, newTitle: string, newLink: string, newTimeperiod: string, newBullets: string, refreshExps: () => Promise<void>}>()
+	} = $props<{toHide: boolean, newTitle: string, newLink: string, newStartTime: string, newEndTime: string, newBullets: string, refreshExps: () => Promise<void>}>()
 
 	async function handlePost() {
-		if (!(newTitle == "" || newTimeperiod == "" || newBullets == "")) {
-			let newExp: NewExp = {
-				title: $state.snapshot(newTitle),
-				link: $state.snapshot(newLink),
-				timeperiod: $state.snapshot(newTimeperiod),
-				bullets: $state.snapshot(newBullets),
-			};
+		let newExp: ExpFormSQL = {
+			title: $state.snapshot(newTitle),
+			link: $state.snapshot(newLink),
+			startTime: $state.snapshot(newStartTime),
+			endTime: $state.snapshot(newEndTime),
+			bullets: $state.snapshot(newBullets),
+		};
 
-			let result = await PostExp(newExp);
-			await refreshExps();
-		}
+		let result = await PostExp(newExp);
+		await refreshExps();
 	}
+
+/*
+[
+	"exp1 bullet1",
+	"exp2 bullet2",
+	"exp3 bullet3"
+]
+*/	
 </script>
 
 
@@ -51,18 +59,28 @@
 					+ "w-[100%] h-[40px] p-3 mt-5 outline-none rounded-lg resize-none scrollbar-none"
 				}
 			>
-			<p class="text-neutral-400 px-3">^ You Can Leave This Empty</p>
+			<p class="text-neutral-400 px-3">^ Can Be Empty</p>
 			
-			<!-- Time Period -->
+			<!-- Start Time -->
 			<input 
-				type="text" placeholder="Time Period"
-				bind:value={newTimeperiod}
+				type="text" placeholder="Start Date"
+				bind:value={newStartTime}
 				class={
 					"bg-black border border-neutral-600 focus:border-blue-400 text-white placeholder-neutral-300 "
 					+ "w-[100%] h-[40px] p-3 mt-5 outline-none rounded-lg resize-none scrollbar-none"
 				}
 			>
-			<p class="text-neutral-400 px-3">^ This is Stored Verbatim</p>
+
+			<!-- End Time -->
+			<input 
+				type="text" placeholder="End Date"
+				bind:value={newEndTime}
+				class={
+					"bg-black border border-neutral-600 focus:border-blue-400 text-white placeholder-neutral-300 "
+					+ "w-[100%] h-[40px] p-3 mt-5 outline-none rounded-lg resize-none scrollbar-none"
+				}
+			>
+			<p class="text-neutral-400 px-3">^ Leave Empty If Experience Hasn't Concluded</p>
 			
 			<!-- Bullets -->
 			<textarea
@@ -70,9 +88,10 @@
 				bind:value={newBullets}
 				class={
 					"bg-black border border-neutral-600 focus:border-blue-400 text-white placeholder-neutral-300 "
-					+ "w-[100%] h-[40vh] p-3 mt-5 font-mono outline-none rounded-lg resize-none scrollbar-none text-nowrap"
+					+ "w-[100%] h-[30vh] p-3 mt-5 font-mono outline-none rounded-lg resize-none scrollbar-none text-nowrap"
 				}
 			></textarea>
+			<p class="text-neutral-400 px-3">^ Can Be Empty</p>
 		</div>
 	
 		<div class="flex gap-10">

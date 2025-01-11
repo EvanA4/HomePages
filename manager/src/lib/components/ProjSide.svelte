@@ -1,26 +1,28 @@
 <script lang="ts">
 	import { PostProj } from "$lib/actions/projActions";
-	import type { NewProject } from "$lib/types/types";
+	import type { ProjectFormSQL } from "$lib/types/types";
 
 	let {
 		toHide = $bindable(true),
 		newTitle = $bindable(""),
+		newCompleted = $bindable(""),
 		newLink = $bindable(""),
 		newSummary = $bindable(""),
 		newFlags = $bindable(""),
 		refreshProjs
-	} = $props<{toHide: boolean, newTitle: string, newLink: string, newSummary: string, newFlags: string, refreshProjs: () => Promise<void>}>()
+	} = $props<{toHide: boolean, newTitle: string, newCompleted: String, newLink: string, newSummary: string, newFlags: string, refreshProjs: () => Promise<void>}>()
 
 	async function handlePost() {
 		if (!(newTitle == "" || newSummary == "")) {
-			let newProj: NewProject = {
+			let newProj: ProjectFormSQL = {
 				title: $state.snapshot(newTitle),
+				completed: $state.snapshot(newCompleted) ,
 				link: $state.snapshot(newLink),
 				summary: $state.snapshot(newSummary),
 				flags: $state.snapshot(newFlags),
 			};
 
-			let result = await PostProj(newProj);
+			await PostProj(newProj);
 			await refreshProjs();
 		}
 	}
@@ -51,7 +53,17 @@
 					+ "w-[100%] h-[40px] p-3 mt-5 outline-none rounded-lg resize-none scrollbar-none"
 				}
 			>
-			<p class="text-neutral-400 px-3">^ You Can Leave This Empty</p>
+			<p class="text-neutral-400 px-3">^ Can Be Empty</p>
+
+			<!-- Completed -->
+			<input 
+				type="text" placeholder="Date Completed"
+				bind:value={newCompleted}
+				class={
+					"bg-black border border-neutral-600 focus:border-blue-400 text-white placeholder-neutral-300 "
+					+ "w-[100%] h-[40px] p-3 mt-5 outline-none rounded-lg resize-none scrollbar-none"
+				}
+			>
 			
 			<!-- Summary -->
 			<textarea
@@ -69,10 +81,10 @@
 				bind:value={newFlags}
 				class={
 					"bg-black border border-neutral-600 focus:border-blue-400 text-white placeholder-neutral-300 "
-					+ "w-[100%] h-[40vh] p-3 mt-5 font-mono outline-none rounded-lg resize-none scrollbar-none text-nowrap"
+					+ "w-[100%] h-[30vh] p-3 mt-5 font-mono outline-none rounded-lg resize-none scrollbar-none text-nowrap"
 				}
 			></textarea>
-			<p class="text-neutral-400 px-3">^ Can Also Leave Empty</p>
+			<p class="text-neutral-400 px-3">^ Can Be Empty</p>
 		</div>
 	
 		<div class="flex gap-10">

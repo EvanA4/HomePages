@@ -29,12 +29,12 @@ CREATE TABLE Projects (
 SHOW TABLES;
 
 -- @block
-DROP TABLE Blogs;
+-- DROP TABLE Blogs;
 DROP TABLE Experiences;
-DROP TABLE Projects;
+-- DROP TABLE Projects;
 
 -- @block
-SELECT * FROM Projects;
+SELECT * FROM Experiences;
 
 -- @block
 INSERT INTO Experiences (title, link, timeperiod, bullets) VALUES ("exp1", "/blogs", "911", "[\"exp1 bullet1\",\"exp1 bullet2\",\"exp1 bullet3\"]")

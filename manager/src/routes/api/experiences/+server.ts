@@ -1,16 +1,10 @@
-import mysql from "mysql2";
 import dotenv from "dotenv";
 import { json, type RequestEvent } from "@sveltejs/kit";
-import type { Exp, ExpRow } from "$lib/types/types.js";
+import type { ExpType } from "$lib/types/types.js";
+import { Experience } from "$lib/models/experience";
+import { Op, Sequelize } from "@sequelize/core"
+import { toSQLDate } from "$lib/utils/sqlDate";
 dotenv.config();
-
-
-var pool = mysql.createPool({
-  host: process.env.MYSQL_URL,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASS,
-  database: process.env.MYSQL_BASE
-}).promise();
 
 
 export async function GET(req: RequestEvent) {
@@ -26,34 +20,43 @@ export async function GET(req: RequestEvent) {
 
 	// access search parameters
 	console.log("exp got a GET request!");
-    let title = req.url.searchParams.get("title");
-	let timeperiod = req.url.searchParams.get("timeperiod");
+    let searchTitle = req.url.searchParams.get("title");
 	let strict = req.url.searchParams.get("strict");
 	let strictBool = strict == "true";
 
-	// check for bad request
-	// - invalid strict parameter
-	// - if strict but only one of the params are defined
-	if ((strict != "true" && strict != "false") || (strictBool && (title == "") != (timeperiod == ""))) {
-		console.log("bad request")
-		return json([], {
-			status: 400
-		});
-	}
-	
-	// determine query string
-	let sql: string;
-	if (!strictBool) sql = `SELECT * FROM Experiences WHERE title LIKE "%${title}%" ORDER BY title ASC`;
-	else sql = `SELECT * FROM Experiences WHERE title="${title}" AND timeperiod="${timeperiod}" ORDER BY title ASC`;
-
 	// try to use the query
 	try {
-		const [result, fields] = await pool.query<ExpRow[]>(sql);
+		let result;
+		if (strictBool) {
+			result = await Experience.findAll({
+				where: {
+					title: searchTitle,
+				},
+				order: [
+					["endTime", "DESC"],
+				]
+			});
+		}
+
+		else
+			result = await Experience.findAll({
+				where: {
+					title: {
+						[Op.like]: '%' + searchTitle + '%'
+					}
+				},
+
+				order: [
+					["endTime", "DESC"],
+				]
+			});
+
 		return json(result, {
 			status: 200
 		});
 
 	} catch (err) {
+		console.log(err);
 		return json([], {
 			status: 500
 		});
@@ -74,8 +77,8 @@ export async function POST(req: RequestEvent) {
 
 	// access request body
 	console.log("exp got a POST request!")
-    const body: Exp = await req.request.json();
-	if ((body.title == undefined || body.title == "") || (body.timeperiod == undefined || body.timeperiod == "") || (body.bullets == undefined || body.bullets.length == 0)) {
+    const body: ExpType = await req.request.json();
+	if (body.title == undefined || body.startTime == undefined || body.endTime == undefined) {
 		console.log("bad request")
 		return json(false, {
 			status: 400
@@ -83,12 +86,19 @@ export async function POST(req: RequestEvent) {
 	}
 
 	// determine query string
-	let sql = `INSERT INTO Experiences (title, link, timeperiod, bullets) VALUES ("${body.title}", "${body.link}", "${body.timeperiod}", "${body.bullets}")`;
-	if (body.link == "") sql = `INSERT INTO Experiences (title, timeperiod, bullets) VALUES ("${body.title}", "${body.timeperiod}", "${body.bullets}")`;
+	// let sql = `INSERT INTO Experiences (title, link, timeperiod, bullets) VALUES ("${body.title}", "${body.link}", "${body.timeperiod}", "${body.bullets}")`;
+	// if (body.link == "") sql = `INSERT INTO Experiences (title, timeperiod, bullets) VALUES ("${body.title}", "${body.timeperiod}", "${body.bullets}")`;
 
 	// try to use the query
 	try {
-		await pool.query(sql);
+		await Experience.create({
+			title: body.title,
+			link: body.link,
+			startTime: toSQLDate(body.startTime),
+			endTime: body.endTime ? toSQLDate(body.endTime) : undefined,
+			bullets: body.bullets,
+		});
+
 		return json(true, {
 			status: 200
 		});
@@ -114,21 +124,21 @@ export async function DELETE(req: RequestEvent) {
 	*/
 
 	// get search parameters
-	console.log("exp got a DELETE request!")
-	let title = req.url.searchParams.get("title")
-	let timeperiod = req.url.searchParams.get("timeperiod")
-	if (title == "" || title == null || timeperiod == "" || timeperiod == null) {
+	console.log("exp got a DELETE request!");
+	let searchTitle = req.url.searchParams.get("title");
+	if (!searchTitle) {
 		return json(false, {
 			status: 400
 		});
 	}
 
-	// determine query string
-	let sql = `DELETE FROM Experiences WHERE title="${title}" AND timeperiod="${timeperiod}"`
-
 	// try to use the query
 	try {
-		await pool.query(sql);
+		await Experience.destroy({
+			where: {
+				title: searchTitle
+			}
+		});
 		return json(true, {
 			status: 200
 		});

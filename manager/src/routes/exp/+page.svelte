@@ -5,7 +5,7 @@
 	import TrashImg from '$lib/public/btrash.svg';
 	import CheckImg from '$lib/public/bcheck.svg';
 	import ExpImg from '$lib/public/experiences.png';
-  	import { type Exp } from '$lib/types/types';
+  	import type { ExpType } from '$lib/types/types';
   	import { onMount } from 'svelte';
 
 	let hideSidePage = $state(true);
@@ -13,12 +13,13 @@
 	let searchText = $state("");
 	let newTitle = $state("");
 	let newLink = $state("");
-	let newTimeperiod = $state("");
+	let newStartTime = $state("");
+	let newEndTime = $state("");
 	let newBullets = $state("");
-	let exps = $state<Exp[]>([]);
+	let exps = $state<ExpType[]>([]);
 
 	async function refreshExps() {
-		exps = await GetExps("", "");
+		exps = await GetExps("", "", "");
 	}
 	onMount(() => {
 		refreshExps();
@@ -36,7 +37,8 @@
 
 <div>
 	<Navbar />
-	<ExpSide bind:toHide={hideSidePage} bind:newTitle={newTitle} bind:newLink={newLink} bind:newTimeperiod={newTimeperiod} bind:newBullets={newBullets} refreshExps={refreshExps}/>
+	<ExpSide bind:toHide={hideSidePage} bind:newTitle={newTitle} bind:newLink={newLink}
+	bind:newStartTime={newStartTime} bind:newEndTime={newEndTime} bind:newBullets={newBullets} refreshExps={refreshExps}/>
 
 	<div class='w-[100%] my-[4vh] flex flex-col justify-center items-center p-3 relative'>
 		<img src={ExpImg} alt="blog display">
@@ -50,14 +52,15 @@
 	<div class='p-3 w-[100%] flex gap-3 justify-center static'>
 		<input type="text" bind:value={searchText} placeholder='Search or scroll!' class='w-[60vw] rounded-full py-3 px-4 text-black z-10'/>
 		<button onclick={async () => {
-			exps = await GetExps(searchText, "");
+			exps = await GetExps(searchText, "", "");
 		}} class='bg-blue-500 hover:bg-blue-400 text-white px-3 rounded-[10px]'>Search</button>
 		<button
 			id="openBtn"
 			onclick={() => {
 				newTitle = ""
 				newLink = ""
-				newTimeperiod = ""
+				newStartTime = ""
+				newEndTime = ""
 				newBullets = ""
 				if (hideSidePage) hideSidePage = false;
 			}}
@@ -71,7 +74,8 @@
 				<button onclick={() => {
 					newTitle = exp.title;
 					newLink = exp.link;
-					newTimeperiod = exp.timeperiod;
+					newStartTime = exp.startTime;
+					newEndTime = exp.endTime == "Present" ? "" : exp.endTime;
 					newBullets = JSON.stringify(exp.bullets);
 					if (hideSidePage) hideSidePage = false;
 				}} class='w-[350px] h-[450px] bg-white rounded-[30px] shadow-md p-5 text-start flex flex-col'>
@@ -80,7 +84,7 @@
 					{:else}	
 						<p class='text-[25px]'><b>{exp.title}</b></p>
 					{/if}
-					<p>{exp.timeperiod}</p>
+					<p class="text-neutral-500">{exp.startTime} - {exp.endTime}</p>
 					<br/>
 					<ul class='list-disc px-5'>
 						{#each exp.bullets as bullet}
@@ -90,15 +94,15 @@
 				</button>
 	
 				<button onclick={async () => {
-					if (deleteConfirm == exp.title + exp.timeperiod) {
+					if (deleteConfirm == exp.title + exp.startTime + exp.endTime) {
 						deleteConfirm = ""
-						await DeleteExp(exp.title, exp.timeperiod)
+						await DeleteExp(exp.title, exp.startTime, exp.endTime)
 						await refreshExps()
 					} else {
-						deleteConfirm = exp.title + exp.timeperiod
+						deleteConfirm = exp.title + exp.startTime + exp.endTime
 					}
 				}} class="absolute left-[50%] -translate-x-[50%] bottom-[25px] w-[35px] h-[35px] hover:opacity-50">
-					{#if deleteConfirm == exp.title + exp.timeperiod}
+					{#if deleteConfirm == exp.title + exp.startTime + exp.endTime}
 						<img src={CheckImg} alt="A Check Mark">
 					{:else}
 						<img src={TrashImg} alt="A Trash Bin">

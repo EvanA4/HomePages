@@ -1,6 +1,6 @@
 <script lang="ts">
 	import { PostBlog } from "$lib/actions/blogActions";
-	import type { Blog } from "$lib/types/types";
+	import type { BlogType } from "$lib/types/types";
 
 	let {
 		toHide = $bindable(true),
@@ -13,7 +13,7 @@
 
 	async function handlePost() {
 		if (!(newTitle == "" || newSummary == "" || newContent == "")) {
-			let newBlog: Blog = {
+			let newBlog: BlogType = {
 				title: $state.snapshot(newTitle),
 				summary: $state.snapshot(newSummary),
 				content: $state.snapshot(newContent),

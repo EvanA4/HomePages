@@ -3,7 +3,7 @@
   	import Navbar from '$lib/components/Navbar.svelte';
   	import ProjSide from '$lib/components/ProjSide.svelte';
 	import ProjImg from '$lib/public/projects.png';
-	import type { Project } from '$lib/types/types';
+	import type { ProjectType } from '$lib/types/types';
 	import { onMount } from 'svelte';
 	import EditImg from "$lib/public/edit.svg";
 	import TrashImg from "$lib/public/wtrash.svg";
@@ -15,9 +15,10 @@
 	let searchText = $state("");
 	let newTitle = $state("");
     let newLink = $state("");
+	let newCompleted = $state("");
     let newSummary = $state("");
     let newFlags = $state("");
-	let projs = $state<Project[]>([]);
+	let projs = $state<ProjectType[]>([]);
 
 
 	// let proj = {
@@ -39,7 +40,7 @@
 
 <div>
 	<Navbar />
-	<ProjSide bind:toHide={hideSidePage} bind:newTitle={newTitle} bind:newLink={newLink} bind:newSummary={newSummary} bind:newFlags={newFlags} refreshProjs={refreshProjs}/>
+	<ProjSide bind:toHide={hideSidePage} bind:newTitle={newTitle} bind:newLink={newLink} bind:newCompleted={newCompleted} bind:newSummary={newSummary} bind:newFlags={newFlags} refreshProjs={refreshProjs}/>
 
   	<div class='w-[100%] my-[4vh] flex flex-col justify-center items-center p-3 relative'>
 		<img src={ProjImg} alt="proj display">
@@ -71,11 +72,12 @@
 		{#each projs as proj}
 			<div class='w-[100%] sm:w-auto h-fit px-[7vw] py-3 sm:p-3 flex justify-center'>
 				<div class='w-[100%] sm:w-[450px] h-[400px] sm:h-[350px] bg-white rounded-[30px] shadow-md p-5 relative'>
-					{#if proj.link != undefined}
-						<a href={proj.link}><p class='text-[25px]'><b>{proj.title}</b></p></a><br/>
+					{#if proj.link != ""}
+						<a href={proj.link}><p class='text-[25px]'><b>{proj.title}</b></p></a>
 					{:else}
-						<p class='text-[25px]'><b>{proj.title}</b></p><br/>
+						<p class='text-[25px]'><b>{proj.title}</b></p>
 					{/if}
+					<p class="text-neutral-500">{proj.completed}</p><br>
 					<p>{proj.summary}</p>
 					<div class='absolute bottom-[20px] left-0 h-[10vw] max-h-[50px] w-[100%] px-5 flex justify-around'>
 						{#each proj.flags as flag}
@@ -88,6 +90,7 @@
 					<button onclick={async () => {
 						newTitle = proj.title;
 						newLink = proj.link == undefined ? "" : proj.link;
+						newCompleted = proj.completed
 						newSummary = proj.summary;
 						newFlags = proj.flags == undefined ? "" : JSON.stringify(proj.flags);
 						hideSidePage = false;

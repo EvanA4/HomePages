@@ -1,16 +1,8 @@
-import mysql from "mysql2";
-import dotenv from "dotenv";
 import { json, type RequestEvent } from "@sveltejs/kit";
-import type { Blog, BlogRow } from "$lib/types/types.js";
-dotenv.config();
-
-
-var pool = mysql.createPool({
-  host: process.env.MYSQL_URL,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASS,
-  database: process.env.MYSQL_BASE
-}).promise();
+import { Blog } from "$lib/models/blog";
+import type { BlogType } from "$lib/types/types";
+import { Op } from "@sequelize/core"
+import { toSQLDate } from "$lib/utils/sqlDate";
 
 
 export async function GET(req: RequestEvent) {
@@ -26,8 +18,9 @@ export async function GET(req: RequestEvent) {
 
 	// access search parameters
 	console.log("blogs got a GET request!");
-    let title = req.url.searchParams.get("title");
+    let searchTitle = req.url.searchParams.get("title");
 	let strict = req.url.searchParams.get("strict");
+	let strictBool = strict == "true";
 
 	// check for bad request
 	if (strict != "true" && strict != "false") {
@@ -35,21 +28,28 @@ export async function GET(req: RequestEvent) {
 			status: 400
 		});
 	}
-	
-	// determine query string
-	let strictBool = strict == "true";
-	let sql: string;
-	if (!strictBool) sql = `SELECT * FROM Blogs WHERE title LIKE "%${title}%" ORDER BY postdate DESC`;
-	else sql = `SELECT * FROM Blogs WHERE title="${title}" ORDER BY postdate DESC`;
+
+	if (!searchTitle) searchTitle = "";
 
 	// try to use the query
 	try {
-		const [result, fields] = await pool.query<BlogRow[]>(sql);
+		const result = await Blog.findAll({
+			where: {
+				title: {
+					[Op.like]: strictBool ? searchTitle : '%' + searchTitle + '%'
+				}
+			},
+			order: [
+				['postdate', 'DESC'],
+			]
+		})
+
 		return json(result, {
 			status: 200
 		});
 
-	} catch {
+	} catch (err) {
+		console.log(err);
 		return json([], {
 			status: 500
 		});
@@ -70,20 +70,30 @@ export async function POST(req: RequestEvent) {
 
 	// access request body
 	console.log("blogs got a POST request!")
-    const body: Blog = await req.request.json();
+    const body: BlogType = await req.request.json();
 	if (body.title == undefined || body.summary == undefined || body.content == undefined) {
 		return json(false, {
 			status: 400
 		});
 	}
 
-	// determine query string
-	let sql = `INSERT INTO Blogs (title, summary, content, postdate) VALUES ("${body.title}", "${body.summary}", "${body.content}", "${body.postdate}")`;
-	if (body.postdate == "") sql = `INSERT INTO Blogs (title, summary, content) VALUES ("${body.title}", "${body.summary}", "${body.content}")`;
-
 	// try to use the query
 	try {
-		await pool.query(sql);
+		if (body.postdate) {
+			await Blog.create({
+				title: body.title,
+				summary: body.summary,
+				content: body.content,
+				postdate: toSQLDate(body.postdate),
+			});
+		} else {
+			await Blog.create({
+				title: body.title,
+				summary: body.summary,
+				content: body.content,
+			});
+		}
+
 		return json(true, {
 			status: 200
 		});
@@ -110,19 +120,20 @@ export async function DELETE(req: RequestEvent) {
 
 	// get search parameters
 	console.log("blogs got a DELETE request!")
-	let title = req.url.searchParams.get("title")
-	if (title == "" || title == null) {
+	let searchTitle = req.url.searchParams.get("title")
+	if (searchTitle == "" || searchTitle == null) {
 		return json(false, {
 			status: 400
 		});
 	}
 
-	// determine query string
-	let sql = `DELETE FROM Blogs WHERE title="${title}"`
-
 	// try to use the query
 	try {
-		await pool.query(sql);
+		await Blog.destroy({
+			where: {
+				title: searchTitle
+			}
+		});
 		return json(true, {
 			status: 200
 		});
