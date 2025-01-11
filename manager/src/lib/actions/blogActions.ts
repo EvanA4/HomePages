@@ -56,9 +56,9 @@ export async function PostBlog(blog: BlogType): Promise<boolean> {
         await DeleteBlog(blog.title);
     }
 
-    blog.content = blog.content.replace(/\t/g,'\\t');
-    blog.content = blog.content.replace(/\n/g,'\\n');
-    blog.content = blog.content.replace(/\"/g,'\\\"');
+    // blog.content = blog.content.replace(/\t/g,'\\t');
+    // blog.content = blog.content.replace(/\n/g,'\\n');
+    // blog.content = blog.content.replace(/\"/g,'\\\"');
 
     // make actual POST request
     let res = await fetch("/api/blogs", {

@@ -111,26 +111,12 @@ function addCodeFrame(blogContent: string): string {
 export default function Blog({ params }: any) {
   const [blogCode, setBlog] = useState(<></>)
   const finishedFirstSearch = useRef(false)
-  // vvv requires MySQL server on device editing code vvv
-  //   const fetchIP = process.env.NODE_ENV === "production" ? 'https://evanabbott.net' : 'http://127.0.0.1:30360'
-  const fetchIP = 'https://evanabbott.net'
 
   if (!finishedFirstSearch.current) {
-    // fetch(fetchIP + '/fullblogs/' + params.blogTitle).then((response) => {
-    //     response.json().then((data) => {
-    //         console.log(data)
-    //       const babelCode = babel.transform(addCodeFrame(data[0].content), {presets: ["react", "es2017"]}).code;
-    //       const code = babelCode.replace('"use strict";', "").trim();
-    //       const func = new Function("React", `return ${code}`);
-    //       setBlog(func(React)(Image))
-    //     })
-    // }, (error) => {
-    //     console.log(error)
-    // })
     (async () => {
         let blog = (await GetBlogs(params.blogTitle.replaceAll("%2B", " "), true))[0];
         if (blog != undefined) {
-            const babelCode = babel.transform(addCodeFrame(blog.content), {presets: ["react", "es2017"]}).code;
+            const babelCode = babel.transform(addCodeFrame(blog.content.replace("\\n", "\n")), {presets: ["react", "es2017"]}).code;
             const code = babelCode.replace('"use strict";', "").trim();
             const func = new Function("React", `return ${code}`);
             setBlog(func(React)(Image))
