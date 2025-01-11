@@ -1,16 +1,6 @@
-import mysql from "mysql2";
-import dotenv from "dotenv";
-import type { ExpRow } from "@/types/types";
+import { Experience } from "@/public/models/experience";
 import { NextRequest, NextResponse } from "next/server";
-dotenv.config();
-
-
-var pool = mysql.createPool({
-	host: process.env.MYSQL_URL,
-	user: process.env.MYSQL_USER,
-	password: process.env.MYSQL_PASS,
-	database: process.env.MYSQL_BASE
-}).promise();
+import { Op } from "sequelize";
 
 
 export async function GET(req: NextRequest, { params }: { params: { title: string, timeperiod: string, strict: string } }) {
@@ -27,28 +17,37 @@ export async function GET(req: NextRequest, { params }: { params: { title: strin
 	// access search parameters
 	console.log("exp got a GET request!");
 	let urlObj = new URL(req.url);
-	let title = urlObj.searchParams.get("title");
-	let timeperiod = urlObj.searchParams.get("timeperiod");
+	let searchTitle = urlObj.searchParams.get("title");
 	let strict = urlObj.searchParams.get("strict");
 	let strictBool = strict == "true";
-
-	// check for bad request
-	// - invalid strict parameter
-	// - if strict but only one of the params are defined
-	if (strictBool && (title == "") != (timeperiod == "")) {
-		return new NextResponse(JSON.stringify([]), {
-			status: 400
-		});
-	}
 	
-	// determine query string
-	let sql: string;
-	if (!strictBool) sql = `SELECT * FROM Experiences WHERE title LIKE "%${title}%" ORDER BY title ASC`;
-	else sql = `SELECT * FROM Experiences WHERE title="${title}" AND timeperiod="${timeperiod}" ORDER BY title ASC`;
-
 	// try to use the query
 	try {
-		const [result, fields] = await pool.query<ExpRow[]>(sql);
+		let result;
+		if (strictBool) {
+			result = await Experience.findAll({
+				where: {
+					title: searchTitle,
+				},
+				order: [
+					["endTime", "DESC"],
+				]
+			});
+		}
+
+		else
+			result = await Experience.findAll({
+				where: {
+					title: {
+						[Op.like]: '%' + searchTitle + '%'
+					}
+				},
+
+				order: [
+					["endTime", "DESC"],
+				]
+			});
+			
 		return new NextResponse(JSON.stringify(result), {
 			status: 200
 		});

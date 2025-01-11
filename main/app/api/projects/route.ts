@@ -1,16 +1,6 @@
-import mysql from "mysql2";
-import dotenv from "dotenv";
-import type { ProjectRow } from "@/types/types.js";
+import { Project } from "@/public/models/project";
 import { NextRequest, NextResponse } from "next/server";
-dotenv.config();
-
-
-var pool = mysql.createPool({
-  host: process.env.MYSQL_URL,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASS,
-  database: process.env.MYSQL_BASE
-}).promise();
+import { Op } from "sequelize";
 
 
 export async function GET(req: NextRequest, { params }: { params: { title: string, strict: string } }) {
@@ -27,28 +17,44 @@ export async function GET(req: NextRequest, { params }: { params: { title: strin
 	// access search parameters
 	console.log("projects got a GET request!");
 	let urlObj = new URL(req.url);
-	let title = urlObj.searchParams.get("title");
+	let searchTitle = urlObj.searchParams.get("title");
 	let strict = urlObj.searchParams.get("strict");
 	let strictBool = strict == "true";
 
 	// check for bad request
 	// - invalid strict parameter
 	// - if strict but title not defined
-	if (strictBool && title == "") {
+	if ((strict != "true" && strict != "false") || (strictBool && searchTitle == "")) {
 		console.log("bad request")
 		return new NextResponse(JSON.stringify([]), {
 			status: 400
 		});
 	}
-	
-	// determine query string
-	let sql: string;
-	if (!strictBool) sql = `SELECT * FROM Projects WHERE title LIKE "%${title}%" ORDER BY title ASC`;
-	else sql = `SELECT * FROM Projects WHERE title="${title}" ORDER BY title ASC`;
 
 	// try to use the query
 	try {
-		const [result, fields] = await pool.query<ProjectRow[]>(sql);
+		let result;
+
+		if (strictBool) {
+			result = await Project.findAll({
+				where: {
+					title: searchTitle,
+				}
+			})
+		} else {
+			result = await Project.findAll({
+				where: {
+					title: {
+						[Op.like]: '%' + searchTitle + '%'
+					}
+				},
+				order: [
+					["completed", "DESC"],
+				]
+			})
+
+		}
+
 		return new NextResponse(JSON.stringify(result), {
 			status: 200
 		});

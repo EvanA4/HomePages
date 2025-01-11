@@ -10,7 +10,7 @@ import 'swiper/css/navigation';
 import './experience.css';
 import { Suspense, useEffect, useRef, useState } from 'react';
 import { GetExps } from '@/actions/expActions';
-import { Exp } from '@/types/types';
+import { ExpType } from '@/types/types';
 
 
 const Experience = () => {
@@ -26,11 +26,11 @@ const Experience = () => {
 		}
 
 		if (!finishedFirstLoad.current) {
-			let data = await GetExps("", "");
+			let data = await GetExps("", "", "");
 
-			let expsHTMLs = data.map((exp: Exp) => {
+			let expsHTMLs = data.map((exp: ExpType) => {
 				return (
-					<SwiperSlide key={exp.title + exp.timeperiod}>
+					<SwiperSlide key={exp.title}>
 						<div className='h-[100%] w-[100%] p-3 flex justify-center'>
 							<div className='w-[350px] h-[450px] bg-white rounded-[30px] shadow-md p-5'>
 								{exp.link ? <>
@@ -38,7 +38,8 @@ const Experience = () => {
 								</> : <>
 									<p className='text-[25px]'><b>{exp.title}</b></p>
 								</>}
-								<p>{exp.timeperiod}</p>
+								<p className="text-neutral-500">{exp.startTime} - {exp.endTime}</p>
+								<br/>
 								<br/>
 								<ul className='list-disc px-5'>
 									{exp.bullets.map((bullet: string) => {

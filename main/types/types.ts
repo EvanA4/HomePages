@@ -1,7 +1,4 @@
-import type { RowDataPacket } from "mysql2";
-
-export interface BlogRow extends RowDataPacket {
-    id: number;
+export interface BlogType {
     title: string;
     summary: string;
     content: string;
@@ -9,66 +6,37 @@ export interface BlogRow extends RowDataPacket {
 }
 
 
-export interface Blog {
-    title: string;
-    summary: string;
-    content: string;
-    postdate: string;
-}
-
-
-export interface ExpRow extends RowDataPacket {
-    id: number;
+export interface ExpType {
     title: string;
     link: string;
-    timeperiod: string;
-    bullets: string;
-}
-
-
-export interface Exp {
-    title: string;
-    link: string;
-    timeperiod: string;
+    startTime: string;
+    endTime: string;
     bullets: string[];
 }
 
 
-export interface NewExp {
+export interface ExpFormSQL {
     title: string;
     link: string;
-    timeperiod: string;
+    startTime: string;
+    endTime: string;
     bullets: string;
 }
 
-// -- CREATE TABLE Projects (
-// --     id INT PRIMARY KEY AUTO_INCREMENT,
-// --     title VARCHAR(255) NOT NULL UNIQUE,
-// --     link VARCHAR(255),
-// --     bullets TEXT(511) NOT NULL,
-// --     flags VARCHAR(255)
-// -- );
 
-export interface ProjectRow extends RowDataPacket {
-    id: number;
+export interface ProjectFormSQL {
     title: string;
+    completed: string;
     link: string;
-    bullets: string;
+    summary: string;
     flags: string;
 }
 
 
-export interface Project {
+export interface ProjectType {
     title: string;
+    completed: string;
     link: string;
     summary: string;
     flags: string[];
-}
-
-
-export interface NewProject {
-    title: string;
-    link: string;
-    summary: string;
-    flags: string;
 }

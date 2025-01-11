@@ -1,17 +1,6 @@
-import mysql from "mysql2";
-import dotenv from "dotenv";
-import type { BlogRow } from "@/types/types";
+import { Blog } from "@/public/models/blog";
 import { NextRequest, NextResponse } from "next/server";
-dotenv.config();
-
-
-var pool = mysql.createPool({
-  host: process.env.MYSQL_URL,
-  user: process.env.MYSQL_USER,
-  password: process.env.MYSQL_PASS,
-  database: process.env.MYSQL_BASE
-}).promise();
-
+import { Op } from "sequelize";
 
 export async function GET(req: NextRequest) {
 	/*
@@ -26,30 +15,37 @@ export async function GET(req: NextRequest) {
 
 	console.log("blogs got a GET request!");
 	let urlObj = new URL(req.url);
-	let title = urlObj.searchParams.get("title");
+	let searchTitle = urlObj.searchParams.get("title");
 	let strict = urlObj.searchParams.get("strict");
 	let strictBool = strict == "true";
 
 	// check for bad request
-	if (strictBool && title == "") {
+	if (strict != "true" && strict != "false") {
 		return new NextResponse(JSON.stringify([]), {
 			status: 400
 		});
 	}
-	
-	// determine query string
-	let sql: string;
-	if (!strictBool) sql = `SELECT * FROM Blogs WHERE title LIKE "%${title}%" ORDER BY postdate DESC`;
-	else sql = `SELECT * FROM Blogs WHERE title="${title}" ORDER BY postdate DESC`;
+
+	if (!searchTitle) searchTitle = "";
 
 	// try to use the query
 	try {
-		const [result, fields] = await pool.query<BlogRow[]>(sql);
+		const result = await Blog.findAll({
+			where: {
+				title: {
+					[Op.like]: strictBool ? searchTitle : '%' + searchTitle + '%'
+				}
+			},
+			order: [
+				['postdate', 'DESC'],
+			]
+		})
 		return new NextResponse(JSON.stringify(result), {
 			status: 200
 		});
 
-	} catch {
+	} catch (err) {
+		console.log(err);
 		return new NextResponse(JSON.stringify([]), {
 			status: 500
 		});

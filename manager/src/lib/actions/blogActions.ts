@@ -1,5 +1,5 @@
 import type { BlogType } from "$lib/types/types"
-import { fromSQLDate, toSQLDate } from "$lib/utils/sqlDate"
+import { fromSQLDate } from "$lib/utils/sqlDate"
 
 
 export async function GetBlogs(title: string, strict: boolean = false): Promise<BlogType[]> {

@@ -1,21 +1,13 @@
 'use client'
 import Image from 'next/image';
 import Nav from '../components/nav'
-import { useEffect, useRef, useState } from 'react';
+import { useRef, useState } from 'react';
 import { GetBlogs } from '@/actions/blogActions';
-import { Blog } from '@/types/types';
-
-
-interface BlogSnippet {
-    id: number
-    title: string
-    summary: string
-    posted: string
-}
+import { BlogType } from '@/types/types';
 
 
 export default function Blogs() {
-    const [blogs, setBlogs] = useState<Blog[]>([]);
+    const [blogs, setBlogs] = useState<BlogType[]>([]);
     const searchText = useRef<string>('');
     const firstSearch = useRef(false);
 
@@ -55,7 +47,7 @@ export default function Blogs() {
             </div>
 
             <div className='flex flex-col gap-[25px] w-[100%] justify-center items-center px-5 pb-[50px] pt-[50px]'>
-                {blogs.map((blog: Blog) => {
+                {blogs.map((blog: BlogType) => {
                     return (
                         <a key={blog.title} href={'blogs/' + blog.title.replaceAll(' ', '+')} className='w-[100%] z-20'>
                             <div className='text-white p-3 border-white border-2 rounded-[15px] bg-black'>

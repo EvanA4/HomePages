@@ -1,5 +1,5 @@
 import type { ExpType, ExpFormSQL } from "$lib/types/types"
-import { fromSQLDate, toSQLDate } from "$lib/utils/sqlDate";
+import { fromSQLDate } from "$lib/utils/sqlDate";
 
 
 export async function GetExps(title: string, startTime: string, endTime: string, strict: boolean = false): Promise<ExpType[]> {

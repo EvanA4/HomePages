@@ -2,10 +2,10 @@
 import React, { useEffect, useRef, useState } from 'react'
 import Image from 'next/image'
 import { GetProjs } from '@/actions/projActions'
-import { Project } from '@/types/types'
+import { ProjectType } from '@/types/types'
 
 
-function projCard(data: Project) {
+function projCard(data: ProjectType) {
     return (
         <div key={data.title} className='w-[100%] sm:w-auto h-fit px-[7vw] py-3 sm:p-3 flex justify-center'>
             <div className='w-[100%] sm:w-[450px] h-[400px] sm:h-[350px] bg-white rounded-[30px] shadow-md p-5 relative'>
@@ -14,7 +14,7 @@ function projCard(data: Project) {
                 </> : <>
                     <p className='text-[25px]'><b>{data.title}</b></p>
                 </>}
-                <br/>
+                <p className="text-neutral-500">{data.completed}</p><br/>
                 <p>{data.summary}</p>
                 <div className='absolute bottom-[20px] left-0 h-[10vw] max-h-[50px] w-[100%] px-5 flex justify-around'>
                     {data.flags.map((name: string) => {
@@ -49,7 +49,7 @@ const Projects = () => {
                 var projRow = []
 
                 // add first card
-                var current: Project = data[i]
+                var current: ProjectType = data[i]
                 projRow.push(projCard(current))
 
                 // add second card
