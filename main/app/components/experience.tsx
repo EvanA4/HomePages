@@ -8,7 +8,7 @@ import 'swiper/css';
 import 'swiper/css/navigation';
 // https://www.youtube.com/watch?v=IwAYsbuERL4
 import './experience.css';
-import { Suspense, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { GetExps } from '@/actions/expActions';
 import { ExpType } from '@/types/types';
 

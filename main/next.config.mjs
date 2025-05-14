@@ -1,7 +1,7 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    devIndicators: false,
     reactStrictMode: true,
-    swcMinify: true,
     webpack: (config) => {
         config.experiments = {...config.experiments, topLevelAwait: true};
         config.module.rules.push(

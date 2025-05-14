@@ -1,16 +1,15 @@
-import Greeting from './components/greeting'
-import Nav from './components/nav'
-import Experience from './components/experience'
-import Projects from './components/projects'
-import Contact from './components/contact'
-import Image from 'next/image'
+import Greeting from './components/greeting';
+import Experience from './components/experience';
+import Projects from './components/projects';
+import Contact from './components/contact';
+import { Nav } from './components/nav';
 
 
 export default function Home() {
   return (
     <div className='bg-zinc-950'>
       <Nav alwaysOn={false}/>
-      <Greeting/>
+      <Greeting />
 
       <div className='pt-[20vh]'>
         <div className='text-neutral-200 p-[20px] border-white border-2 rounded-[15px] bg-black mx-[5vw]'>

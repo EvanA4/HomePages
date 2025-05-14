@@ -1,6 +1,6 @@
 'use client'
 import Image from 'next/image';
-import Nav from '../components/nav'
+import { Nav } from '../components/nav'
 import { useRef, useState } from 'react';
 import { GetBlogs } from '@/actions/blogActions';
 import { BlogType } from '@/types/types';

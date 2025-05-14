@@ -1,4 +1,7 @@
 "use client"
+import { actionLogout } from '@/actions/authActions';
+import { useUser } from '@/public/utils/authUtils';
+import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
 
 
@@ -7,8 +10,10 @@ interface navProps {
 }
 
 
-const Nav = (props: navProps) => {
+export function Nav(props: navProps) {
     const [scrollPosition, setScrollPosition] = useState(0);
+    const [showLinkDropdown, setShowLinkDropdown] = useState(false);
+    const [showUserDropdown, setShowUserDropdown] = useState(false);
     const handleScroll = () => {
         const position = window.scrollY;
         setScrollPosition(position);
@@ -22,17 +27,125 @@ const Nav = (props: navProps) => {
         };
     }, []);
 
+    const { user, loading } = useUser();
+
+    async function handleLogout() {
+        await actionLogout();
+        window.location.reload();
+    }
+
     return (
-    <div className={(props.alwaysOn ? 'sticky ' : 'fixed ') + 'w-[100%] top-0 z-50 bg-green-600 backdrop-filter backdrop-blur-md bg-opacity-80 flex justify-between items-center transition-all duration-300 overflow-hidden ' + (scrollPosition > 50 || props.alwaysOn ? 'h-[50px]' : 'h-0')}>
-        <div className='pl-10 text-white'>
-            <a href="/"><b>Home</b></a>
+        <div
+            className={
+                'fixed w-[100%] top-0 z-50 bg-green-600 backdrop-filter backdrop-blur-md bg-opacity-80 '
+                + 'flex justify-between items-center transition-all duration-300 h-[50px] px-5 md:px-10 '
+                + (scrollPosition > 50 || props.alwaysOn ? '' : '-translate-y-[100%]')
+            }
+        >
+            <div className='text-white'>
+                <a href="/"><b>Home</b></a>
+            </div>
+
+            <div className='flex gap-5 md:gap-10 items-center'>
+                <div className='relative flex items-center'>
+                    <button
+                        onClick={() => {
+                            setShowLinkDropdown(prev => !prev);
+                            setShowUserDropdown(false);
+                        }}
+                        className='opacity-70 hover:opacity-100'
+                    >
+                        <Image
+                            src="/svgs/burger.svg"
+                            height={35}
+                            width={35}
+                            alt="Burger icon"
+                        />
+                    </button>
+
+                    <div
+                        className={'absolute bottom-0 right-0 translate-y-[100%] overflow-hidden ' + ((scrollPosition > 50 || props.alwaysOn) && showLinkDropdown ? '' : 'h-0')}
+                    >
+                        <div className='flex flex-col rounded-lg text-white overflow-hidden w-[100px] md:w-[150px] text-center'>
+                            <a href="/blogs">
+                                <div
+                                    className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2'
+                                >
+                                    Blogs
+                                </div>
+                            </a>
+
+                            <hr className='border-[rgb(18,80,40)]'/>
+
+                            <a href="/art">
+                                <div
+                                    className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2'
+                                >
+                                    Art
+                                </div>
+                            </a>
+
+                            <hr className='border-[rgb(18,80,40)]'/>
+
+                            {loading ? <>
+                                <div
+                                    className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2'
+                                >
+                                    Loading...
+                                </div>
+                            </> : (user ? <>
+                                <button onClick={handleLogout}>
+                                    <div
+                                        className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2'
+                                    >
+                                        Logout
+                                    </div>
+                                </button>
+                            </> : <>
+                                <a href="/login">
+                                    <div
+                                        className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2'
+                                    >
+                                        Login
+                                    </div>
+                                </a>
+                            </>)}
+                        </div>
+                    </div>
+                </div>
+
+                {user && <div>
+                    <p className='text-white hidden md:block'>u/<b>{user.username}</b></p>
+
+                    <div className='relative'>
+                        <button
+                            onClick={() => {
+                                setShowUserDropdown(prev => !prev);
+                                setShowLinkDropdown(false);
+                            }}
+                            className={'opacity-70 hover:opacity-100 block md:hidden transition-all duration-200 ' + (showUserDropdown && 'rotate-180')}
+                        >
+                            <Image
+                                src="/svgs/droparrow.svg"
+                                height={35}
+                                width={35}
+                                alt="Burger icon"
+                            />
+                        </button>
+
+                        <div
+                            className={'absolute bottom-0 right-0 translate-y-[100%] overflow-hidden ' + ((scrollPosition > 50 || props.alwaysOn) && showUserDropdown ? '' : 'h-0')}
+                        >
+                            <div
+                                className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2 rounded-lg'
+                            >
+                                <p className='text-neutral-300'>Logged in as</p>
+                                <p className='text-white'>u/<b>{user.username}</b></p>
+                            </div>
+                        </div>
+                    </div>
+                </div>}
+            </div>
         </div>
-        <div className='flex gap-10 pr-10 text-white'>
-            <a href="/blogs">Blogs</a>
-            <a href="/art">Art</a>
-        </div>
-    </div>
     )
 }
-
-export default Nav
