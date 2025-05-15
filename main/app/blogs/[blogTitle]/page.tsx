@@ -1,7 +1,7 @@
 'use client'
-import React, { useRef } from "react"
+import React, { use, useRef } from "react"
 import Image from "next/image"
-import Nav from "../../components/nav"
+import { Nav } from "../../components/nav"
 import { useState } from "react"
 import * as babel from "babel-standalone"
 import { GetBlogs } from "@/actions/blogActions"
@@ -111,10 +111,11 @@ function addCodeFrame(blogContent: string): string {
 export default function Blog({ params }: any) {
   const [blogCode, setBlog] = useState(<></>)
   const finishedFirstSearch = useRef(false)
+  const { blogTitle } = use(params) as { blogTitle: string };
 
   if (!finishedFirstSearch.current) {
     (async () => {
-        let blog = (await GetBlogs(params.blogTitle.replaceAll("%2B", " "), true))[0];
+        let blog = (await GetBlogs(blogTitle.replaceAll("%2B", " "), true))[0];
         if (blog != undefined) {
             const babelCode = babel.transform(addCodeFrame(blog.content.replace("\\n", "\n")), {presets: ["react", "es2017"]}).code;
             const code = babelCode.replace('"use strict";', "").trim();

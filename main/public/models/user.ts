@@ -28,7 +28,12 @@ export const UserModel = sequelize.define(
         hint: {
             type: DataTypes.TEXT,
             allowNull: false,
-        }
+        },
+
+        isAdmin: {
+            type: DataTypes.BOOLEAN,
+            allowNull: false,
+        },
     }
 )
 

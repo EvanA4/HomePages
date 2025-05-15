@@ -24,7 +24,7 @@ export async function actionCreateUser(user: User): Promise<{
     
     user.password = await hash(user.password, 10);
     try {
-        const result = (await UserModel.create(user)).dataValues as unknown as User;
+        const result = (await UserModel.create({...user})).dataValues as unknown as User;
         
         return {
             success: true,

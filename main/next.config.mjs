@@ -2,6 +2,7 @@
 const nextConfig = {
     devIndicators: false,
     reactStrictMode: true,
+    serverExternalPackages: ["sequelize"],
     webpack: (config) => {
         config.experiments = {...config.experiments, topLevelAwait: true};
         config.module.rules.push(

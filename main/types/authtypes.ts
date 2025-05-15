@@ -2,6 +2,7 @@ export type User = {
     username: string;
     password: string;
     hint: string;
+    isAdmin: boolean;
     id?: number;
     createdAt?: Date;
     updatedAt?: Date;

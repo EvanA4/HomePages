@@ -38,7 +38,7 @@ export default function Login() {
 
         // verify username and password
         const userRegex = /^[a-zA-Z0-9]+$/;
-        const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*])[a-zA-Z0-9!@#$%^&*]{6,16}$/
+        const passwordRegex = /^(?=.*[0-9])(?=.*[!@#$%^&*_])[a-zA-Z0-9!@#$%^&*_]{6,16}$/
 
         if (inputUsername.length < 4 || inputUsername.length > 15) {
             setGlobalError("Username must be between 4-15 characters in length.");
@@ -64,6 +64,7 @@ export default function Login() {
             username: inputUsername,
             password: inputPassword,
             hint: inputHint,
+            isAdmin: false,
         });
         if (res.success && res.unwrap()) {
             await actionLogin(res.unwrap().username);
