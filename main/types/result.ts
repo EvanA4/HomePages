@@ -1,14 +1,14 @@
 export class Result<T> {
     private data: T | undefined;
-    public success = false;
+    public error = true;
     public message: string | undefined;
 
     public constructor(data?: T, message?: string) {
         if (data != undefined) {
             this.data = data;
-            this.success = true;
+            this.error = false;
         } else {
-            this.success = false;
+            this.error = true;
         }
 
         if (message) {
@@ -17,7 +17,7 @@ export class Result<T> {
     }
 
     public unwrap(errorMessage?: string): T {
-        if (!this.success) {
+        if (this.error) {
             throw new Error(
                 errorMessage ? errorMessage :
                 "tried to unwrap unsuccessful Result"
@@ -30,7 +30,7 @@ export class Result<T> {
     }
 
     public expect(handleError: () => void) {
-        if (!this.success) {
+        if (this.error) {
             handleError();
         }
         if (!this.data) {

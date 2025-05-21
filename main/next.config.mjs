@@ -1,5 +1,10 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
+    images: {
+        dangerouslyAllowSVG: true,
+        contentDispositionType: 'attachment',
+        contentSecurityPolicy: "default-src 'self'; script-src 'none'; sandbox;",
+    },
     devIndicators: false,
     reactStrictMode: true,
     serverExternalPackages: ["sequelize"],
@@ -18,6 +23,10 @@ const nextConfig = {
                 //         loader: 'raw-loader'
                 //     }
                 // ]
+            },
+            {
+                test: /\.svg$/,
+                use: ["@svgr/webpack"],
             }
         )
         return config

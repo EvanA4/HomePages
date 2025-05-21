@@ -20,7 +20,6 @@ import pz from '../../public/skybox/pz.png'
 import nz from '../../public/skybox/nz.png'
 
 // backup sim pic
-import simPic from '../../public/simPicSmall.png'
 import Image from 'next/image'
 
 
@@ -264,7 +263,7 @@ const Greeting = () => {
     <div className='w-[100%] h-[100%] overflow-hidden relative pointer-events-none'>
       <Image
         priority
-        src={simPic.src}
+        src='/simPicSmall.png'
         fill
         alt="Simulation picture"
         style={{objectFit: "cover"}}

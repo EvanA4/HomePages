@@ -48,11 +48,11 @@ export default function Login() {
         }
 
         const res = await validateCredentials(inputUsername, inputPassword);
-        if (res.success && res.unwrap()) {
+        if (!res.error && res.unwrap()) {
             await actionLogin(inputUsername);
             setGlobalError("");
             router.push("/");
-        } else if (res.success && !res.unwrap()) {
+        } else if (!res.error && !res.unwrap()) {
             setGlobalError("Invalid username or password.")
         } else {
             setGlobalError("Error validating credentials.");
@@ -66,7 +66,7 @@ export default function Login() {
         }
 
         const res = await getHint(inputUsername);
-        if (res.success) {
+        if (!res.error) {
             setPasswordHint(res.unwrap());
             setGlobalError("");
 

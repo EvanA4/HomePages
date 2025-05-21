@@ -1,4 +1,6 @@
-export interface BlogType {
+import { StaticImageData } from "next/image";
+
+export type BlogType = {
     title: string;
     summary: string;
     content: string;
@@ -6,7 +8,7 @@ export interface BlogType {
 }
 
 
-export interface ExpType {
+export type ExpType = {
     title: string;
     link: string;
     startTime: string;
@@ -15,7 +17,7 @@ export interface ExpType {
 }
 
 
-export interface ExpFormSQL {
+export type ExpFormSQL = {
     title: string;
     link: string;
     startTime: string;
@@ -24,19 +26,36 @@ export interface ExpFormSQL {
 }
 
 
-export interface ProjectFormSQL {
+export type ProjectFormSQL = {
     title: string;
-    completed: string;
+    completed: Date;
     link: string;
     summary: string;
     flags: string;
 }
 
 
-export interface ProjectType {
+export type Project = {
     title: string;
-    completed: string;
+    completed: Date;
     link: string;
     summary: string;
     flags: string[];
+    id?: number;
+    createdAt?: Date;
+    updatedAt?: Date;
+}
+
+
+export type DBImage = {
+    name: string;
+    class: string;
+    path: string;
+    type: string;
+    size: number;
+    width?: number;
+    height?: number;
+    id?: number;
+    createdAt?: Date;
+    updatedAt?: Date;
 }

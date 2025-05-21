@@ -75,13 +75,13 @@ export async function actionValidateCredentials(username: string, password: stri
 }
 
 
-export async function actionGetUserByCookie(): Promise<{
+export async function actionGetUserByCookie(apiCookie?: string): Promise<{
     success: boolean;
     message: string;
     data?: User;
 }> {
     try {
-        const cookie = (await cookies()).get("session")?.value;
+        const cookie = apiCookie ? apiCookie : (await cookies()).get("session")?.value;
         if (cookie) {
             const session = await actionDecryptJWT(cookie);
             if (session) {
@@ -98,7 +98,9 @@ export async function actionGetUserByCookie(): Promise<{
 
                 } else {
                     // token has expired
-                    (await cookies()).delete("session");
+                    if (!apiCookie) {
+                        (await cookies()).delete("session");
+                    }
                     return {
                         success: true,
                         message: "token expired",

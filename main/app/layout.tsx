@@ -16,7 +16,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body style={{backgroundColor: 'rgb(9, 9, 11)'}} className={inter.className}>{children}</body>
+      <body style={{backgroundColor: 'rgb(9, 9, 11)'}} className={inter.className}>
+        <div id="modal-root"></div>
+        {children}
+      </body>
     </html>
   );
 }

@@ -3,6 +3,7 @@ import { actionLogout } from '@/actions/authActions';
 import { useUser } from '@/public/utils/authUtils';
 import Image from 'next/image';
 import React, { useState, useEffect } from 'react';
+import Modal from './modal';
 
 
 interface navProps {
@@ -52,7 +53,6 @@ export function Nav(props: navProps) {
                     <button
                         onClick={() => {
                             setShowLinkDropdown(prev => !prev);
-                            setShowUserDropdown(false);
                         }}
                         className='opacity-70 hover:opacity-100'
                     >
@@ -67,118 +67,129 @@ export function Nav(props: navProps) {
                     <div
                         className={'absolute bottom-0 right-0 translate-y-[100%] overflow-hidden ' + ((scrollPosition > 50 || props.alwaysOn) && showLinkDropdown ? '' : 'h-0')}
                     >
-                        <div className='flex flex-col rounded-lg text-white overflow-hidden w-[150px] text-center'>
-                            <a href="/blogs">
-                                <div
-                                    className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2'
-                                >
-                                    Blogs
-                                </div>
-                            </a>
-
-                            <hr className='border-[rgb(18,80,40)]'/>
-
-                            <a href="/art">
-                                <div
-                                    className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2'
-                                >
-                                    Art
-                                </div>
-                            </a>
-
-                            <hr className='border-[rgb(18,80,40)]'/>
-
-                            {user?.isAdmin && <>
-                                <button onClick={() => setExpandAdmin(prev => !prev)}>
-                                    <div
-                                        className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2 relative'
-                                    >
-                                        <p>Admin</p>
-
-                                        <div className={'absolute right-[10%] top-[50%] -translate-y-[50%] opacity-70 hover:opacity-100 transition-all duration-200 ' + (expandAdmin ? '' : 'rotate-180')}>
-                                            <Image
-                                                src="/svgs/droparrow.svg"
-                                                height={25}
-                                                width={25}
-                                                alt="Drop Arrow"
-                                            />
-                                        </div>
-                                    </div>
-                                </button>
-                                <hr className='border-[rgb(18,80,40)]'/>
-
-                                {expandAdmin && <>
-                                    <a href="/admin/blogs">
-                                        <div
-                                            className='w-full bg-[rgb(15,73,35)] hover:bg-[rgb(10,63,25)] transition-colors px-4 py-2 text-neutral-300 hover:text-neutral-400'
-                                        >
-                                            Blogs
-                                        </div>
-                                    </a>
-                                    <hr className='border-green-950'/>
-
-                                    <a href="/admin/art">
-                                        <div
-                                            className='w-full bg-[rgb(15,73,35)] hover:bg-[rgb(10,63,25)] transition-colors px-4 py-2 text-neutral-300 hover:text-neutral-400'
-                                        >
-                                            Art
-                                        </div>
-                                    </a>
-                                    <hr className='border-green-950'/>
-
-                                    <a href="/admin/experiences">
-                                        <div
-                                            className='w-full bg-[rgb(15,73,35)] hover:bg-[rgb(10,63,25)] transition-colors px-4 py-2 text-neutral-300 hover:text-neutral-400'
-                                        >
-                                            Experiences
-                                        </div>
-                                    </a>
-                                    <hr className='border-green-950'/>
-
-                                    <a href="/admin/projects">
-                                        <div
-                                            className='w-full bg-[rgb(15,73,35)] hover:bg-[rgb(10,63,25)] transition-colors px-4 py-2 text-neutral-300 hover:text-neutral-400'
-                                        >
-                                            Projects
-                                        </div>
-                                    </a>
-                                    <hr className='border-green-950'/>
-
-                                    <a href="/admin/users">
-                                        <div
-                                            className='w-full bg-[rgb(15,73,35)] hover:bg-[rgb(10,63,25)] transition-colors px-4 py-2 text-neutral-300 hover:text-neutral-400'
-                                        >
-                                            Users
-                                        </div>
-                                    </a>
-                                    <hr className='border-[rgb(18,80,40)]'/>
-                                </>}
-                            </>}
-
-                            {loading ? <>
-                                <div
-                                    className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2'
-                                >
-                                    Loading...
-                                </div>
-                            </> : (user ? <>
-                                <button onClick={handleLogout}>
+                        <Modal visible={showLinkDropdown} setVisibile={setShowLinkDropdown} >
+                            <div className='flex flex-col rounded-lg text-white overflow-hidden w-[150px] text-center'>
+                                <a href="/blogs">
                                     <div
                                         className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2'
                                     >
-                                        Logout
-                                    </div>
-                                </button>
-                            </> : <>
-                                <a href="/login">
-                                    <div
-                                        className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2'
-                                    >
-                                        Login
+                                        Blogs
                                     </div>
                                 </a>
-                            </>)}
-                        </div>
+
+                                <hr className='border-[rgb(18,80,40)]'/>
+
+                                <a href="/art">
+                                    <div
+                                        className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2'
+                                    >
+                                        Art
+                                    </div>
+                                </a>
+
+                                <hr className='border-[rgb(18,80,40)]'/>
+
+                                {user?.isAdmin && <>
+                                    <button onClick={() => setExpandAdmin(prev => !prev)}>
+                                        <div
+                                            className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2 relative'
+                                        >
+                                            <p>Admin</p>
+
+                                            <div className={'absolute right-[10%] top-[50%] -translate-y-[50%] opacity-70 hover:opacity-100 transition-all duration-200 ' + (!expandAdmin ? '' : 'rotate-180')}>
+                                                <Image
+                                                    src="/svgs/droparrow.svg"
+                                                    height={25}
+                                                    width={25}
+                                                    alt="Drop Arrow"
+                                                />
+                                            </div>
+                                        </div>
+                                    </button>
+                                    <hr className='border-[rgb(18,80,40)]'/>
+
+                                    {expandAdmin && <>
+                                        <a href="/admin/images">
+                                            <div
+                                                className='w-full bg-[rgb(15,73,35)] hover:bg-[rgb(10,63,25)] transition-colors px-4 py-2 text-neutral-300 hover:text-neutral-400'
+                                            >
+                                                Images
+                                            </div>
+                                        </a>
+                                        <hr className='border-green-950'/>
+
+                                        <a href="/admin/blogs">
+                                            <div
+                                                className='w-full bg-[rgb(15,73,35)] hover:bg-[rgb(10,63,25)] transition-colors px-4 py-2 text-neutral-300 hover:text-neutral-400'
+                                            >
+                                                Blogs
+                                            </div>
+                                        </a>
+                                        <hr className='border-green-950'/>
+
+                                        <a href="/admin/art">
+                                            <div
+                                                className='w-full bg-[rgb(15,73,35)] hover:bg-[rgb(10,63,25)] transition-colors px-4 py-2 text-neutral-300 hover:text-neutral-400'
+                                            >
+                                                Art
+                                            </div>
+                                        </a>
+                                        <hr className='border-green-950'/>
+
+                                        <a href="/admin/experiences">
+                                            <div
+                                                className='w-full bg-[rgb(15,73,35)] hover:bg-[rgb(10,63,25)] transition-colors px-4 py-2 text-neutral-300 hover:text-neutral-400'
+                                            >
+                                                Experiences
+                                            </div>
+                                        </a>
+                                        <hr className='border-green-950'/>
+
+                                        <a href="/admin/projects">
+                                            <div
+                                                className='w-full bg-[rgb(15,73,35)] hover:bg-[rgb(10,63,25)] transition-colors px-4 py-2 text-neutral-300 hover:text-neutral-400'
+                                            >
+                                                Projects
+                                            </div>
+                                        </a>
+                                        <hr className='border-green-950'/>
+
+                                        <a href="/admin/users">
+                                            <div
+                                                className='w-full bg-[rgb(15,73,35)] hover:bg-[rgb(10,63,25)] transition-colors px-4 py-2 text-neutral-300 hover:text-neutral-400'
+                                            >
+                                                Users
+                                            </div>
+                                        </a>
+                                        <hr className='border-[rgb(18,80,40)]'/>
+                                    </>}
+                                </>}
+
+                                {loading ? <>
+                                    <div
+                                        className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2'
+                                    >
+                                        Loading...
+                                    </div>
+                                </> : (user ? <>
+                                    <button onClick={handleLogout}>
+                                        <div
+                                            className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2'
+                                        >
+                                            Logout
+                                        </div>
+                                    </button>
+                                </> : <>
+                                    <a href="/login">
+                                        <div
+                                            className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2'
+                                        >
+                                            Login
+                                        </div>
+                                    </a>
+                                </>)}
+                            </div>
+                        </Modal>
                     </div>
                 </div>
 
@@ -189,7 +200,6 @@ export function Nav(props: navProps) {
                         <button
                             onClick={() => {
                                 setShowUserDropdown(prev => !prev);
-                                setShowLinkDropdown(false);
                             }}
                             className={'opacity-70 hover:opacity-100 block md:hidden transition-all duration-200 ' + (showUserDropdown && 'rotate-180')}
                         >
@@ -204,12 +214,14 @@ export function Nav(props: navProps) {
                         <div
                             className={'absolute bottom-0 right-0 translate-y-[100%] overflow-hidden ' + ((scrollPosition > 50 || props.alwaysOn) && showUserDropdown ? '' : 'h-0')}
                         >
-                            <div
-                                className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2 rounded-lg'
-                            >
-                                <p className='text-neutral-300'>Logged in as</p>
-                                <p className='text-white'>u/<b>{user.username}</b></p>
-                            </div>
+                            <Modal visible={showUserDropdown} setVisibile={setShowUserDropdown} >
+                                <div
+                                    className='w-full bg-green-800 hover:bg-green-900 transition-colors px-4 py-2 rounded-lg'
+                                >
+                                    <p className='text-neutral-300'>Logged in as</p>
+                                    <p className='text-white'>u/<b>{user.username}</b></p>
+                                </div>
+                            </Modal>
                         </div>
                     </div>
                 </div>}

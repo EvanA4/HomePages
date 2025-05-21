@@ -1,30 +1,88 @@
-import type { ProjectType, ProjectFormSQL } from "@/types/types";
-import { fromSQLDate } from "@/public/utils/sqlDate";
+'use server';
+
+import { ProjectModel } from "@/public/models/project";
+import { ActionResult } from "@/types/actionResult";
+import type { Project, ProjectFormSQL } from "@/types/types";
 
 
-export async function GetProjs(title: string, strict: boolean = false): Promise<ProjectType[]> {
+export async function actionGetProjects(): Promise<ActionResult<Project[]>> {
     // get raw SQL rows for each blog
-    let res = await fetch('/api/projects?' + new URLSearchParams({
-        title: title,
-        strict: (strict ? "true" : "false")
-    }).toString(), {
-        cache: "no-cache"
-    });
-    let rows: ProjectFormSQL[] = await res.json();
-    let projs: ProjectType[] = [];
-
+    let rows: ProjectFormSQL[] = (await ProjectModel.findAll({
+        order: [
+            ['completed', 'DESC'],
+        ],
+    })).map(el => el.dataValues);
+    
     // simplify and convert each row into an exp object
-    for (let i = 0; i < rows.length; ++i) {
-        let proj: ProjectType = {
-            title: rows[i].title,
-            completed: fromSQLDate(rows[i].completed),
-            link: rows[i].link,
-            summary: rows[i].summary,
-            flags: rows[i].flags ? JSON.parse(rows[i].flags) : [],
-        };
+    let projs: Project[] = rows.map(row => ({
+        title: row.title,
+        completed: row.completed,
+        link: row.link,
+        summary: row.summary,
+        flags: row.flags ? JSON.parse(row.flags) : [],
+    }));
 
-        projs.push(proj);
+    return {
+        error: false,
+        message: "successfully retrieved projects",
+        data: projs,
+    };
+}
+
+
+export async function actionCreateProject(project: Project): Promise<ActionResult<Project>> {
+    try {
+        const result = (await ProjectModel.create({...project, flags: JSON.stringify(project.flags)})).dataValues as unknown as Project;
+        return {
+            error: false,
+            message: "successfully added project",
+            data: result,
+        }
+
+    } catch {
+        return {
+            error: true,
+            message: "error adding project",
+        }
     }
+}
 
-    return projs;
+
+export async function actionDeleteProject(project: Project): Promise<ActionResult<boolean>> {
+    try {
+        await ProjectModel.destroy({ where: { title: project.title } });
+        return {
+            error: false,
+            message: "successfully deleted project",
+            data: true,
+        }
+
+    } catch {
+        return {
+            error: true,
+            message: "error deleting project",
+        }
+    }
+}
+
+
+export async function actionUpdateProject(searchTitle: string, project: Project): Promise<ActionResult<boolean>> {
+    try {
+        await ProjectModel.update({
+            ...project,
+            flags: JSON.stringify(project.flags)
+        }, { where: { title: searchTitle } });
+
+        return {
+            error: false,
+            message: "successfully updated project",
+            data: true,
+        }
+
+    } catch {
+        return {
+            error: true,
+            message: "error updating project",
+        }
+    }
 }

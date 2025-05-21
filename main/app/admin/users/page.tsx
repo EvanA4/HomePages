@@ -39,7 +39,7 @@ export default function AdminUsers() {
 			setDeleteConfirm(user.username);
 		} else {
 			const res = await deleteUser({ id: user.id! });
-			if (res.success) {
+			if (!res.error) {
 				setUsers(prev => prev.filter(x => user.username != x.username));
 				setRows(prev => prev.filter(x => user.username != x.username));
 			}
@@ -48,7 +48,7 @@ export default function AdminUsers() {
 
 	async function handlePromote(user: User) {
 		const res = await changeUserRole({ id: user.id! }, !user.isAdmin);
-		if (res.success) {
+		if (!res.error) {
 			setUsers(prev => prev.map(x => ({
 				...x,
 				isAdmin: x.id == user.id ? !user.isAdmin : x.isAdmin,

@@ -1,6 +1,4 @@
 import { Sequelize, DataTypes } from 'sequelize';
-import dotenv from "dotenv";
-dotenv.config();
 
 
 const sequelize = new Sequelize(
@@ -14,35 +12,43 @@ const sequelize = new Sequelize(
 await sequelize.authenticate();
 
 
-export const ProjectModel = sequelize.define(
-    'Project',
+export const DBImageModel = sequelize.define(
+    'DBImage',
     {
-        title: {
+        name: {
             type: DataTypes.STRING,
             allowNull: false,
             unique: true,
         },
 
-        completed: {
-            type: DataTypes.DATE,
-            allowNull: false,
-        },
-
-        link: {
+        class: {
             type: DataTypes.STRING,
             allowNull: false,
         },
 
-        summary: {
-            type: DataTypes.STRING(511),
+        path: {
+            type: DataTypes.STRING,
             allowNull: false,
         },
 
-        flags: {
+        type: {
             type: DataTypes.STRING,
             allowNull: false,
+        },
+
+        size: {
+            type: DataTypes.INTEGER,
+            allowNull: false,
+        },
+
+        width: {
+            type: DataTypes.INTEGER,
+        },
+
+        height: {
+            type: DataTypes.INTEGER,
         },
     }
 )
 
-await ProjectModel.sync();
+await DBImageModel.sync();
