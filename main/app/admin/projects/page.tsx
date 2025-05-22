@@ -1,6 +1,5 @@
 'use client'
-import DynamicImage from '@/app/components/dynamicImage';
-import Modal from '@/app/components/modal';
+import DynamicSVG from '@/app/components/dynamicSVG';
 import { Nav } from '@/app/components/nav'
 import ProjectCreationModal from '@/app/components/projectCreationModal';
 import VerifyLayout, { PageVerifyType } from '@/app/components/verifyLayout';
@@ -106,7 +105,7 @@ export default function AdminProjects() {
 					</div>
 
 					<div className='p-3 w-full flex gap-3 justify-center static'>
-						<input type="text" onChange={e => setSearchText(e.target.value)} placeholder='Search by title!' className='w-[60vw] rounded-full py-3 px-4 text-black z-10'/>
+						<input type="text" onChange={e => setSearchText(e.target.value)} placeholder='Search by title!' className='w-[60vw] rounded-full py-3 px-4 text-black z-10 bg-white'/>
 						<button
 							onClick={handleSearch}
 							className='bg-blue-600 hover:bg-blue-700 text-white px-3 rounded-[10px]'
@@ -141,16 +140,14 @@ export default function AdminProjects() {
 											<div className='h-[10vw] max-h-[50px] w-full px-5 flex justify-around'>
 												{project.flags.map((name, idx) => {
 													return (
-														<DynamicImage
-															key={idx}
-															path={'/dynamic/projects/' + name + '.svg'}
-															alt={`${name} icon`}
-                                                            unoptimized
-															scaling='bigfit'
+														<DynamicSVG
+															path={`/projects/${name}.svg`}
+															scaling='maxfit'
 															fitDims={{
 																width: 50,
 																height: 50
 															}}
+															key={idx}
 														/>
 													)
 												})}

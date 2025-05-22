@@ -59,3 +59,10 @@ export type DBImage = {
     createdAt?: Date;
     updatedAt?: Date;
 }
+
+
+export type FileAPIResult = {
+    success: boolean;
+    message: string;
+    dbImage?: DBImage;
+}

@@ -4,7 +4,7 @@ import ImageCreateModal from '@/app/components/imageCreateModal';
 import ImageSearch from '@/app/components/imageSearch';
 import { Nav } from '@/app/components/nav'
 import VerifyLayout, { PageVerifyType } from '@/app/components/verifyLayout';
-import { getImages, writeImage } from '@/public/utils/imageUtils';
+import { deleteImage, getImages, writeImage } from '@/public/utils/imageUtils';
 import { User } from '@/types/authtypes';
 import { DBImage } from '@/types/types';
 import Image from 'next/image'
@@ -19,7 +19,8 @@ export default function AdminImages() {
 	const [rows, setRows] = useState<DBImage[]>([]);
 	const [pageNum, setPageNum] = useState<number>(0);
 	const [openModal, setOpenModal] = useState<boolean>(false);
-	const [deleteConfirm, setDeleteConfirm] = useState<string | undefined>();
+	const [deleteConfirm, setDeleteConfirm] = useState<string>("");
+	const [searchClass, setSearchClass] = useState<string>("projects");
 
 	function verify(user: User | undefined): PageVerifyType {
 		const pv: PageVerifyType = {
@@ -43,21 +44,17 @@ export default function AdminImages() {
 	}
 	
 	async function handleDelete(image: DBImage) {
-		// if (!deleteConfirm || (deleteConfirm && deleteConfirm != image.name)) {
-		// 	setDeleteConfirm(image.name);
-		// } else {
-		// 	const res = await deleteImage({ id: image.id! });
-		// 	if (!res.error) {
-		// 		setImages(prev => prev.filter(x => image.name != x.name));
-		// 		setRows(prev => prev.filter(x => image.name != x.name));
-		// 	}
-		// }
+		const res = await deleteImage(image.path);
+		if (!res.error) {
+			setImages(prev => prev.filter(x => image.name != x.name));
+			setRows(prev => prev.filter(x => image.name != x.name));
+		}
 	}
 
 	async function handleCreate(files: File[], imageClass: string) {
 		files.forEach(async (x: File) => {
 			const res = await writeImage(x, imageClass);
-			if (res) {
+			if (res && (imageClass == searchClass)) {
 				setImages(prev => [res, ...prev]);
 				setRows(prev => [res, ...prev]);
 			}
@@ -69,12 +66,12 @@ export default function AdminImages() {
 		setRows(images.filter(image => image.name.toLowerCase().includes(searchText.toLowerCase())));
 	}
 
-	async function refreshImages() {
-		const res = await getImages("projects");
+	async function refreshImages(argClass?: string) {
+		const res = await getImages(argClass || searchClass);
 		if (!res.error) {
-			console.log(res.unwrap());
 			setImages(res.unwrap());
 			setRows(res.unwrap());
+			setPageNum(0);
 		}
 	}
 
@@ -99,7 +96,34 @@ export default function AdminImages() {
 						<p className='text-[40px] text-center mt-5'>Images</p>
 					</div>
 			
-					<ImageSearch handleSearch={handleSearch} refreshImages={refreshImages} setOpenModal={setOpenModal} />
+					<div>
+						<div className='flex gap-10 mb-5'>
+							<button
+								onClick={() => {
+									setSearchClass("art")
+									refreshImages("art");
+								}}
+								className={'bg-neutral-600 w-full hover:bg-neutral-700 text-white px-3 py-2 rounded-[10px] ' + (searchClass == "art" && ' opacity-50')}
+							>Art</button>
+
+							<button
+								onClick={() => {
+									setSearchClass("blogs")
+									refreshImages("blogs");
+								}}
+								className={'bg-neutral-600 w-full hover:bg-neutral-700 text-white px-3 py-2 rounded-[10px] ' + (searchClass == "blogs" && ' opacity-50')}
+							>Blogs</button>
+
+							<button
+								onClick={() => {
+									setSearchClass("projects")
+									refreshImages("projects");
+								}}
+								className={'bg-neutral-600 w-full hover:bg-neutral-700 text-white px-3 py-2 rounded-[10px] ' + (searchClass == "projects" && ' opacity-50')}
+							>Projects</button>
+						</div>
+						<ImageSearch handleSearch={handleSearch} refreshImages={refreshImages} setOpenModal={setOpenModal} />
+					</div>
 			
 					{rows.length == 0 && <p className='text-3xl text-neutral-400'>No Results</p>}
 			
@@ -136,7 +160,12 @@ export default function AdminImages() {
 					<div className='flex flex-wrap justify-center items-stretch gap-5 w-[80%] pb-20'>
 						{rows.filter((_, idx) => (
 							idx >= MAX_PER_PAGE * pageNum && idx < MAX_PER_PAGE * (pageNum + 1)
-						)).map((image, idx) => <div key={idx}>{AdminImageCard({ image })}</div>)}
+						)).map((image, idx) => <div key={idx}>{AdminImageCard({
+							image: image,
+							deleteConfirm: deleteConfirm,
+							setDeleteConfirm: setDeleteConfirm,
+							onDelete: handleDelete
+						})}</div>)}
 					</div>
 				</div>
 

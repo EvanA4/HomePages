@@ -39,7 +39,7 @@ export function Nav(props: navProps) {
     return (
         <div
             className={
-                'fixed w-[100%] top-0 z-50 bg-green-600 backdrop-filter backdrop-blur-md bg-opacity-80 '
+                'fixed w-[100%] top-0 z-50 bg-green-600/80 backdrop-filter backdrop-blur-md '
                 + 'flex justify-between items-center transition-all duration-300 h-[50px] px-5 md:px-10 '
                 + (scrollPosition > 50 || props.alwaysOn ? '' : '-translate-y-[100%]')
             }

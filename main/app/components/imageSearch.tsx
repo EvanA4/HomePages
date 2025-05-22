@@ -32,7 +32,7 @@ export default function ImageSearch(props: ImageSearchProps) {
                     onClick={() => {
                         if (confirm("Resync image database?")) {
                             syncImages();
-                            props.refreshImages();
+                            window.location.reload();
                         }
                     }}
                     className='py-2 px-5'

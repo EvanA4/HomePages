@@ -1,19 +1,12 @@
 import { actionGetUserByCookie } from "@/actions/authActions";
 import { DBImageModel } from "@/public/models/image";
-import { DBImage } from "@/types/types";
+import { DBImage, FileAPIResult } from "@/types/types";
 import { Image } from "canvas";
 import { existsSync, mkdirSync, readdirSync, rmdirSync, unlinkSync, writeFileSync } from "fs";
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
 import { basename, dirname, extname, join } from "path";
 import sharp from "sharp";
-
-
-type FileAPIResult = {
-    success: boolean;
-    message: string;
-    dbImage?: DBImage;
-}
 
 
 async function confirmAdmin(): Promise<boolean> {
@@ -154,7 +147,7 @@ async function apiWriteFile(
         const newDBImage = {
             name: basename(filePath),
             class: imagePath[0],
-            path: filePath.substring(join(process.cwd(), "/dynamic").length + 1),
+            path: filePath.substring(join(process.cwd(), "/dynamic").length + 1).replaceAll("\\", "/"),
             type: imageType,
             size: body.size,
             ...imageSize

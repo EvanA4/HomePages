@@ -2,10 +2,14 @@ import { DBImage } from '@/types/types'
 import React from 'react'
 import { prettySize } from '@/public/utils/imageUtils'
 import DynamicSVG from './dynamicSVG'
+import Image from 'next/image'
 
 type AdminImageCardProps = {
-    image: DBImage
-}
+    image: DBImage;
+    deleteConfirm: string;
+    setDeleteConfirm: React.Dispatch<React.SetStateAction<string>>;
+    onDelete: (image: DBImage) => void; 
+};
 
 export default function AdminImageCard(props: AdminImageCardProps) {
     const { image } = props;
@@ -19,7 +23,7 @@ export default function AdminImageCard(props: AdminImageCardProps) {
                             image.type == "svg" ?
                             <div className='hover:shadow-[0_0px_10px_rgba(0,0,0,0.5)]'>
                                 <DynamicSVG
-                                    dbImage={image}
+                                    path={image.path}
                                     scaling='minfit'
                                     fitDims={{
                                         width: 200,
@@ -46,10 +50,27 @@ export default function AdminImageCard(props: AdminImageCardProps) {
 
                     <p className='text-neutral-500 mt-3 text-sm'>{image.path}</p>
                 </div>
-            </div>
 
-            <div className='w-full flex justify-around'>
-                    
+                <div className='w-full flex justify-center'>
+                    <button
+                        onClick={() => {
+                            if (props.deleteConfirm != image.name) {
+                                props.setDeleteConfirm(image.name);
+                            } else {
+                                props.onDelete(image);
+                                props.setDeleteConfirm("");
+                            }
+                        }}
+                        className='opacity-50 hover:opacity-100'
+                    >
+                        <Image
+                            width={40}
+                            height={40}
+                            alt="Check Icon"
+                            src={props.deleteConfirm == image.name ? "/svgs/bcheck.svg" : "/svgs/btrash.svg"}
+                        />
+                    </button>
+                </div>
             </div>
         </div>
     )

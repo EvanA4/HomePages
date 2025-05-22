@@ -1,9 +1,7 @@
-import { DBImage } from '@/types/types'
-import dynamic from 'next/dynamic';
 import React, { useEffect, useState } from 'react'
 
 type DynamicSVGProps = {
-    dbImage: DBImage,
+    path: string,
     scaling: "maxfit" | "minfit",
     fitDims: {
         width: number,
@@ -22,7 +20,7 @@ export default function DynamicSVG(props: DynamicSVGProps) {
 
     useEffect(() => {
         (async () => {
-            const res = await fetch(`\\api\\images\\${props.dbImage.path}`);
+            const res = await fetch(`\\api\\images\\${props.path}`);
             const rawSVG = await res.text();
             const viewBox = rawSVG.substring(rawSVG.indexOf("viewBox")).split("\"")[1].split(" ").map(x => parseFloat(x));
 

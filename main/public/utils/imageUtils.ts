@@ -1,6 +1,6 @@
 import { actionGetDBImages } from "@/actions/imageActions";
 import { Result } from "@/types/result";
-import { DBImage } from "@/types/types";
+import { DBImage, FileAPIResult } from "@/types/types";
 
 
 export async function getImages(imageClass: string): Promise<Result<DBImage[]>> {
@@ -53,7 +53,7 @@ export async function writeImage(file: File, imageClass: string): Promise<DBImag
         body: file
     });
     const data = await res.json() as { success: boolean, message: string, dbImage: DBImage };
-    console.log(data);
+    // console.log(data);
 
     return data.dbImage;
 }
@@ -70,4 +70,18 @@ export async function syncImages(): Promise<{
     };
 
     return data;
+}
+
+
+export async function deleteImage(path: string): Promise<Result<boolean>> {
+    const res = await fetch(`/api/images/manage/${path}`, {
+        method: "DELETE"
+    });
+    const data = (await res.json()) as FileAPIResult;
+
+    if (data.dbImage) {
+        return new Result(true, data.message);
+    } else {
+        return new Result(false, data.message);
+    }
 }

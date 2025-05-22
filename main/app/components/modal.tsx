@@ -31,7 +31,7 @@ export default function Modal(props: ModalProps) {
     return (props.centered ? createPortal((
         <>
             {props.visible && <>
-                <div className={'w-full h-screen flex justify-center items-center fixed top-0 left-0 z-50 ' + (props.hasShadow && 'bg-black bg-opacity-70')}>
+                <div className={'w-full h-screen flex justify-center items-center fixed top-0 left-0 z-50 ' + (props.hasShadow && 'bg-black/70')}>
                     <div ref={divRef}>
                         {props.children}
                     </div>

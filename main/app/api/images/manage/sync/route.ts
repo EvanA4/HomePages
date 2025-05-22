@@ -138,7 +138,7 @@ export async function GET(request: Request): Promise<NextResponse<{
             const newDBImage = {
                 name: basename(filePath),
                 class: imageClass,
-                path: filePath.substring(join(process.cwd(), "/dynamic").length + 1),
+                path: filePath.substring(join(process.cwd(), "/dynamic").length + 1).replaceAll("\\", "/"),
                 type: imageType,
                 size: fileSize,
                 ...imageSize
