@@ -61,6 +61,7 @@ export function Nav(props: navProps) {
                             height={35}
                             width={35}
                             alt="Burger icon"
+                            priority
                         />
                     </button>
 

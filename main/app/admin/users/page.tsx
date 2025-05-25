@@ -1,7 +1,7 @@
 'use client'
 import { actionGetUsers } from '@/actions/userActions';
-import { Nav } from '@/app/components/nav'
-import VerifyLayout, { PageVerifyType } from '@/app/components/verifyLayout';
+import { Nav } from '@/app/components/general/nav'
+import VerifyLayout, { PageVerifyType } from '@/app/components/general/verifyLayout';
 import { changeUserRole, deleteUser } from '@/public/utils/userUtils';
 import { User } from '@/types/authtypes';
 import Image from 'next/image'
@@ -90,7 +90,12 @@ export default function AdminUsers() {
 					</div>
 
 					<div className='p-3 w-[100%] flex gap-3 justify-center static'>
-						<input type="text" onChange={e => setSearchText(e.target.value)} placeholder='Search by username!' className='w-[60vw] rounded-full py-3 px-4 text-black z-10'/>
+						<input 
+							type="text" 
+							onChange={e => setSearchText(e.target.value)} 
+							placeholder='Search by username!' 
+							className='w-[60vw] rounded-full py-3 px-4 text-black z-10 bg-white'
+						/>
 						<button
 							onClick={handleSearch}
 							className='bg-blue-600 hover:bg-blue-700 text-white px-3 rounded-[10px]'

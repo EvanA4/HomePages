@@ -2,7 +2,7 @@
 import React, { useEffect, useRef, useState } from 'react'
 import { Project } from '@/types/types'
 import { getProjects } from '@/public/utils/projectUtils'
-import DynamicImage from './dynamicImage'
+import DynamicSVG from '../general/dynamicSVG'
 
 
 function projCard(project: Project) {
@@ -24,11 +24,10 @@ function projCard(project: Project) {
                         <div className='h-[10vw] max-h-[50px] w-full px-5 flex justify-around'>
                             {project.flags.map((name, idx) => {
                                 return (
-                                    <DynamicImage
+                                    <DynamicSVG
                                         key={idx}
-                                        path={'/dynamic/projects/' + name + '.svg'}
-                                        alt={`${name} icon`}
-                                        scaling='bigfit'
+                                        path={'/projects/' + name + '.svg'}
+                                        scaling='maxfit'
                                         fitDims={{
                                             width: 50,
                                             height: 50

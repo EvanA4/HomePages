@@ -1,27 +1,28 @@
-import { StaticImageData } from "next/image";
-
 export type BlogType = {
     title: string;
     summary: string;
     content: string;
-    postdate: string;
+    postdate: Date;
 }
 
 
 export type ExpType = {
     title: string;
     link: string;
-    startTime: string;
-    endTime: string;
+    startTime: Date;
+    endTime?: Date;
     bullets: string[];
+    id?: number;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 
-export type ExpFormSQL = {
+export type ExpRawSQL = {
     title: string;
     link: string;
-    startTime: string;
-    endTime: string;
+    startTime: Date;
+    endTime: Date;
     bullets: string;
 }
 

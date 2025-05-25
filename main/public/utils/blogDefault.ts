@@ -1,0 +1,5 @@
+export const blogDefault = {
+    "title": "Default Blog",
+    "summary": "This is an example blog for development purposes.",
+    "content": "<H1>Default Blog</H1>\n<IMG\n    src='/blogs.png'\n    height={500}\n    width={500}\n    alt='Blog image'\n>\n    Writer Evan busy at work!\n</IMG>\n<Note>\n    This is just a placeholder for you to start writing.\n</Note>\n<H2>\n    Good luck writing your blog!\n</H2>\n<p>\n    Lorem ipsum dolor sit amet consectetur adipiscing elit.\n    Quisque faucibus ex sapien vitae pellentesque sem placerat. In id cursus mi pretium tellus\n    duis convallis. Tempus leo eu aenean sed diam urna tempor. Pulvinar vivamus fringilla lacus\n    nec metus bibendum egestas. Iaculis massa nisl malesuada lacinia integer nunc posuere.\n    Ut hendrerit semper vel class aptent taciti sociosqu. Ad litora torquent per conubia nostra\n    inceptos himenaeos.\n</p>\n"
+}

@@ -1,29 +1,58 @@
+'use server';
+
 import type { BlogType } from "@/types/types"
-import { fromSQLDate } from "@/public/utils/sqlDate";
+import { Blog } from "@/public/models/blog";
+import { ActionResult } from "@/types/actionResult";
 
 
-export async function GetBlogs(title: string, strict: boolean = false): Promise<BlogType[]> {
-    // get raw SQL rows for each blog
-    let res = await fetch('/api/blogs?' + new URLSearchParams({
-        title: title,
-        strict: (strict ? "true" : "false")
-    }).toString(), {
-        cache: "no-cache"
-    });
-    let rows: BlogType[] = await res.json();
-    let blogs: BlogType[] = [];
+export async function actionGetBlogs(): Promise<ActionResult<BlogType[]>> {
+    let blogs: BlogType[] = (await Blog.findAll({
+        order: [
+            ['postdate', 'DESC'],
+        ],
+    })).map(x => x.dataValues);
+    return {
+        error: false,
+        message: "successfully retrieved blogs",
+        data: blogs
+    };
+}
 
-    // simplify and convert each row into a blog object
-    for (let i = 0; i < rows.length; ++i) {
-        let blog: BlogType = {
-            title: rows[i].title,
-            summary: rows[i].summary,
-            content: rows[i].content,
-            postdate: fromSQLDate(rows[i].postdate),
-        };
 
-        blogs.push(blog);
-    }
+export async function actionGetBlogByTitle(title: string): Promise<ActionResult<BlogType>> {
+    let blogs: BlogType = (await Blog.findOne({ where: { title: title } }))?.dataValues;
+    return {
+        error: false,
+        message: "successfully retrieved blogs",
+        data: blogs
+    };
+}
 
-    return blogs;
+
+export async function actionUpdateBlog(searchTitle: string, newBlog: BlogType): Promise<ActionResult<boolean>> {
+    await Blog.update(newBlog, { where: { title: searchTitle } });
+    return {
+        error: false,
+        message: "successfully retrieved blogs",
+        data: true
+    };
+}
+
+
+export async function actionCreateBlog(newBlog: BlogType): Promise<ActionResult<BlogType>> {
+    const res: BlogType = (await Blog.create(newBlog)).dataValues;
+    return {
+        error: false,
+        message: "successfully retrieved blogs",
+        data: res
+    };
+}
+
+export async function actionDeleteBlog(blog: BlogType): Promise<ActionResult<boolean>> {
+    await Blog.destroy({ where: { title: blog.title } });
+    return {
+        error: false,
+        message: "successfully retrieved blogs",
+        data: true
+    };
 }

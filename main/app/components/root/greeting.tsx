@@ -6,18 +6,18 @@ import * as THREE from 'three';
 import { OrbitControls, PerspectiveCamera, useGLTF } from '@react-three/drei'
 
 // The below five lines are normally red, idk how to fix this yet -- still works!
-import atmVert from './shaders/atmVert.glsl'
-import atmFrag from './shaders/atmFrag.glsl'
-import sunVert from './shaders/sunVert.glsl'
-import sunFrag from './shaders/sunFrag.glsl'
+import atmVert from '../../../public/shaders/atmVert.glsl'
+import atmFrag from '../../../public/shaders/atmFrag.glsl'
+import sunVert from '../../../public/shaders/sunVert.glsl'
+import sunFrag from '../../../public/shaders/sunFrag.glsl'
 
 // skybox
-import px from '../../public/skybox/px.png'
-import nx from '../../public/skybox/nx.png'
-import py from '../../public/skybox/py.png'
-import ny from '../../public/skybox/ny.png'
-import pz from '../../public/skybox/pz.png'
-import nz from '../../public/skybox/nz.png'
+import px from '../../../public/skybox/px.png'
+import nx from '../../../public/skybox/nx.png'
+import py from '../../../public/skybox/py.png'
+import ny from '../../../public/skybox/ny.png'
+import pz from '../../../public/skybox/pz.png'
+import nz from '../../../public/skybox/nz.png'
 
 // backup sim pic
 import Image from 'next/image'

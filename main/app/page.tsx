@@ -1,8 +1,8 @@
-import Greeting from './components/greeting';
-import Experience from './components/experience';
-import Projects from './components/projects';
-import Contact from './components/contact';
-import { Nav } from './components/nav';
+import Greeting from './components/root/greeting';
+import Experience from './components/root/experience';
+import Projects from './components/root/projects';
+import Contact from './components/root/contact';
+import { Nav } from './components/general/nav';
 
 
 export default function Home() {

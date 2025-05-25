@@ -1,9 +1,9 @@
 'use client'
-import AdminImageCard from '@/app/components/adminImage';
-import ImageCreateModal from '@/app/components/imageCreateModal';
-import ImageSearch from '@/app/components/imageSearch';
-import { Nav } from '@/app/components/nav'
-import VerifyLayout, { PageVerifyType } from '@/app/components/verifyLayout';
+import AdminImageCard from '@/app/components/admin/adminImage';
+import ImageCreateModal from '@/app/components/admin/imageCreateModal';
+import ImageSearch from '@/app/components/admin/imageSearch';
+import { Nav } from '@/app/components/general/nav'
+import VerifyLayout, { PageVerifyType } from '@/app/components/general/verifyLayout';
 import { deleteImage, getImages, writeImage } from '@/public/utils/imageUtils';
 import { User } from '@/types/authtypes';
 import { DBImage } from '@/types/types';
@@ -170,8 +170,6 @@ export default function AdminImages() {
 				</div>
 
 				<ImageCreateModal
-					setImages={setImages}
-					setRows={setRows}
 					visible={openModal}
 					setVisible={setOpenModal}
 					handleCreate={handleCreate}

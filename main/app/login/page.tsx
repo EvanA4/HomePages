@@ -1,12 +1,12 @@
 'use client';
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import { Nav } from "../components/nav";
+import { Nav } from "../components/general/nav";
 import { getHint, useUser, validateCredentials } from "@/public/utils/authUtils";
 import { actionLogin } from "@/actions/authActions";
 import Image from "next/image";
 import { User } from "@/types/authtypes";
-import VerifyLayout, { PageVerifyType } from "../components/verifyLayout";
+import VerifyLayout, { PageVerifyType } from "../components/general/verifyLayout";
 
 export default function Login() {
     const [inputUsername, setUsername] = useState("");

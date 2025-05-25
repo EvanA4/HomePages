@@ -6,6 +6,7 @@ import React, { useCallback, useEffect, useRef, useState } from 'react';
 type FileUploaderProps = {
     onUpload: (files: File[]) => void,
     allowedTypes: string[],
+    multipleFiles?: boolean,
 }
 
 type Upload = {
@@ -38,7 +39,7 @@ export default function FileUploader(props: FileUploaderProps) {
         const uploads: Upload[] = [];
         const validList: File[] = [];
 
-        for (let i = 0; i < files.length; ++i) {
+        for (let i = 0; i < (props.multipleFiles ? files.length : 1); ++i) {
             const partitions = files[i].name.split('.');
             if (
                 (partitions.length == 1 && props.allowedTypes.includes("")) || 
@@ -145,9 +146,9 @@ export default function FileUploader(props: FileUploaderProps) {
                 />
                 <div className='text-center'>
                     <p className='text-neutral-300 select-none'>{isDragging ? "Drop to upload" : "Drag and drop files"}</p>
-                    <p className='text-neutral-400'>Allowed types: {props.allowedTypes.reduce((acc, fileType, idx) => {
+                    <p className='text-neutral-400'>Allowed types: {props.allowedTypes.length > 1 ? props.allowedTypes.reduce((acc, fileType, idx) => {
                         return acc + (idx == props.allowedTypes.length - 1 ? `and ${fileType.toUpperCase()}` : `${fileType.toUpperCase()}, `);
-                    }, "")}</p>
+                    }, "") : props.allowedTypes[0].toUpperCase()}</p>
                 </div>
 
                 <div

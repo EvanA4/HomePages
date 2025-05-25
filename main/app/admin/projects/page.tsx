@@ -1,8 +1,8 @@
 'use client'
-import DynamicSVG from '@/app/components/dynamicSVG';
-import { Nav } from '@/app/components/nav'
-import ProjectCreationModal from '@/app/components/projectCreationModal';
-import VerifyLayout, { PageVerifyType } from '@/app/components/verifyLayout';
+import DynamicSVG from '@/app/components/general/dynamicSVG';
+import { Nav } from '@/app/components/general/nav'
+import ProjectCreationModal from '@/app/components/admin/projectCreationModal';
+import VerifyLayout, { PageVerifyType } from '@/app/components/general/verifyLayout';
 import { createProject, deleteProject, getProjects, updateProject } from '@/public/utils/projectUtils';
 import { User } from '@/types/authtypes';
 import { Result } from '@/types/result';
@@ -199,7 +199,7 @@ export default function AdminProjects() {
 				<ProjectCreationModal
                     toEdit={toEdit}
 					visible={createModalOpen}
-					setVisibile={setCreateModalOpen}
+					setVisible={setCreateModalOpen}
 					handleCreate={handleCreate}
                     handleUpdate={handleUpdate}
 				/>

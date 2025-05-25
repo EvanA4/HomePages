@@ -1,12 +1,12 @@
 'use client';
 import { useState } from "react";
-import { Nav } from "../components/nav";
+import { Nav } from "../components/general/nav";
 import { createUser } from "@/public/utils/authUtils";
 import { actionLogin } from "@/actions/authActions";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import { User } from "@/types/authtypes";
-import VerifyLayout, { PageVerifyType } from "../components/verifyLayout";
+import VerifyLayout, { PageVerifyType } from "../components/general/verifyLayout";
 
 export default function Login() {
     const [inputUsername, setUsername] = useState("");

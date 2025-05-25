@@ -1,16 +1,15 @@
 'use client';
 
-import { createProject } from '@/public/utils/projectUtils';
 import { Project } from '@/types/types';
 import Image from 'next/image';
 import React, { useEffect, useState } from 'react'
-import Modal from './modal';
+import Modal from '../general/modal';
 import { Result } from '@/types/result';
 
 type ProjectCreationModalProps = {
     toEdit: Project | undefined;
     visible: boolean;
-    setVisibile: React.Dispatch<React.SetStateAction<boolean>>;
+    setVisible: React.Dispatch<React.SetStateAction<boolean>>;
     handleCreate: (project: Project) => Promise<Result<Project>>;
     handleUpdate: (searchTitle: string, project: Project) => Promise<Result<boolean>>;
 };
@@ -65,14 +64,14 @@ export default function ProjectCreationModal(props: ProjectCreationModalProps) {
             res = await props.handleCreate(newProject);
         }
         if (!res.error) {
-            props.setVisibile(false);
+            props.setVisible(false);
         } else {
             console.error(res.message);
         }
     }
 
     return (
-        <Modal visible={props.visible} setVisibile={props.setVisibile} hasShadow centered >
+        <Modal visible={props.visible} setVisibile={props.setVisible} hasShadow centered >
             <div className='p-10 bg-neutral-800 text-white rounded-2xl flex flex-col gap-5 w-[800px]'>
                 {/* Title */}
                 <div className='w-full'>

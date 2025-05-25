@@ -9,13 +9,17 @@ import 'swiper/css/navigation';
 // https://www.youtube.com/watch?v=IwAYsbuERL4
 import './experience.css';
 import { useEffect, useRef, useState } from 'react';
-import { GetExps } from '@/actions/expActions';
+import { actionGetExps } from '@/actions/expActions';
 import { ExpType } from '@/types/types';
 
 
 const Experience = () => {
 	const [expSlides, setSlides] = useState<JSX.Element[]>([])
 	const finishedFirstLoad = useRef(false)
+
+	function dateFormat(date: Date) {
+		return date.toLocaleDateString('en-US', { timeZone: 'America/New_York' });
+	}
 
 	useEffect(() => {(async () => { 
 		if (isMobile) {
@@ -26,7 +30,7 @@ const Experience = () => {
 		}
 
 		if (!finishedFirstLoad.current) {
-			let data = await GetExps("", "", "");
+			let data = (await actionGetExps()).data!;
 
 			let expsHTMLs = data.map((exp: ExpType) => {
 				return (
@@ -38,7 +42,7 @@ const Experience = () => {
 								</> : <>
 									<p className='text-[25px]'><b>{exp.title}</b></p>
 								</>}
-								<p className="text-neutral-500">{exp.startTime} - {exp.endTime}</p>
+								<p className="text-neutral-500">{dateFormat(exp.startTime)} - {exp.endTime ? dateFormat(exp.endTime) : "Present"}</p>
 								<br/>
 								<br/>
 								<ul className='list-disc px-5'>

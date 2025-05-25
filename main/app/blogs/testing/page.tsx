@@ -1,7 +1,7 @@
 'use client'
 import React from "react"
 import Image from "next/image"
-import Nav from '../../components/nav'
+import Nav from '../../components/general/nav'
 
 
 function blogTSX(props: any) {

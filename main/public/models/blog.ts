@@ -38,14 +38,14 @@ export const Blog = sequelize.define(
             allowNull: false,
         },
 
-        content: {
-            type: DataTypes.TEXT,
-            allowNull: false,
-        },
-
         postdate: {
             type: DataTypes.DATE,
             defaultValue: DataTypes.NOW,
+        },
+        
+        content: {
+            type: DataTypes.TEXT,
+            allowNull: false,
         },
     }
 )

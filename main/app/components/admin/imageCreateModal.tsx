@@ -1,13 +1,10 @@
 'use client';
 
-import React, { useRef, useState } from 'react'
-import Modal from './modal'
-import { DBImage } from '@/types/types'
+import React, { useRef, useState } from 'react';
+import Modal from '../general/modal';
 import FileUploader from './FileUploader';
 
 type ImageCreateModalProps = {
-    setImages: React.Dispatch<React.SetStateAction<DBImage[]>>;
-    setRows: React.Dispatch<React.SetStateAction<DBImage[]>>;
     visible: boolean;
     setVisible: React.Dispatch<React.SetStateAction<boolean>>;
     handleCreate: (files: File[], imageClass: string) => void;
@@ -46,7 +43,7 @@ export default function ImageCreateModal(props: ImageCreateModalProps) {
                 <p className='text-3xl text-white text-center mb-10'>Image Upload</p>
 
                 <div className='h-[50%]'>
-                    <FileUploader onUpload={handleUpload} allowedTypes={["png", "jpg", "jpeg", "svg"]}/>
+                    <FileUploader onUpload={handleUpload} allowedTypes={["png", "jpg", "jpeg", "svg"]} multipleFiles/>
                 </div>
 
                 <div className='mt-10'>

@@ -1,7 +1,7 @@
 import { DBImage } from '@/types/types'
 import React from 'react'
 import { prettySize } from '@/public/utils/imageUtils'
-import DynamicSVG from './dynamicSVG'
+import DynamicSVG from '../general/dynamicSVG'
 import Image from 'next/image'
 
 type AdminImageCardProps = {

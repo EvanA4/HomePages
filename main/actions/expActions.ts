@@ -1,32 +1,81 @@
-import type { ExpType, ExpFormSQL } from "@/types/types"
-import { fromSQLDate } from "@/public/utils/sqlDate";
+'use server'
+
+import type { ExpType, ExpRawSQL } from "@/types/types"
+import { ActionResult } from "@/types/actionResult";
+import { Experience } from "@/public/models/experience";
 
 
-export async function GetExps(title: string, startTime: string, endTime: string, strict: boolean = false): Promise<ExpType[]> {
-    // get raw SQL rows for each blog
-    let res = await fetch('/api/experiences?' + new URLSearchParams({
-        title: title,
-        strict: (strict ? "true" : "false")
-    }).toString(), {
-        cache: "no-cache"
-    });
+export async function actionGetExps(): Promise<ActionResult<ExpType[]>> {
+    let rows: ExpRawSQL[] = (await Experience.findAll({
+        order: [
+            ['startTime', 'DESC'],
+        ],
+    })).map(x => x.dataValues);
+    let exps: ExpType[] = rows.map(
+        rawExp => ({
+            ...rawExp,
+            bullets: JSON.parse(rawExp.bullets) as string[]
+        })
+    );
 
-    let rows: ExpFormSQL[] = await res.json();
-    let exps: ExpType[] = [];
+    return {
+        error: false,
+        message: "successfully retrieved experiences",
+        data: exps
+    };
+}
 
-    // simplify and convert each row into an exp object
-    for (let i = 0; i < rows.length; ++i) {
-        let exp: ExpType = {
-            title: rows[i].title,
-            link: rows[i].link,
-            startTime: fromSQLDate(rows[i].startTime),
-            endTime: rows[i].endTime ? fromSQLDate(rows[i].endTime) : "Present",
-            bullets: rows[i].bullets == "" ? [] : JSON.parse(rows[i].bullets),
+
+export async function actionCreateExp(exp: ExpType): Promise<ActionResult<ExpType>> {
+    const rawSQL = (await Experience.create({
+        ...exp,
+        bullets: JSON.stringify(exp.bullets)
+    }))?.dataValues as unknown as ExpRawSQL;
+    const res = {
+        ...rawSQL,
+        bullets: JSON.parse(rawSQL.bullets)
+    };
+
+    return {
+        error: false,
+        message: "successfully created experience",
+        data: res
+    };
+}
+
+
+export async function actionDeleteExp(exp: ExpType): Promise<ActionResult<ExpType>> {
+    const rawSQL = (await Experience.findOne({ where: { title: exp.title } }))?.dataValues as unknown as ExpRawSQL;
+    if (!rawSQL) {
+        return {
+            error: false,
+            message: "experience already exists"
         };
-
-        if (exp.endTime != "Present") exps.push(exp);
-        else exps.splice(0, 0, exp);
     }
+    
+    await Experience.destroy({ where: { title: exp.title }});
+    const res = {
+        ...rawSQL,
+        bullets: JSON.parse(rawSQL.bullets)
+    };
 
-    return exps;
+    return {
+        error: false,
+        message: "successfully created experience",
+        data: res
+    };
+}
+
+
+export async function actionUpdateExp(searchTitle: string, exp: ExpType): Promise<ActionResult<boolean>> {
+    await Experience.update({
+        ...exp,
+        bullets: JSON.stringify(exp.bullets)
+    }, { where: { title: searchTitle } });
+
+    return {
+        error: false,
+        message: "successfully updated experience",
+        data: true
+    };
 }
