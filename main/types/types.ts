@@ -67,3 +67,18 @@ export type FileAPIResult = {
     message: string;
     dbImage?: DBImage;
 }
+
+
+export type ArtCollection = {
+    name: string;
+    count: number;
+    displayImgPath: string;
+}
+
+
+export type ArtPiece = {
+    name: string;
+    imgPath: string;
+    postdate: Date;
+    content: string;
+}
