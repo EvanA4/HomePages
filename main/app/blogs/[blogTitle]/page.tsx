@@ -30,7 +30,7 @@ export default function Blog({ params }: any) {
             if (!blogRes.error) {
                 try {
                     const blog = blogRes.unwrap();
-                    const babelCode = babel.transform(addCodeFrame(blog.content), {presets: ["react", "es2017"]}).code as string;
+                    const babelCode = babel.transform(addCodeFrame(blog.content!), {presets: ["react", "es2017"]}).code as string;
                     const func = new Function("React", `return ${babelCode}`);
                     setBlog(func(React)(Image))
                 } catch (e: any) {

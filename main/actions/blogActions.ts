@@ -10,6 +10,9 @@ export async function actionGetBlogs(): Promise<ActionResult<BlogType[]>> {
         order: [
             ['postdate', 'DESC'],
         ],
+        attributes: {
+            exclude: ["content"]
+        }
     })).map(x => x.dataValues);
     return {
         error: false,

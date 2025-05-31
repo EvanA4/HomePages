@@ -1,7 +1,7 @@
 export type BlogType = {
     title: string;
     summary: string;
-    content: string;
+    content?: string | undefined;
     postdate: Date;
 }
 
