@@ -1,4 +1,8 @@
-import { Sequelize, DataTypes } from 'sequelize';
+import {
+    Sequelize, DataTypes, Model, InferAttributes, InferCreationAttributes,
+    CreationOptional, ForeignKey
+} from 'sequelize';
+import { ArtCollectionModel } from './artCollection';
 
 const sequelize = new Sequelize(
     process.env.MYSQL_BASE as string,
@@ -10,31 +14,53 @@ const sequelize = new Sequelize(
 });
 await sequelize.authenticate();
 
+export class ArtPieceModel extends Model<InferAttributes<ArtPieceModel>, InferCreationAttributes<ArtPieceModel>> {
+    declare id: CreationOptional<number>;
+    declare createdAt: CreationOptional<Date>;
+    declare updatedAt: CreationOptional<Date>;
 
-export const ArtPieceModel = sequelize.define(
-    'ArtPiece',
+    declare name: string;
+    declare imgPath: string;
+    declare postdate: Date;
+    declare content: string;
+
+    declare collId: ForeignKey<ArtCollectionModel['id']>;
+}
+
+ArtPieceModel.init(
     {
+        id: {
+            type: DataTypes.INTEGER.UNSIGNED,
+            autoIncrement: true,
+            primaryKey: true
+        },
         name: {
-            type: DataTypes.STRING,
-            allowNull: false,
-            unique: true,
+            type: new DataTypes.STRING,
+            allowNull: false
         },
-
         imgPath: {
-            type: DataTypes.STRING,
-            allowNull: false,
+            type: new DataTypes.STRING,
+            allowNull: false
         },
-
         postdate: {
-            type: DataTypes.DATE,
-            allowNull: false,
+            type: new DataTypes.DATE,
+            allowNull: false
         },
-
         content: {
-            type: DataTypes.TEXT,
-            allowNull: false,
+            type: new DataTypes.TEXT,
+            allowNull: false
         },
+        createdAt: DataTypes.DATE,
+        updatedAt: DataTypes.DATE,
+    },
+    {
+        sequelize,
+        tableName: 'artPiece'
     }
-)
+);
+
+ArtPieceModel.belongsTo(ArtCollectionModel, {
+    foreignKey: 'collId'
+})
 
 await ArtPieceModel.sync({ force: true });

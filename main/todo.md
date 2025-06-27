@@ -1,4 +1,5 @@
 - add ArtPiece CRUD
 - add pagination to projects on home page
-- generalize "blogs" as "posts"?
 - loading screen for greeting.tsx
+- reduce footprint of /public
+- generalize "blogs" as "posts"?
