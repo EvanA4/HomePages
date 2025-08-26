@@ -11,6 +11,7 @@ import './experience.css';
 import { useEffect, useRef, useState } from 'react';
 import { actionGetExps } from '@/actions/expActions';
 import { ExpType } from '@/types/types';
+import { HARDCODED_EXPERIENCES } from '@/utils/hardcoded/experiences';
 
 
 const Experience = () => {
@@ -30,7 +31,7 @@ const Experience = () => {
 		}
 
 		if (!finishedFirstLoad.current) {
-			let data = (await actionGetExps()).data!;
+			let data = HARDCODED_EXPERIENCES;
 
 			let expsHTMLs = data.map((exp: ExpType) => {
 				return (

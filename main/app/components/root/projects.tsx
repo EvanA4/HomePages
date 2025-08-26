@@ -3,6 +3,7 @@ import React, { useEffect, useRef, useState } from 'react'
 import { Project } from '@/types/types'
 import { getProjects } from '@/public/utils/projectUtils'
 import DynamicSVG from '../general/dynamicSVG'
+import { HARDCODED_PROJECTS } from '@/utils/hardcoded/projects'
 
 
 function projCard(project: Project) {
@@ -50,8 +51,7 @@ const Projects = () => {
 
     useEffect(() => {(async () => {
         if (!finishedFirstLoad.current) {
-            const res = await getProjects();
-            const data = res.unwrap();
+            const data = HARDCODED_PROJECTS;
 
             var newCards = [];
             for (let i = 0; i < data.length; i += 2) {

@@ -18,7 +18,7 @@ export default function Home() {
               <hr className='border-neutral-700'/>
           </div>
           <p>
-            I'm Evan Abbott, a junior computer science student at the University of Tennessee (Knoxville). Although I'm currently an undergraduate student, I hope to
+            I'm Evan Abbott, a senior computer science student at the University of Tennessee (Knoxville). Although I'm currently an undergraduate student, I hope to
             eventually earn a master's degree. Since freshman year, I've created projects across machine learning, full-stack web development, GUI design, graphics programming,
             and even some game development. I'm currently looking for internships, so feel free to <a className="text-blue-400" href="#contact"><u>reach out</u></a>!
           </p>
@@ -37,12 +37,13 @@ export default function Home() {
         <Projects/>
       </div>
 
-      <div className='flex justify-center mb-[20vh]'>
+      <div className='flex justify-center opacity-50'>
         <p className='text-white text-2xl md:text-3xl text-center px-5'>
-          Looking for more? Check out my <a href="/blogs" className='text-blue-400'><u>blogs</u></a> and
-           <a href="/art" className='text-blue-400'> <u>art</u></a>!
+          Looking for more? Check out my <span className='text-blue-400'><u>blogs</u></span> and
+           <span className='text-blue-400'> <u>art</u></span>!
         </p>
       </div>
+      <p className='text-yellow-500 mb-[20vh] text-center opacity-80'>**unforunately, the other pages are temporarily disabled as I move living spaces</p>
 
       <Contact/>
       <div id='contact'></div>

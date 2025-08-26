@@ -12,8 +12,7 @@ export default function Blogs() {
                         <hr className='border-neutral-700'/>
                     </div>
                     <p>
-                        This site is still a work in progress, so it may be a minute before this is available. In the meantime, check out
-                        the <a className='text-blue-500' href="/blogs"><u>Blogs</u></a> page!
+                        This site is still a work in progress, so it may be a minute before this is available.
                     </p>
                 </div>
             </div>
